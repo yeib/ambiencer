@@ -1,0 +1,8 @@
+# Local workspace files
+GEMINI.md
+
+# Dependencies & Build artifacts
+node_modules/
+dist/
+src-tauri/target/
+.DS_Store
