@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "tauri": "npx @tauri-apps/cli",
     "msix": "node scripts/build-msix.js",
+    "generate-icons": "node scripts/generate-icons.js",
     "tauri:windows:build": "tauri-windows-bundle build"
   },
   "dependencies": {
