@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "tauri": "npx @tauri-apps/cli"
+    "tauri": "npx @tauri-apps/cli",
+    "msix": "node scripts/build-msix.js",
+    "tauri:windows:build": "tauri-windows-bundle build"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.2.0",
@@ -17,10 +19,12 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@choochmeque/tauri-windows-bundle": "^0.1.28",
     "@tauri-apps/cli": "^2.2.0",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
     "@vitejs/plugin-react": "^4.3.4",
+    "cross-env": "^10.1.0",
     "typescript": "^5.7.3",
     "vite": "^6.1.0"
   }
