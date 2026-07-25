@@ -1,26 +1,32 @@
-# 🎧 Guía de Generación de Audios con IA & Prompts para Ambiencer Pro
+# 🎧 Guía de Generación de Audios con IA 100% GRATUITAS & Prompts para Ambiencer Pro
 
-> **Objetivo:** Generar bucles de audio HD completamente propios, con **0% riesgo de reclamos de derechos de autor y 0% obligación de atribución**.
-
----
-
-## 🏆 Las 2 Mejores Plataformas de IA para Generar Sonidos Comerciales
-
-### 1. 🥇 **ElevenLabs Sound Effects** ([elevenlabs.io](https://elevenlabs.io))
-- **Por qué es la #1:** Es la mejor herramienta del mercado para efectos de sonido e hilo ambiental. Genera muestras hiper-realistas a partir de descripciones en texto.
-- **Licencia Comercial:** Con cualquier plan de pago (desde $5/mes), el contenido generado es **100% de tu propiedad comercial exclusiva**. No requiere dar crédito a nadie.
-- **Ideal para:** Gotas de lluvia, tecleo ASMR, crujido de fuego, cafetería, viento en árboles y truenos.
-
-### 2. 🥈 **Stable Audio (Stability AI)** ([stableaudio.com](https://stableaudio.com))
-- **Por qué es la #2:** Especializado en audios más largos y fondos musicales/drones de meditación de hasta 3 minutos.
-- **Licencia Comercial:** Su plan comercial otorga derechos de uso ilimitado y venta en aplicaciones.
-- **Ideal para:** Drones espaciales, pads zen, ondas de meditación y atmósferas continuas.
+> **Objetivo:** Generar bucles de audio HD completamente propios sin gastar **$0 USD**, con **0% riesgo de derechos de autor y 0% obligación de dar créditos a nadie**.
 
 ---
 
-## 📝 15 Mini-Prompts Listos para Usar en IA
+## 🏆 Las 3 Mejores Herramientas de IA 100% GRATUITAS
 
-Copia y pega estos prompts directamente en la IA para obtener capas de audio modulares perfectas:
+### 1. 🥇 **Meta AudioGen / AudioCraft (en Hugging Face Spaces)**
+- **Qué es:** El modelo open-source oficial de Meta (Facebook AI) entrenado específicamente para generar efectos de sonido y atmósferas reales a partir de texto (*Text-to-Sound Effect*).
+- **Precio:** **100% GRATIS**.
+- **Cómo usarlo:** Puedes usar la demo gratuita en vivo en Hugging Face Spaces (ej. `facebook/AudioGen`) o correrlo en Google Colab con GPU gratis.
+- **Licencia:** Al ser un modelo open-source corrido en tu sesión, los sonidos generados son completamente tuyos sin reclamos ni créditos.
+
+### 2. 🥈 **Stable Audio Open 1.0 (Demo Hugging Face / Google Colab)**
+- **Qué es:** La versión **open-source gratuita** lanzada por Stability AI. Permite generar fondos musicales, drones zen y sonidos ambientales de hasta 47 segundos por toma.
+- **Precio:** **100% GRATIS**.
+- **Cómo usarlo:** Gratis en la demo de Hugging Face (`stabilityai/stable-audio-open-1.0`) o en Google Colab.
+
+### 3. 🥉 **Audacity + Sintetizadores DSP (Software 100% Offline)**
+- **Qué es:** El editor de audio open-source más popular del mundo. Incluye generadores de ruido procedimental (Rosa, Blanco, Marrón), tonos modulados, LFOs y reverberaciones profundas en 24-bit.
+- **Precio:** **100% GRATIS** (código abierto sin límites).
+- **Ideal para:** Diseñar capas de viento, olas de mar y fuego crujiente en cuestión de segundos sin depender de internet.
+
+---
+
+## 📝 15 Mini-Prompts Listos para Usar en AudioGen / Stable Audio Open
+
+Copia y pega estos prompts directamente en las herramientas gratuitas:
 
 ### 🌧️ Naturaleza & Clima
 1. **Lluvia en Ventana:**
