@@ -4,7 +4,7 @@
 
 ---
 
-## 🏆 Las 3 Mejores Herramientas de IA 100% GRATUITAS
+## 🏆 Las 2 Mejores Herramientas de IA 100% GRATUITAS
 
 ### 1. 🥇 **Meta AudioGen / AudioCraft (en Hugging Face Spaces)**
 - **Qué es:** El modelo open-source oficial de Meta (Facebook AI) entrenado específicamente para generar efectos de sonido y atmósferas reales a partir de texto (*Text-to-Sound Effect*).
@@ -17,10 +17,15 @@
 - **Precio:** **100% GRATIS**.
 - **Cómo usarlo:** Gratis en la demo de Hugging Face (`stabilityai/stable-audio-open-1.0`) o en Google Colab.
 
-### 3. 🥉 **Audacity + Sintetizadores DSP (Software 100% Offline)**
-- **Qué es:** El editor de audio open-source más popular del mundo. Incluye generadores de ruido procedimental (Rosa, Blanco, Marrón), tonos modulados, LFOs y reverberaciones profundas en 24-bit.
-- **Precio:** **100% GRATIS** (código abierto sin límites).
-- **Ideal para:** Diseñar capas de viento, olas de mar y fuego crujiente en cuestión de segundos sin depender de internet.
+---
+
+## 🧮 3. Generación Sintética Integrada en Código (0 KB — Ya Incluido)
+
+Recuerda que **Ambiencer Pro** ya sintetiza internamente en tiempo real mediante Web Audio API en JavaScript (sin descargar ningún programa extra ni audios externos):
+- **Ruido Rosa, Blanco & Marrón**
+- **Solfeggio (432 Hz, 528 Hz, 639 Hz, 741 Hz, 852 Hz)**
+- **Ondas Binaurales (Alfa 10Hz, Theta 6Hz, Delta 2Hz, Gamma 40Hz)**
+- **Simulador de Lluvia, Viento, Olas y Fogata Procedimental**
 
 ---
 
