@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Volume2, VolumeX, RotateCcw, CloudRain, Zap, Waves, Wind, Flame, Coffee, Keyboard, Radio, Disc } from 'lucide-react';
+import { Volume2, VolumeX, RotateCcw, CloudRain, Zap, Waves, Wind, Flame, Coffee, Keyboard, Radio, Disc, Car, Train, BookOpen, PenTool, Heart, Trees } from 'lucide-react';
 import { SoundChannel, SoundCategory, AppSettings } from '../types';
 import { getTranslation } from '../i18n';
 
@@ -30,6 +30,13 @@ export const SoundMixer: React.FC<SoundMixerProps> = ({
       case 'fire': return <Flame size={22} />;
       case 'cafe': return <Coffee size={22} />;
       case 'keyboard': return <Keyboard size={22} />;
+      case 'car': return <Car size={22} />;
+      case 'train': return <Train size={22} />;
+      case 'library': return <BookOpen size={22} />;
+      case 'pencil': return <PenTool size={22} />;
+      case 'cat': return <Heart size={22} />;
+      case 'bamboo': return <Trees size={22} />;
+      case 'space': return <Disc size={22} />;
       case 'radio': return <Radio size={22} />;
       default: return <Disc size={22} />;
     }

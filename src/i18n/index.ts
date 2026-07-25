@@ -51,17 +51,24 @@ export const translations = {
     settingsAccent: 'Color de Acento UI',
     settingsAudio: 'Motor de Audio local WebAudio',
     settingsHighQuality: 'Síntesis de Alta Fidelidad (24-bit procedimental)',
-    soundRain: 'Lluvia Suave',
+
+    // 14 HD Soundscapes
+    soundRain: 'Lluvia en Ventana',
     soundThunder: 'Tormenta & Truenos',
-    soundWaves: 'Olas del Mar',
-    soundWind: 'Viento en el Bosque',
-    soundFire: 'Fogata Crujiente',
+    soundWaves: 'Olas del Mar Calmas',
+    soundWind: 'Viento en Bosque de Pinos',
+    soundFire: 'Fogata Acogedora',
     soundCafe: 'Cafetería Acogedora',
     soundKeyboard: 'Teclado Mecánico ASMR',
+    soundCarRain: 'Lluvia dentro del Auto',
+    soundTrain: 'Tren Nocturno',
+    soundLibrary: 'Biblioteca Silenciosa',
+    soundPencil: 'Escritura con Lápiz ASMR',
+    soundCat: 'Ronroneo de Gato',
+    soundBamboo: 'Fuente de Bambú Zen',
+    soundSpacePad: 'Espacio Profundo Zen',
     soundPinkNoise: 'Ruido Rosa Procedimental',
-    soundWhiteNoise: 'Ruido Blanco Procedimental',
-    soundBinauralAlpha: 'Frecuencia Binaural Alfa (10 Hz)',
-    soundBinauralTheta: 'Frecuencia Binaural Theta (6 Hz)'
+    soundWhiteNoise: 'Ruido Blanco Procedimental'
   },
   en: {
     appTitle: 'Ambiencer Pro',
@@ -115,17 +122,24 @@ export const translations = {
     settingsAccent: 'UI Accent Color',
     settingsAudio: 'WebAudio Procedural Engine',
     settingsHighQuality: 'High-Fidelity Synthesis (24-bit procedural)',
-    soundRain: 'Gentle Rain',
+
+    // 14 HD Soundscapes
+    soundRain: 'Window Rain',
     soundThunder: 'Storm & Thunder',
-    soundWaves: 'Ocean Waves',
-    soundWind: 'Forest Wind',
-    soundFire: 'Crackling Fireplace',
+    soundWaves: 'Calm Ocean Waves',
+    soundWind: 'Pine Forest Wind',
+    soundFire: 'Cozy Fireplace',
     soundCafe: 'Cozy Coffee Shop',
     soundKeyboard: 'ASMR Mechanical Keyboard',
+    soundCarRain: 'Rain Inside Car',
+    soundTrain: 'Night Train Ride',
+    soundLibrary: 'Quiet Library',
+    soundPencil: 'ASMR Pencil Writing',
+    soundCat: 'Cat Purring',
+    soundBamboo: 'Zen Bamboo Fountain',
+    soundSpacePad: 'Deep Space Zen',
     soundPinkNoise: 'Procedural Pink Noise',
-    soundWhiteNoise: 'Procedural White Noise',
-    soundBinauralAlpha: 'Binaural Alpha (10 Hz)',
-    soundBinauralTheta: 'Binaural Theta (6 Hz)'
+    soundWhiteNoise: 'Procedural White Noise'
   }
 };
 

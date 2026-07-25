@@ -1,4 +1,4 @@
-export type SoundCategory = 'all' | 'nature' | 'urban' | 'asmr' | 'synth' | 'binaural';
+export type SoundCategory = 'all' | 'nature' | 'urban' | 'asmr' | 'synth';
 
 export interface SoundChannel {
   id: string;
@@ -8,6 +8,7 @@ export interface SoundChannel {
   volume: number; // 0.0 to 1.0
   isMuted: boolean;
   type: string;
+  fileUrl?: string;
 }
 
 export interface FocusPreset {
@@ -26,7 +27,7 @@ export interface FrequencyGeneratorState {
   beatFreq: number; // e.g. 10 (Alpha), 6 (Theta), 2 (Delta), 40 (Gamma)
   waveform: 'sine' | 'triangle' | 'sawtooth' | 'square';
   volume: number;
-  smoothFilter: number; // Cutoff frequency to keep sounds soft and soothing
+  smoothFilter: number;
 }
 
 export type WallpaperType = 'rain_drops' | 'aurora_stars' | 'fireplace_glow' | 'cyber_grid';

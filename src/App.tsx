@@ -14,13 +14,27 @@ import { SoundChannel, FocusPreset, WidgetState, AppSettings, ActiveTab, Frequen
 import './styles/main.css';
 
 const INITIAL_CHANNELS: SoundChannel[] = [
-  { id: 'rain', nameKey: 'soundRain', icon: 'rain', category: 'nature', volume: 0.6, isMuted: false, type: 'rain' },
-  { id: 'thunder', nameKey: 'soundThunder', icon: 'thunder', category: 'nature', volume: 0.0, isMuted: false, type: 'thunder' },
-  { id: 'waves', nameKey: 'soundWaves', icon: 'waves', category: 'nature', volume: 0.0, isMuted: false, type: 'waves' },
-  { id: 'wind', nameKey: 'soundWind', icon: 'wind', category: 'nature', volume: 0.0, isMuted: false, type: 'wind' },
-  { id: 'fire', nameKey: 'soundFire', icon: 'fire', category: 'nature', volume: 0.4, isMuted: false, type: 'fire' },
-  { id: 'cafe', nameKey: 'soundCafe', icon: 'cafe', category: 'urban', volume: 0.0, isMuted: false, type: 'cafe' },
-  { id: 'keyboard', nameKey: 'soundKeyboard', icon: 'keyboard', category: 'asmr', volume: 0.0, isMuted: false, type: 'keyboard' },
+  // Naturaleza & Clima
+  { id: 'rain', nameKey: 'soundRain', icon: 'rain', category: 'nature', volume: 0.6, isMuted: false, type: 'media', fileUrl: '/sounds/gentle-raindrops-falling-steadily-on_072526.webm' },
+  { id: 'thunder', nameKey: 'soundThunder', icon: 'thunder', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/heavy-thunderstorm-rumble-distant-low_072526.webm' },
+  { id: 'waves', nameKey: 'soundWaves', icon: 'waves', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/calm-ocean-waves-gently-washing_072526.webm' },
+  { id: 'wind', nameKey: 'soundWind', icon: 'wind', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/soft-autumn-wind-blowing-through_072526.webm' },
+  { id: 'fire', nameKey: 'soundFire', icon: 'fire', category: 'nature', volume: 0.3, isMuted: false, type: 'media', fileUrl: '/sounds/crackle-of-a-cozy-fireplace_072526.webm' },
+  { id: 'bamboo', nameKey: 'soundBamboo', icon: 'bamboo', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/japanese-bamboo-water-fountain-shishi-odoshi_072526.webm' },
+
+  // Urbanos & Espacios Acogedores
+  { id: 'cafe', nameKey: 'soundCafe', icon: 'cafe', category: 'urban', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/cozy-coffee-shop-interior-ambience_072526.webm' },
+  { id: 'car_rain', nameKey: 'soundCarRain', icon: 'car', category: 'urban', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/night-rain-falling-on-car_072526.webm' },
+  { id: 'train', nameKey: 'soundTrain', icon: 'train', category: 'urban', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/passenger-train-interior-gentle-rhythmic_072526.webm' },
+  { id: 'library', nameKey: 'soundLibrary', icon: 'library', category: 'urban', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/quiet-library-interior-subtle-paper_072526.webm' },
+
+  // ASMR & Tactil
+  { id: 'keyboard', nameKey: 'soundKeyboard', icon: 'keyboard', category: 'asmr', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/asmr-mechanical-keyboard-typing-thocky_072526.webm' },
+  { id: 'pencil', nameKey: 'soundPencil', icon: 'pencil', category: 'asmr', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/pencil-writing-smoothly-on-thick_072526.webm' },
+  { id: 'cat', nameKey: 'soundCat', icon: 'cat', category: 'asmr', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/cat-purring-sleeping-peacefully-rhythmic_072526.webm' },
+
+  // Zen & Sintetizador
+  { id: 'space_pad', nameKey: 'soundSpacePad', icon: 'space', category: 'synth', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/deep-space-cosmic-ambient-pad_072526.webm' },
   { id: 'pink_noise', nameKey: 'soundPinkNoise', icon: 'radio', category: 'synth', volume: 0.0, isMuted: false, type: 'pink_noise' },
   { id: 'white_noise', nameKey: 'soundWhiteNoise', icon: 'radio', category: 'synth', volume: 0.0, isMuted: false, type: 'white_noise' },
 ];
@@ -48,7 +62,7 @@ const FOCUS_PRESETS: FocusPreset[] = [
     descKey: 'presetTotalCalmDesc',
     icon: 'waves',
     badge: 'Relajación',
-    volumes: { waves: 0.6, fire: 0.45, wind: 0.15 }
+    volumes: { waves: 0.6, fire: 0.45, wind: 0.15, cat: 0.4 }
   },
   {
     id: 'alpha_study',
@@ -56,7 +70,7 @@ const FOCUS_PRESETS: FocusPreset[] = [
     descKey: 'presetAlphaStudyDesc',
     icon: 'brain',
     badge: 'Enfoque Alfa',
-    volumes: { pink_noise: 0.4 }
+    volumes: { pink_noise: 0.3, library: 0.4, pencil: 0.3 }
   },
   {
     id: 'deep_space',
@@ -64,7 +78,7 @@ const FOCUS_PRESETS: FocusPreset[] = [
     descKey: 'presetDeepSpaceDesc',
     icon: 'moon',
     badge: 'Zen',
-    volumes: { white_noise: 0.35 }
+    volumes: { space_pad: 0.6, bamboo: 0.4 }
   }
 ];
 
@@ -124,12 +138,12 @@ export const App: React.FC = () => {
     if (isPlaying) {
       audioEngine.resume();
       channels.forEach((ch) => {
-        audioEngine.updateChannelVolume(ch.id, ch.volume, ch.isMuted, ch.type);
+        audioEngine.updateChannelVolume(ch.id, ch.volume, ch.isMuted, ch.type, ch.fileUrl);
       });
       audioEngine.updateFrequencyGenerator(freqState);
     } else {
       channels.forEach((ch) => {
-        audioEngine.updateChannelVolume(ch.id, 0, true, ch.type);
+        audioEngine.updateChannelVolume(ch.id, 0, true, ch.type, ch.fileUrl);
       });
       audioEngine.updateFrequencyGenerator({ ...freqState, enabled: false });
     }

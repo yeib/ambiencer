@@ -1,11 +1,11 @@
-// Web Audio API Procedural Sound Engine — 100% Offline & Zero Asset Dependencies
+// Web Audio API Procedural & Media Audio Sound Engine — 100% Offline
 import { FrequencyGeneratorState } from '../types';
 
 class WebAudioEngine {
   private ctx: AudioContext | null = null;
   private masterGain: GainNode | null = null;
   private analyser: AnalyserNode | null = null;
-  private channels: Map<string, { gain: GainNode; nodes: any[]; cleanup?: () => void }> = new Map();
+  private channels: Map<string, { gain: GainNode; nodes: any[]; audioEl?: HTMLAudioElement; cleanup?: () => void }> = new Map();
   private isMasterMuted: boolean = false;
   private masterVolume: number = 0.8;
 
@@ -69,12 +69,11 @@ class WebAudioEngine {
 
     const now = this.ctx.currentTime;
 
-    // Create frequency nodes if not exist
     if (!this.freqGainNode) {
       this.freqGainNode = this.ctx.createGain();
       this.freqFilter = this.ctx.createBiquadFilter();
       this.freqFilter.type = 'lowpass';
-      this.freqFilter.frequency.value = 1400; // Keep tone smooth & soothing
+      this.freqFilter.frequency.value = 1400;
 
       this.freqGainNode.connect(this.freqFilter);
       this.freqFilter.connect(this.masterGain);
@@ -82,7 +81,6 @@ class WebAudioEngine {
 
     this.freqGainNode.gain.setTargetAtTime(state.volume, now, 0.05);
 
-    // Stop old oscillators if parameters change drastically
     if (this.freqOscL) {
       try { this.freqOscL.stop(); this.freqOscL.disconnect(); } catch (e) {}
     }
@@ -94,19 +92,17 @@ class WebAudioEngine {
     const beat = state.mode === 'binaural' ? state.beatFreq : 0;
     const waveType = state.waveform;
 
-    // Left Channel = Carrier
     this.freqOscL = this.ctx.createOscillator();
     this.freqOscL.type = waveType;
     this.freqOscL.frequency.setValueAtTime(carrier, now);
 
-    // Right Channel = Carrier + Beat Frequency
     this.freqOscR = this.ctx.createOscillator();
     this.freqOscR.type = waveType;
     this.freqOscR.frequency.setValueAtTime(carrier + beat, now);
 
     const merger = this.ctx.createChannelMerger(2);
-    this.freqOscL.connect(merger, 0, 0); // Left
-    this.freqOscR.connect(merger, 0, 1); // Right
+    this.freqOscL.connect(merger, 0, 0);
+    this.freqOscR.connect(merger, 0, 1);
 
     merger.connect(this.freqGainNode);
 
@@ -114,22 +110,29 @@ class WebAudioEngine {
     this.freqOscR.start(now);
   }
 
-  // --- Sound Channel Controls ---
-  public updateChannelVolume(channelId: string, vol: number, isMuted: boolean, type: string) {
+  // --- Channel Audio Controls ---
+  public updateChannelVolume(channelId: string, vol: number, isMuted: boolean, type: string, fileUrl?: string) {
     if (!this.ctx) this.init();
     const effectiveVol = isMuted ? 0 : vol;
 
     let ch = this.channels.get(channelId);
     if (!ch) {
       if (effectiveVol > 0) {
-        this.createChannel(channelId, type, effectiveVol);
+        this.createChannel(channelId, type, effectiveVol, fileUrl);
       }
     } else {
       ch.gain.gain.setTargetAtTime(effectiveVol, this.ctx?.currentTime || 0, 0.05);
+      if (ch.audioEl) {
+        if (effectiveVol > 0 && ch.audioEl.paused) {
+          ch.audioEl.play().catch(() => {});
+        } else if (effectiveVol === 0 && !ch.audioEl.paused) {
+          ch.audioEl.pause();
+        }
+      }
     }
   }
 
-  private createChannel(channelId: string, type: string, initialVol: number) {
+  private createChannel(channelId: string, type: string, initialVol: number, fileUrl?: string) {
     if (!this.ctx || !this.masterGain) return;
     
     const gainNode = this.ctx.createGain();
@@ -137,186 +140,62 @@ class WebAudioEngine {
     gainNode.connect(this.masterGain);
 
     const activeNodes: any[] = [];
+    let audioEl: HTMLAudioElement | undefined = undefined;
     let cleanupFunc: (() => void) | undefined = undefined;
 
-    switch (type) {
-      case 'pink_noise': {
-        const buffer = this.generatePinkNoiseBuffer(3);
-        const src = this.ctx.createBufferSource();
-        src.buffer = buffer;
-        src.loop = true;
-        src.connect(gainNode);
-        src.start();
-        activeNodes.push(src);
-        break;
-      }
-      case 'white_noise': {
-        const buffer = this.generateWhiteNoiseBuffer(3);
-        const src = this.ctx.createBufferSource();
-        src.buffer = buffer;
-        src.loop = true;
-        src.connect(gainNode);
-        src.start();
-        activeNodes.push(src);
-        break;
-      }
-      case 'rain': {
-        const buffer = this.generatePinkNoiseBuffer(5);
-        const src = this.ctx.createBufferSource();
-        src.buffer = buffer;
-        src.loop = true;
-        const filter = this.ctx.createBiquadFilter();
-        filter.type = 'lowpass';
-        filter.frequency.value = 1200;
-        src.connect(filter);
-        filter.connect(gainNode);
-        src.start();
-        activeNodes.push(src, filter);
-        break;
-      }
-      case 'thunder': {
-        const buffer = this.generateBrownNoiseBuffer(5);
-        const src = this.ctx.createBufferSource();
-        src.buffer = buffer;
-        src.loop = true;
-        const filter = this.ctx.createBiquadFilter();
-        filter.type = 'lowpass';
-        filter.frequency.value = 350;
-        src.connect(filter);
-        filter.connect(gainNode);
-        src.start();
+    if (fileUrl) {
+      audioEl = new Audio(fileUrl);
+      audioEl.loop = true;
+      audioEl.crossOrigin = 'anonymous';
 
-        let isThundering = true;
-        const triggerThunderRumble = () => {
-          if (!isThundering || !this.ctx) return;
-          const osc = this.ctx.createOscillator();
-          const rumbleGain = this.ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(45 + Math.random() * 30, this.ctx.currentTime);
-          rumbleGain.gain.setValueAtTime(0.3, this.ctx.currentTime);
-          rumbleGain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 1.8);
-          osc.connect(rumbleGain);
-          rumbleGain.connect(gainNode);
-          osc.start();
-          osc.stop(this.ctx.currentTime + 1.8);
-          setTimeout(triggerThunderRumble, Math.random() * 4000 + 3000);
-        };
-        triggerThunderRumble();
-        cleanupFunc = () => { isThundering = false; };
-        activeNodes.push(src, filter);
-        break;
-      }
-      case 'waves': {
-        const buffer = this.generatePinkNoiseBuffer(6);
-        const src = this.ctx.createBufferSource();
-        src.buffer = buffer;
-        src.loop = true;
-        const filter = this.ctx.createBiquadFilter();
-        filter.type = 'lowpass';
-        filter.frequency.value = 800;
-        const lfo = this.ctx.createOscillator();
-        lfo.type = 'sine';
-        lfo.frequency.value = 0.12;
-        const lfoGain = this.ctx.createGain();
-        lfoGain.gain.value = 400;
-        lfo.connect(lfoGain);
-        lfoGain.connect(filter.frequency);
-        src.connect(filter);
-        filter.connect(gainNode);
-        src.start();
-        lfo.start();
-        activeNodes.push(src, filter, lfo, lfoGain);
-        break;
-      }
-      case 'wind': {
-        const buffer = this.generatePinkNoiseBuffer(5);
-        const src = this.ctx.createBufferSource();
-        src.buffer = buffer;
-        src.loop = true;
-        const filter = this.ctx.createBiquadFilter();
-        filter.type = 'bandpass';
-        filter.frequency.value = 400;
-        filter.Q.value = 2.0;
-        const lfo = this.ctx.createOscillator();
-        lfo.frequency.value = 0.2;
-        const lfoGain = this.ctx.createGain();
-        lfoGain.gain.value = 350;
-        lfo.connect(lfoGain);
-        lfoGain.connect(filter.frequency);
-        src.connect(filter);
-        filter.connect(gainNode);
-        src.start();
-        lfo.start();
-        activeNodes.push(src, filter, lfo, lfoGain);
-        break;
-      }
-      case 'fire': {
-        const buffer = this.generateBrownNoiseBuffer(4);
-        const src = this.ctx.createBufferSource();
-        src.buffer = buffer;
-        src.loop = true;
-        const filter = this.ctx.createBiquadFilter();
-        filter.type = 'lowpass';
-        filter.frequency.value = 900;
-        src.connect(filter);
-        filter.connect(gainNode);
-        src.start();
+      const sourceNode = this.ctx.createMediaElementSource(audioEl);
+      sourceNode.connect(gainNode);
+      activeNodes.push(sourceNode);
 
-        let isCracking = true;
-        const triggerCrackle = () => {
-          if (!isCracking || !this.ctx) return;
-          const osc = this.ctx.createOscillator();
-          const crackleGain = this.ctx.createGain();
-          osc.type = 'triangle';
-          osc.frequency.value = 800 + Math.random() * 2000;
-          crackleGain.gain.setValueAtTime(0.04 * Math.random(), this.ctx.currentTime);
-          crackleGain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.03);
-          osc.connect(crackleGain);
-          crackleGain.connect(gainNode);
-          osc.start();
-          osc.stop(this.ctx.currentTime + 0.03);
-          setTimeout(triggerCrackle, Math.random() * 150 + 50);
-        };
-        triggerCrackle();
-        cleanupFunc = () => { isCracking = false; };
-        activeNodes.push(src, filter);
-        break;
-      }
-      case 'keyboard': {
-        let isTyping = true;
-        const triggerClick = () => {
-          if (!isTyping || !this.ctx) return;
-          const osc = this.ctx.createOscillator();
-          const clickGain = this.ctx.createGain();
-          osc.type = 'square';
-          osc.frequency.setValueAtTime(400 + Math.random() * 600, this.ctx.currentTime);
-          osc.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 0.04);
-          clickGain.gain.setValueAtTime(0.05, this.ctx.currentTime);
-          clickGain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.04);
-          osc.connect(clickGain);
-          clickGain.connect(gainNode);
-          osc.start();
-          osc.stop(this.ctx.currentTime + 0.04);
-          const delay = Math.random() < 0.2 ? Math.random() * 400 + 200 : Math.random() * 120 + 80;
-          setTimeout(triggerClick, delay);
-        };
-        triggerClick();
-        cleanupFunc = () => { isTyping = false; };
-        break;
-      }
-      default: {
-        const buffer = this.generatePinkNoiseBuffer(4);
-        const src = this.ctx.createBufferSource();
-        src.buffer = buffer;
-        src.loop = true;
-        src.connect(gainNode);
-        src.start();
-        activeNodes.push(src);
-        break;
+      audioEl.play().catch(e => console.warn(`Audio play deferred for ${channelId}:`, e));
+      cleanupFunc = () => {
+        if (audioEl) {
+          audioEl.pause();
+          audioEl.src = '';
+        }
+      };
+    } else {
+      // Procedural fallback node synthesis
+      switch (type) {
+        case 'pink_noise': {
+          const buffer = this.generatePinkNoiseBuffer(3);
+          const src = this.ctx.createBufferSource();
+          src.buffer = buffer;
+          src.loop = true;
+          src.connect(gainNode);
+          src.start();
+          activeNodes.push(src);
+          break;
+        }
+        case 'white_noise': {
+          const buffer = this.generateWhiteNoiseBuffer(3);
+          const src = this.ctx.createBufferSource();
+          src.buffer = buffer;
+          src.loop = true;
+          src.connect(gainNode);
+          src.start();
+          activeNodes.push(src);
+          break;
+        }
+        default: {
+          const buffer = this.generatePinkNoiseBuffer(4);
+          const src = this.ctx.createBufferSource();
+          src.buffer = buffer;
+          src.loop = true;
+          src.connect(gainNode);
+          src.start();
+          activeNodes.push(src);
+          break;
+        }
       }
     }
 
-    this.channels.set(channelId, { gain: gainNode, nodes: activeNodes, cleanup: cleanupFunc });
+    this.channels.set(channelId, { gain: gainNode, nodes: activeNodes, audioEl, cleanup: cleanupFunc });
   }
 
   private generatePinkNoiseBuffer(durationSeconds: number): AudioBuffer {
@@ -348,21 +227,6 @@ class WebAudioEngine {
     const data = buffer.getChannelData(0);
     for (let i = 0; i < bufferSize; i++) {
       data[i] = (Math.random() * 2 - 1) * 0.1;
-    }
-    return buffer;
-  }
-
-  private generateBrownNoiseBuffer(durationSeconds: number): AudioBuffer {
-    if (!this.ctx) throw new Error('AudioContext not ready');
-    const bufferSize = this.ctx.sampleRate * durationSeconds;
-    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-    let lastOutput = 0.0;
-    for (let i = 0; i < bufferSize; i++) {
-      const white = Math.random() * 2 - 1;
-      data[i] = (lastOutput + (0.02 * white)) / 1.02;
-      lastOutput = data[i];
-      data[i] *= 3.5;
     }
     return buffer;
   }
