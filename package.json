@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "tauri": "npx @tauri-apps/cli",
+    "tauri": "tauri",
     "msix": "node scripts/build-msix.js",
     "generate-icons": "node scripts/generate-icons.js",
     "tauri:windows:build": "tauri-windows-bundle build"
