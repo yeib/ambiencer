@@ -16,13 +16,18 @@ import './styles/main.css';
 
 const INITIAL_CHANNELS: SoundChannel[] = [
   // Naturaleza & Clima
-  { id: 'rain', nameKey: 'soundRain', icon: 'rain', category: 'nature', volume: 0.6, isMuted: false, type: 'media', fileUrl: '/sounds/gentle-raindrops-falling-steadily-on_072526.webm' },
+  { id: 'waves', nameKey: 'soundWaves', icon: 'waves', category: 'nature', volume: 0.5, isMuted: false, type: 'media', fileUrl: '/sounds/powerful-oceanic-waves-crashing-against_072626.webm' },
+  { id: 'rain', nameKey: 'soundRain', icon: 'rain', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/gentle-raindrops-falling-steadily-on_072526.webm' },
   { id: 'thunder', nameKey: 'soundThunder', icon: 'thunder', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/heavy-thunderstorm-rumble-distant-low_072526.webm' },
-  { id: 'waves', nameKey: 'soundWaves', icon: 'waves', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/calm-ocean-waves-gently-washing_072526.webm' },
+  { id: 'waterfall', nameKey: 'soundWaterfall', icon: 'waterfall', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/powerful-mountain-waterfall-roaring-stream_072626.webm' },
   { id: 'wind', nameKey: 'soundWind', icon: 'wind', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/soft-autumn-wind-blowing-through_072526.webm' },
   { id: 'fire', nameKey: 'soundFire', icon: 'fire', category: 'nature', volume: 0.3, isMuted: false, type: 'media', fileUrl: '/sounds/crackle-of-a-cozy-fireplace_072526.webm' },
-  { id: 'bamboo', nameKey: 'soundBamboo', icon: 'bamboo', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/japanese-bamboo-water-fountain-shishi-odoshi_072526.webm' },
+  { id: 'morning_forest', nameKey: 'soundMorningForest', icon: 'morning_forest', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/peaceful-morning-forest-ambience-gentle_072626.webm' },
   { id: 'night_forest', nameKey: 'soundNightForest', icon: 'night_forest', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/calm-summer-night-forest-ambience_072526.webm' },
+  { id: 'jungle', nameKey: 'soundJungle', icon: 'jungle', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/deep-tropical-rainforest-jungle-ambience_072626.webm' },
+  { id: 'meadow', nameKey: 'soundMeadow', icon: 'meadow', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/calm-open-spring-meadow-landscape_072626.webm' },
+  { id: 'bamboo', nameKey: 'soundBamboo', icon: 'bamboo', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/japanese-bamboo-water-fountain-shishi-odoshi_072526.webm' },
+  { id: 'zen_pond', nameKey: 'soundZenPond', icon: 'zen_pond', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/tranquil-japanese-zen-garden-gentle_072626.webm' },
   { id: 'cave', nameKey: 'soundCave', icon: 'cave', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/large-ancient-stone-cave-acoustic_072526.webm' },
 
   // Urbanos & Espacios Acogedores
@@ -35,6 +40,7 @@ const INITIAL_CHANNELS: SoundChannel[] = [
   { id: 'pencil', nameKey: 'soundPencil', icon: 'pencil', category: 'asmr', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/pencil-writing-smoothly-on-thick_072526.webm' },
 
   // Zen & Sanación Sonora
+  { id: 'om_chant', nameKey: 'soundOmChant', icon: 'om_chant', category: 'synth', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/deep-meditative-sacred-om-chant_072626.webm' },
   { id: 'singing_bowl', nameKey: 'soundSingingBowl', icon: 'singing_bowl', category: 'synth', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/meditative-singing-bowl-warm-drone_072526.webm' },
   { id: 'solar_synth', nameKey: 'soundSolarSynth', icon: 'solar_synth', category: 'synth', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/warm-analog-synth-ambient-drone_072526.webm' },
   { id: 'space_pad', nameKey: 'soundSpacePad', icon: 'space', category: 'synth', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/deep-space-cosmic-ambient-pad_072526.webm' },
@@ -49,7 +55,7 @@ const SYSTEM_PRESETS: FocusPreset[] = [
     descKey: 'presetYogaChakraDesc',
     icon: 'sparkles',
     badge: 'Yoga & Meditación',
-    volumes: { singing_bowl: 0.7, solar_synth: 0.45, bamboo: 0.3 }
+    volumes: { singing_bowl: 0.7, om_chant: 0.5, solar_synth: 0.35 }
   },
   {
     id: 'rainy_night',
@@ -65,7 +71,7 @@ const SYSTEM_PRESETS: FocusPreset[] = [
     descKey: 'presetTotalCalmDesc',
     icon: 'waves',
     badge: 'Relajación',
-    volumes: { waves: 0.6, fire: 0.45, wind: 0.15 }
+    volumes: { waves: 0.65, fire: 0.45, morning_forest: 0.25 }
   },
   {
     id: 'alpha_study',

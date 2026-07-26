@@ -28,7 +28,7 @@ export const translations = {
     presetCoffeeCode: 'Estudio & Enfoque',
     presetCoffeeCodeDesc: 'Ambiente de concentración con escritura ASMR y biblioteca.',
     presetTotalCalm: 'Calma Total',
-    presetTotalCalmDesc: 'Olas del mar y fuego crujiente para meditación profunda.',
+    presetTotalCalmDesc: 'Olas del mar imponentes y fuego crujiente para meditación profunda.',
     presetAlphaStudy: 'Ondas Alfa & Enfoque',
     presetAlphaStudyDesc: 'Ruido rosa filtrado con frecuencias binaurales de 10Hz.',
     presetDeepSpace: 'Zen Profundo',
@@ -54,10 +54,10 @@ export const translations = {
     settingsAudio: 'Motor de Audio local WebAudio',
     settingsHighQuality: 'Síntesis de Alta Fidelidad (24-bit procedimental)',
 
-    // 16 Soundscapes HD
+    // 22 Soundscapes HD
     soundRain: 'Lluvia en Ventana',
     soundThunder: 'Tormenta & Truenos',
-    soundWaves: 'Olas del Mar Calmas',
+    soundWaves: 'Olas del Mar Imponentes',
     soundWind: 'Viento en Bosque de Pinos',
     soundFire: 'Fogata Acogedora',
     soundKeyboard: 'Teclado Mecánico ASMR',
@@ -71,6 +71,12 @@ export const translations = {
     soundSolarSynth: 'Viento Solar 528Hz',
     soundSingingBowl: 'Cuenco Tibetano 432Hz',
     soundNightForest: 'Bosque Nocturno & Grillos',
+    soundMorningForest: 'Bosque de Mañana & Pajaritos',
+    soundWaterfall: 'Cascada de Montaña',
+    soundJungle: 'Selva Tropical Amazonas',
+    soundMeadow: 'Pradera de Primavera',
+    soundZenPond: 'Jardín Zen & Estanque Koi',
+    soundOmChant: 'Tono Sagrado OM 174Hz',
     soundPinkNoise: 'Ruido Rosa Procedimental',
     soundWhiteNoise: 'Ruido Blanco Procedimental'
   },
@@ -103,7 +109,7 @@ export const translations = {
     presetCoffeeCode: 'Study & Focus',
     presetCoffeeCodeDesc: 'Quiet concentration with ASMR writing and library.',
     presetTotalCalm: 'Total Calm',
-    presetTotalCalmDesc: 'Ocean waves and crackling fireplace for deep relaxation.',
+    presetTotalCalmDesc: 'Imposing ocean waves and crackling fireplace for deep relaxation.',
     presetAlphaStudy: 'Alpha Waves & Focus',
     presetAlphaStudyDesc: 'Filtered pink noise with 10Hz binaural beats.',
     presetDeepSpace: 'Deep Zen',
@@ -129,10 +135,10 @@ export const translations = {
     settingsAudio: 'WebAudio Procedural Engine',
     settingsHighQuality: 'High-Fidelity Synthesis (24-bit procedural)',
 
-    // 16 Soundscapes HD
+    // 22 Soundscapes HD
     soundRain: 'Window Rain',
     soundThunder: 'Storm & Thunder',
-    soundWaves: 'Calm Ocean Waves',
+    soundWaves: 'Imposing Ocean Waves',
     soundWind: 'Pine Forest Wind',
     soundFire: 'Cozy Fireplace',
     soundKeyboard: 'ASMR Mechanical Keyboard',
@@ -146,6 +152,12 @@ export const translations = {
     soundSolarSynth: 'Solar Wind 528Hz',
     soundSingingBowl: 'Tibetan Bowl 432Hz',
     soundNightForest: 'Night Forest & Crickets',
+    soundMorningForest: 'Morning Forest & Songbirds',
+    soundWaterfall: 'Mountain Waterfall',
+    soundJungle: 'Amazon Rainforest',
+    soundMeadow: 'Spring Meadow',
+    soundZenPond: 'Zen Garden & Koi Pond',
+    soundOmChant: 'Sacred OM Tone 174Hz',
     soundPinkNoise: 'Procedural Pink Noise',
     soundWhiteNoise: 'Procedural White Noise'
   }

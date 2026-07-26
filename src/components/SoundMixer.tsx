@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Volume2, VolumeX, RotateCcw, CloudRain, Zap, Waves, Wind, Flame, Coffee, Keyboard, Radio, Disc, Car, Train, BookOpen, PenTool, Heart, Trees, Cpu, Headphones, Compass, Sparkles, Moon, Star } from 'lucide-react';
+import { Volume2, VolumeX, RotateCcw, CloudRain, Zap, Waves, Wind, Flame, Coffee, Keyboard, Radio, Disc, Car, Train, BookOpen, PenTool, Heart, Trees, Cpu, Headphones, Compass, Sparkles, Moon, Sun, Droplets, Palmtree, Flower2, CircleDot } from 'lucide-react';
 import { SoundChannel, SoundCategory, AppSettings } from '../types';
 import { SavePresetModal } from './SavePresetModal';
 import { getTranslation } from '../i18n';
@@ -32,19 +32,23 @@ export const SoundMixer: React.FC<SoundMixerProps> = ({
       case 'waves': return <Waves size={20} />;
       case 'wind': return <Wind size={20} />;
       case 'fire': return <Flame size={20} />;
-      case 'cafe': return <Coffee size={20} />;
       case 'keyboard': return <Keyboard size={20} />;
       case 'car': return <Car size={20} />;
       case 'train': return <Train size={20} />;
       case 'library': return <BookOpen size={20} />;
       case 'pencil': return <PenTool size={20} />;
-      case 'cat': return <Heart size={20} />;
       case 'bamboo': return <Trees size={20} />;
       case 'space': return <Disc size={20} />;
       case 'cave': return <Compass size={20} />;
       case 'solar_synth': return <Sparkles size={20} />;
-      case 'singing_bowl': return <Disc size={20} />;
+      case 'singing_bowl': return <CircleDot size={20} />;
       case 'night_forest': return <Moon size={20} />;
+      case 'morning_forest': return <Sun size={20} />;
+      case 'waterfall': return <Droplets size={20} />;
+      case 'jungle': return <Palmtree size={20} />;
+      case 'meadow': return <Flower2 size={20} />;
+      case 'zen_pond': return <Trees size={20} />;
+      case 'om_chant': return <CircleDot size={20} />;
       case 'radio': return <Radio size={20} />;
       default: return <Disc size={20} />;
     }
@@ -117,7 +121,7 @@ export const SoundMixer: React.FC<SoundMixerProps> = ({
                 transition: 'all 0.2s'
               }}
             >
-              <Star size={14} fill="currentColor" />
+              <span>⭐</span>
               <span>{lang === 'es' ? 'Guardar Preset' : 'Save Preset'}</span>
             </button>
           )}
