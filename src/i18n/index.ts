@@ -1,7 +1,7 @@
 export const translations = {
   es: {
-    appTitle: 'Ambiencer Pro',
-    appSubtitle: 'Mezclador de Paisajes Sonoros & Widgets de Escritorio',
+    appTitle: 'Ambiencer',
+    appSubtitle: 'Paisajes Sonoros & Widgets de Escritorio',
     tabMixer: 'Mezclador',
     tabPresets: 'Presets de Enfoque',
     tabWidgets: 'Widgets Flotantes',
@@ -10,8 +10,8 @@ export const translations = {
     masterMute: 'Silenciar Todo',
     masterPlay: 'Reproducir',
     masterPause: 'Pausar',
-    sleepTimer: 'Temporizador de Apagado',
-    timerOff: 'Desactivado',
+    sleepTimer: 'Temporizador',
+    timerOff: 'Apagado: Off',
     min: 'min',
     omnibarPlaceholder: 'Escribe / para buscar sonidos, presets o comandos...',
     categoryAll: 'Todos',
@@ -71,8 +71,8 @@ export const translations = {
     soundWhiteNoise: 'Ruido Blanco Procedimental'
   },
   en: {
-    appTitle: 'Ambiencer Pro',
-    appSubtitle: 'Ambient Soundscape Generator & Desktop Widgets',
+    appTitle: 'Ambiencer',
+    appSubtitle: 'Ambient Soundscapes & Desktop Widgets',
     tabMixer: 'Sound Mixer',
     tabPresets: 'Focus Presets',
     tabWidgets: 'Desktop Widgets',
@@ -81,8 +81,8 @@ export const translations = {
     masterMute: 'Mute All',
     masterPlay: 'Play',
     masterPause: 'Pause',
-    sleepTimer: 'Sleep Timer',
-    timerOff: 'Off',
+    sleepTimer: 'Timer',
+    timerOff: 'Timer: Off',
     min: 'min',
     omnibarPlaceholder: 'Type / to search sounds, presets or commands...',
     categoryAll: 'All Sounds',
