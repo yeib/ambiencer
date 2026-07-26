@@ -22,6 +22,8 @@ const INITIAL_CHANNELS: SoundChannel[] = [
   { id: 'wind', nameKey: 'soundWind', icon: 'wind', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/soft-autumn-wind-blowing-through_072526.webm' },
   { id: 'fire', nameKey: 'soundFire', icon: 'fire', category: 'nature', volume: 0.3, isMuted: false, type: 'media', fileUrl: '/sounds/crackle-of-a-cozy-fireplace_072526.webm' },
   { id: 'bamboo', nameKey: 'soundBamboo', icon: 'bamboo', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/japanese-bamboo-water-fountain-shishi-odoshi_072526.webm' },
+  { id: 'night_forest', nameKey: 'soundNightForest', icon: 'night_forest', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/calm-summer-night-forest-ambience_072526.webm' },
+  { id: 'cave', nameKey: 'soundCave', icon: 'cave', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/large-ancient-stone-cave-acoustic_072526.webm' },
 
   // Urbanos & Espacios Acogedores
   { id: 'cafe', nameKey: 'soundCafe', icon: 'cafe', category: 'urban', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/cozy-coffee-shop-interior-ambience_072526.webm' },
@@ -36,6 +38,8 @@ const INITIAL_CHANNELS: SoundChannel[] = [
 
   // Zen & Sintetizador
   { id: 'space_pad', nameKey: 'soundSpacePad', icon: 'space', category: 'synth', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/deep-space-cosmic-ambient-pad_072526.webm' },
+  { id: 'solar_synth', nameKey: 'soundSolarSynth', icon: 'solar_synth', category: 'synth', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/warm-analog-synth-ambient-drone_072526.webm' },
+  { id: 'singing_bowl', nameKey: 'soundSingingBowl', icon: 'singing_bowl', category: 'synth', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/meditative-singing-bowl-warm-drone_072526.webm' },
   { id: 'pink_noise', nameKey: 'soundPinkNoise', icon: 'radio', category: 'synth', volume: 0.0, isMuted: false, type: 'pink_noise' },
   { id: 'white_noise', nameKey: 'soundWhiteNoise', icon: 'radio', category: 'synth', volume: 0.0, isMuted: false, type: 'white_noise' },
 ];
@@ -79,7 +83,7 @@ const FOCUS_PRESETS: FocusPreset[] = [
     descKey: 'presetDeepSpaceDesc',
     icon: 'moon',
     badge: 'Zen',
-    volumes: { space_pad: 0.6, bamboo: 0.4 }
+    volumes: { space_pad: 0.5, singing_bowl: 0.4, solar_synth: 0.3 }
   }
 ];
 
@@ -296,7 +300,7 @@ export const App: React.FC = () => {
           )}
           {activeTab === 'settings' && (
             <div className="glass-panel animate-fade-in" style={{ padding: '24px' }}>
-              <h2 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: '16px' }}>⚙️ Ajustes de Ambiencer Pro</h2>
+              <h2 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: '16px' }}>⚙️ Ajustes de Ambiencer</h2>
               <SettingsModal
                 isOpen={true}
                 settings={settings}

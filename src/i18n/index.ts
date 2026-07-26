@@ -52,7 +52,7 @@ export const translations = {
     settingsAudio: 'Motor de Audio local WebAudio',
     settingsHighQuality: 'Síntesis de Alta Fidelidad (24-bit procedimental)',
 
-    // 14 HD Soundscapes
+    // 18 Soundscapes HD
     soundRain: 'Lluvia en Ventana',
     soundThunder: 'Tormenta & Truenos',
     soundWaves: 'Olas del Mar Calmas',
@@ -67,6 +67,10 @@ export const translations = {
     soundCat: 'Ronroneo de Gato',
     soundBamboo: 'Fuente de Bambú Zen',
     soundSpacePad: 'Espacio Profundo Zen',
+    soundCave: 'Cueva Mística',
+    soundSolarSynth: 'Viento Solar 528Hz',
+    soundSingingBowl: 'Cuenco Tibetano 432Hz',
+    soundNightForest: 'Bosque Nocturno & Grillos',
     soundPinkNoise: 'Ruido Rosa Procedimental',
     soundWhiteNoise: 'Ruido Blanco Procedimental'
   },
@@ -123,7 +127,7 @@ export const translations = {
     settingsAudio: 'WebAudio Procedural Engine',
     settingsHighQuality: 'High-Fidelity Synthesis (24-bit procedural)',
 
-    // 14 HD Soundscapes
+    // 18 Soundscapes HD
     soundRain: 'Window Rain',
     soundThunder: 'Storm & Thunder',
     soundWaves: 'Calm Ocean Waves',
@@ -138,6 +142,10 @@ export const translations = {
     soundCat: 'Cat Purring',
     soundBamboo: 'Zen Bamboo Fountain',
     soundSpacePad: 'Deep Space Zen',
+    soundCave: 'Mystical Cave',
+    soundSolarSynth: 'Solar Wind 528Hz',
+    soundSingingBowl: 'Tibetan Bowl 432Hz',
+    soundNightForest: 'Night Forest & Crickets',
     soundPinkNoise: 'Procedural Pink Noise',
     soundWhiteNoise: 'Procedural White Noise'
   }

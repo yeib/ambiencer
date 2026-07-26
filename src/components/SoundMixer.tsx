@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Volume2, VolumeX, RotateCcw, CloudRain, Zap, Waves, Wind, Flame, Coffee, Keyboard, Radio, Disc, Car, Train, BookOpen, PenTool, Heart, Trees, Cpu, Headphones } from 'lucide-react';
+import { Volume2, VolumeX, RotateCcw, CloudRain, Zap, Waves, Wind, Flame, Coffee, Keyboard, Radio, Disc, Car, Train, BookOpen, PenTool, Heart, Trees, Cpu, Headphones, Compass, Sparkles, Moon } from 'lucide-react';
 import { SoundChannel, SoundCategory, AppSettings } from '../types';
 import { getTranslation } from '../i18n';
 
@@ -37,6 +37,10 @@ export const SoundMixer: React.FC<SoundMixerProps> = ({
       case 'cat': return <Heart size={20} />;
       case 'bamboo': return <Trees size={20} />;
       case 'space': return <Disc size={20} />;
+      case 'cave': return <Compass size={20} />;
+      case 'solar_synth': return <Sparkles size={20} />;
+      case 'singing_bowl': return <Disc size={20} />;
+      case 'night_forest': return <Moon size={20} />;
       case 'radio': return <Radio size={20} />;
       default: return <Disc size={20} />;
     }
@@ -132,7 +136,7 @@ export const SoundMixer: React.FC<SoundMixerProps> = ({
               key={ch.id}
               className="glass-card"
               style={{
-                height: '110px', // Altura fija estricta
+                height: '110px',
                 boxSizing: 'border-box',
                 padding: '14px 16px',
                 display: 'flex',
