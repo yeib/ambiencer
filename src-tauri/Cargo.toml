@@ -1,7 +1,7 @@
 [package]
-name = "ambiencer-pro"
+name = "ambiencer"
 version = "1.0.0"
-description = "Ambiencer Pro — Soundscapes & Desktop Widgets"
+description = "Ambiencer — Soundscapes & Desktop Widgets"
 authors = ["Yeib Ecosystem"]
 edition = "2021"
 

@@ -33,7 +33,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "ambiencer-pro"
+name = "ambiencer"
 version = "1.0.0"
 dependencies = [
  "serde",

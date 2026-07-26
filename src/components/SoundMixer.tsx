@@ -110,14 +110,13 @@ export const SoundMixer: React.FC<SoundMixerProps> = ({
         </div>
       </div>
 
-      {/* Grid of Sound Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '16px' }}>
+      {/* Grid of Sound Cards (Fixed Strict Card Dimensions) */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '16px' }}>
         {filteredChannels.map((ch) => {
           const isActive = ch.volume > 0 && !ch.isMuted;
           const isRealAudio = ch.type === 'media';
           const percent = Math.round(ch.volume * 100);
 
-          // Estilo distintivo por tipo de audio
           const iconBg = isRealAudio
             ? (isActive ? 'var(--accent-cyan-glow)' : 'rgba(56, 189, 248, 0.08)')
             : (isActive ? 'var(--accent-purple-glow)' : 'rgba(168, 85, 247, 0.08)');
@@ -133,10 +132,12 @@ export const SoundMixer: React.FC<SoundMixerProps> = ({
               key={ch.id}
               className="glass-card"
               style={{
-                padding: '16px',
+                height: '110px', // Altura fija estricta
+                boxSizing: 'border-box',
+                padding: '14px 16px',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '14px',
+                justifyContent: 'space-between',
                 border: isActive
                   ? (isRealAudio ? '1px solid var(--accent-cyan)' : '1px solid var(--accent-purple)')
                   : 'var(--border-glass)',
@@ -146,54 +147,67 @@ export const SoundMixer: React.FC<SoundMixerProps> = ({
                 boxShadow: isActive
                   ? (isRealAudio ? '0 0 20px rgba(56, 189, 248, 0.18)' : '0 0 20px rgba(168, 85, 247, 0.18)')
                   : 'none',
-                position: 'relative'
+                position: 'relative',
+                overflow: 'hidden'
               }}
             >
-              {/* Top Header info */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              {/* Header info */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
                   <div
                     style={{
-                      width: '38px',
-                      height: '38px',
+                      width: '36px',
+                      height: '36px',
                       borderRadius: '10px',
                       background: iconBg,
                       color: iconColor,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
+                      flexShrink: 0,
                       transition: 'all 0.2s'
                     }}
                   >
                     {getIconComponent(ch.icon)}
                   </div>
-                  <div>
-                    <h3 style={{ fontSize: '0.88rem', fontWeight: 600, color: isActive ? '#ffffff' : 'var(--text-main)', marginBottom: '2px' }}>
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <h3
+                      title={getTranslation(lang, ch.nameKey as any)}
+                      style={{
+                        fontSize: '0.86rem',
+                        fontWeight: 600,
+                        color: isActive ? '#ffffff' : 'var(--text-main)',
+                        marginBottom: '2px',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis'
+                      }}
+                    >
                       {getTranslation(lang, ch.nameKey as any)}
                     </h3>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      {/* Distinción visual: Badge Audio Real vs Sintetizado por Código */}
                       <span
                         style={{
-                          fontSize: '0.65rem',
+                          fontSize: '0.62rem',
                           fontWeight: 700,
-                          padding: '2px 6px',
+                          padding: '1px 5px',
                           borderRadius: '4px',
                           background: badgeBg,
                           border: badgeBorder,
                           color: badgeText,
                           display: 'inline-flex',
                           alignItems: 'center',
-                          gap: '3px'
+                          gap: '3px',
+                          whiteSpace: 'nowrap'
                         }}
                       >
-                        {isRealAudio ? <Headphones size={10} /> : <Cpu size={10} />}
+                        {isRealAudio ? <Headphones size={9} /> : <Cpu size={9} />}
                         {isRealAudio
                           ? (lang === 'es' ? 'Audio HD' : 'HD Audio')
-                          : (lang === 'es' ? 'Sintetizado 0KB' : 'Code Synth 0KB')
+                          : (lang === 'es' ? 'Sintetizado' : 'Code Synth')
                         }
                       </span>
-                      <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{percent}%</span>
+                      <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600 }}>{percent}%</span>
                     </div>
                   </div>
                 </div>
@@ -205,7 +219,8 @@ export const SoundMixer: React.FC<SoundMixerProps> = ({
                     border: 'none',
                     color: ch.isMuted ? 'var(--accent-rose)' : isActive ? iconColor : 'var(--text-dim)',
                     cursor: 'pointer',
-                    padding: '4px'
+                    padding: '4px',
+                    flexShrink: 0
                   }}
                 >
                   {ch.isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
@@ -221,7 +236,8 @@ export const SoundMixer: React.FC<SoundMixerProps> = ({
                 value={ch.isMuted ? 0 : ch.volume}
                 onChange={(e) => onVolumeChange(ch.id, parseFloat(e.target.value))}
                 style={{
-                  accentColor: iconColor
+                  accentColor: iconColor,
+                  width: '100%'
                 }}
               />
             </div>
