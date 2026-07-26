@@ -1,5 +1,5 @@
 import React from 'react';
-import { Activity, Radio, Volume2, Sparkles, Sliders, Zap, Disc } from 'lucide-react';
+import { Activity, Radio, Volume2, Sparkles } from 'lucide-react';
 import { FrequencyGeneratorState, AppSettings } from '../types';
 import { getTranslation } from '../i18n';
 
@@ -16,257 +16,161 @@ export const FrequencyGeneratorTab: React.FC<FrequencyGeneratorTabProps> = ({
 }) => {
   const lang = settings.language;
 
-  const solfeggioPresets = [
-    { freq: 432, name: '432 Hz', desc: 'Armonía Natural & Calma' },
-    { freq: 528, name: '528 Hz', desc: 'Frecuencia de Milagros' },
-    { freq: 639, name: '639 Hz', desc: 'Conexión & Empatía' },
-    { freq: 741, name: '741 Hz', desc: 'Limpieza Mental & Foco' },
-    { freq: 852, name: '852 Hz', desc: 'Intuición & Elevación' },
-  ];
-
-  const binauralPresets = [
-    { beat: 2, name: 'Delta (2 Hz)', desc: 'Sueño Profundo & Regeneración' },
-    { beat: 6, name: 'Theta (6 Hz)', desc: 'Meditación Profunda & R.E.M.' },
-    { beat: 10, name: 'Alfa (10 Hz)', desc: 'Estado de Flujo & Estudio' },
-    { beat: 18, name: 'Beta (18 Hz)', desc: 'Atención Alerta & Resolución' },
-    { beat: 40, name: 'Gamma (40 Hz)', desc: 'Memoria & Procesamiento Alto' },
-  ];
-
-  const waveforms: { id: 'sine' | 'triangle' | 'sawtooth' | 'square'; name: string }[] = [
-    { id: 'sine', name: 'Sinusoidal (Suave)' },
-    { id: 'triangle', name: 'Triangular (Cálido)' },
-    { id: 'sawtooth', name: 'Sierra (Armónicos)' },
-    { id: 'square', name: 'Cuadrada (Retro)' },
+  const solfeggioFrequencies = [
+    { freq: 174, name: '174 Hz', labelEs: 'Alivio del Dolor & Conexión', labelEn: 'Pain Relief & Grounding' },
+    { freq: 432, name: '432 Hz', labelEs: 'Frecuencia Universal Zen', labelEn: 'Universal Natural Frequency' },
+    { freq: 528, name: '528 Hz', labelEs: 'Frecuencia Milagrosa (ADN)', labelEn: 'Miracle Frequency (DNA Repair)' },
+    { freq: 639, name: '639 Hz', labelEs: 'Conexión Armónica & Chakras', labelEn: 'Harmonic Connection & Chakras' },
+    { freq: 741, name: '741 Hz', labelEs: 'Limpieza Mental & Intuición', labelEn: 'Mental Detox & Intuition' },
+    { freq: 852, name: '852 Hz', labelEs: 'Despertar Espiritual & Orden', labelEn: 'Spiritual Awakening' },
   ];
 
   return (
-    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      {/* Header Banner */}
-      <div className="glass-panel" style={{ padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
+    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      {/* Header Info */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
-            <Activity size={24} color="var(--accent-cyan)" />
-            <h2 style={{ fontSize: '1.3rem', fontWeight: 700, color: '#ffffff' }}>
-              {lang === 'es' ? 'Sintetizador de Frecuencias & Ondas Binaurales' : 'Frequency & Binaural Beat Synthesizer'}
-            </h2>
-          </div>
+          <h2 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#ffffff', marginBottom: '4px' }}>
+            🔮 Frecuencias Curativas Solfeggio & Pulsos Binaurales
+          </h2>
           <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-            {lang === 'es' ? 'Genera afinaciones curativas (432Hz, 528Hz) y estímulos cerebrales con forma de onda personalizable.' : 'Generate healing tones (432Hz, 528Hz) and brainwave entrainment with customizable waveforms.'}
+            {lang === 'es'
+              ? 'Sintetizador de frecuencias armónicas (432Hz/528Hz) y ondas cerebrales para Meditación, Yoga y Sanación Sonora.'
+              : 'Harmonic frequency synthesizer (432Hz/528Hz) and brainwave generator for Yoga, Meditation and Sound Healing.'}
           </p>
         </div>
 
-        {/* Master Toggle */}
+        {/* Master Power Toggle */}
         <button
           onClick={() => onChangeState({ enabled: !state.enabled })}
           style={{
-            padding: '12px 24px',
+            padding: '8px 20px',
             borderRadius: 'var(--radius-full)',
-            border: 'none',
-            background: state.enabled ? 'var(--accent-cyan)' : 'rgba(255, 255, 255, 0.1)',
-            color: state.enabled ? '#090b10' : '#ffffff',
+            border: state.enabled ? '1px solid var(--accent-purple)' : 'var(--border-glass)',
+            background: state.enabled ? 'var(--accent-purple-glow)' : 'rgba(255, 255, 255, 0.05)',
+            color: state.enabled ? 'var(--accent-purple)' : 'var(--text-muted)',
+            fontSize: '0.85rem',
             fontWeight: 700,
-            fontSize: '0.9rem',
             cursor: 'pointer',
-            boxShadow: state.enabled ? '0 0 20px var(--accent-cyan-glow)' : 'none',
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
+            boxShadow: state.enabled ? '0 0 20px rgba(168, 85, 247, 0.3)' : 'none',
             transition: 'all 0.2s'
           }}
         >
-          <Radio size={18} />
-          <span>{state.enabled ? (lang === 'es' ? 'Generador Activo' : 'Generator Active') : (lang === 'es' ? 'Activar Generador' : 'Activate Generator')}</span>
+          <Sparkles size={16} />
+          <span>{state.enabled ? (lang === 'es' ? 'Sintetizador Activo' : 'Synth Active') : (lang === 'es' ? 'Activar Frecuencias' : 'Enable Frequencies')}</span>
         </button>
       </div>
 
-      {/* Main Grid: Controls & Presets */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
-        {/* Left Column: Waveform & Custom Sliders */}
-        <div className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--accent-cyan)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Sliders size={18} />
-            <span>{lang === 'es' ? 'Parámetros del Generador' : 'Generator Parameters'}</span>
-          </h3>
-
-          {/* Mode Selector */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{lang === 'es' ? 'Modo de Emisión:' : 'Emission Mode:'}</label>
-            <div style={{ display: 'flex', gap: '10px' }}>
+      {/* Quick Solfeggio Healing Frequencies Pills */}
+      <div className="glass-card" style={{ padding: '16px' }}>
+        <h3 style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--accent-purple)', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <Sparkles size={16} />
+          <span>Frecuencias Sagradas Solfeggio (Selección Rápida Yoga / Meditación)</span>
+        </h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '10px' }}>
+          {solfeggioFrequencies.map((f) => {
+            const isSelected = state.carrierFreq === f.freq && state.enabled;
+            return (
               <button
-                onClick={() => onChangeState({ mode: 'pure' })}
+                key={f.freq}
+                onClick={() => onChangeState({ carrierFreq: f.freq, enabled: true })}
                 style={{
-                  flex: 1,
-                  padding: '10px',
+                  padding: '10px 12px',
                   borderRadius: 'var(--radius-sm)',
-                  border: state.mode === 'pure' ? 'var(--border-accent)' : 'var(--border-glass)',
-                  background: state.mode === 'pure' ? 'var(--accent-cyan-glow)' : 'rgba(255, 255, 255, 0.04)',
-                  color: state.mode === 'pure' ? 'var(--accent-cyan)' : 'var(--text-muted)',
-                  fontSize: '0.82rem',
-                  fontWeight: 600,
-                  cursor: 'pointer'
+                  border: isSelected ? '1px solid var(--accent-purple)' : 'var(--border-glass)',
+                  background: isSelected ? 'rgba(168, 85, 247, 0.2)' : 'rgba(255, 255, 255, 0.03)',
+                  color: isSelected ? '#ffffff' : 'var(--text-muted)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  transition: 'all 0.2s'
                 }}
               >
-                {lang === 'es' ? '🎵 Frecuencia Pura' : '🎵 Pure Tone'}
+                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: isSelected ? 'var(--accent-purple)' : 'var(--text-main)' }}>
+                  {f.name}
+                </div>
+                <div style={{ fontSize: '0.7rem', opacity: 0.8 }}>
+                  {lang === 'es' ? f.labelEs : f.labelEn}
+                </div>
               </button>
-              <button
-                onClick={() => onChangeState({ mode: 'binaural' })}
-                style={{
-                  flex: 1,
-                  padding: '10px',
-                  borderRadius: 'var(--radius-sm)',
-                  border: state.mode === 'binaural' ? 'var(--border-accent)' : 'var(--border-glass)',
-                  background: state.mode === 'binaural' ? 'var(--accent-purple-glow)' : 'rgba(255, 255, 255, 0.04)',
-                  color: state.mode === 'binaural' ? 'var(--accent-purple)' : 'var(--text-muted)',
-                  fontSize: '0.82rem',
-                  fontWeight: 600,
-                  cursor: 'pointer'
-                }}
-              >
-                {lang === 'es' ? '🎧 Ondas Binaurales' : '🎧 Binaural Beats'}
-              </button>
-            </div>
-          </div>
+            );
+          })}
+        </div>
+      </div>
 
-          {/* Waveform Selector */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{lang === 'es' ? 'Tipo de Onda (Oscilador):' : 'Waveform Type:'}</label>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-              {waveforms.map((w) => (
-                <button
-                  key={w.id}
-                  onClick={() => onChangeState({ waveform: w.id })}
-                  style={{
-                    padding: '8px 12px',
-                    borderRadius: 'var(--radius-sm)',
-                    border: state.waveform === w.id ? 'var(--border-accent)' : 'var(--border-glass)',
-                    background: state.waveform === w.id ? 'rgba(56, 189, 248, 0.15)' : 'rgba(255, 255, 255, 0.03)',
-                    color: state.waveform === w.id ? 'var(--accent-cyan)' : 'var(--text-main)',
-                    fontSize: '0.78rem',
-                    cursor: 'pointer'
-                  }}
-                >
-                  {w.name}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Carrier Frequency Slider */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem' }}>
-              <span style={{ color: 'var(--text-muted)' }}>{lang === 'es' ? 'Frecuencia Portadora (Hz):' : 'Carrier Frequency (Hz):'}</span>
-              <strong style={{ color: 'var(--accent-cyan)' }}>{state.carrierFreq} Hz</strong>
-            </div>
-            <input
-              type="range"
-              min="100"
-              max="1000"
-              step="1"
-              value={state.carrierFreq}
-              onChange={(e) => onChangeState({ carrierFreq: parseFloat(e.target.value) })}
-            />
-          </div>
-
-          {/* Binaural Beat Slider (If Binaural mode) */}
-          {state.mode === 'binaural' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem' }}>
-                <span style={{ color: 'var(--text-muted)' }}>{lang === 'es' ? 'Diferencia Binaural (Hz):' : 'Binaural Beat (Hz):'}</span>
-                <strong style={{ color: 'var(--accent-purple)' }}>+{state.beatFreq} Hz</strong>
-              </div>
-              <input
-                type="range"
-                min="0.5"
-                max="40"
-                step="0.5"
-                value={state.beatFreq}
-                onChange={(e) => onChangeState({ beatFreq: parseFloat(e.target.value) })}
-              />
-            </div>
-          )}
-
-          {/* Volume Slider */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem' }}>
-              <span style={{ color: 'var(--text-muted)' }}>{lang === 'es' ? 'Volumen del Sintetizador:' : 'Synthesizer Volume:'}</span>
-              <span>{Math.round(state.volume * 100)}%</span>
-            </div>
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.01"
-              value={state.volume}
-              onChange={(e) => onChangeState({ volume: parseFloat(e.target.value) })}
-            />
+      {/* Main Settings Grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+        {/* Mode Selector */}
+        <div className="glass-card" style={{ padding: '18px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <h3 style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-main)' }}>Modo de Frecuencia</h3>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button
+              onClick={() => onChangeState({ mode: 'pure' })}
+              style={{
+                flex: 1,
+                padding: '8px',
+                borderRadius: 'var(--radius-sm)',
+                border: state.mode === 'pure' ? 'var(--border-accent)' : 'var(--border-glass)',
+                background: state.mode === 'pure' ? 'var(--accent-cyan-glow)' : 'transparent',
+                color: state.mode === 'pure' ? 'var(--accent-cyan)' : 'var(--text-muted)',
+                fontSize: '0.8rem',
+                fontWeight: 600,
+                cursor: 'pointer'
+              }}
+            >
+              Frecuencia Pura
+            </button>
+            <button
+              onClick={() => onChangeState({ mode: 'binaural' })}
+              style={{
+                flex: 1,
+                padding: '8px',
+                borderRadius: 'var(--radius-sm)',
+                border: state.mode === 'binaural' ? '1px solid var(--accent-purple)' : 'var(--border-glass)',
+                background: state.mode === 'binaural' ? 'rgba(168, 85, 247, 0.15)' : 'transparent',
+                color: state.mode === 'binaural' ? 'var(--accent-purple)' : 'var(--text-muted)',
+                fontSize: '0.8rem',
+                fontWeight: 600,
+                cursor: 'pointer'
+              }}
+            >
+              Pulsos Binaurales
+            </button>
           </div>
         </div>
 
-        {/* Right Column: Solfeggio & Brainwave Presets */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          {/* Solfeggio Healing Frequencies */}
-          <div className="glass-panel" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            <h3 style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--accent-amber)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Sparkles size={16} />
-              <span>{lang === 'es' ? 'Frecuencias Solfeggio Curativas' : 'Solfeggio Healing Tones'}</span>
-            </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {solfeggioPresets.map((p) => (
-                <button
-                  key={p.freq}
-                  onClick={() => onChangeState({ carrierFreq: p.freq, enabled: true })}
-                  style={{
-                    padding: '10px 14px',
-                    borderRadius: 'var(--radius-sm)',
-                    border: state.carrierFreq === p.freq ? 'var(--border-accent)' : 'var(--border-glass)',
-                    background: state.carrierFreq === p.freq ? 'rgba(251, 191, 36, 0.15)' : 'rgba(255, 255, 255, 0.03)',
-                    color: '#ffffff',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    cursor: 'pointer',
-                    fontSize: '0.82rem'
-                  }}
-                  className="glass-card"
-                >
-                  <strong style={{ color: 'var(--accent-amber)' }}>{p.name}</strong>
-                  <span style={{ color: 'var(--text-muted)' }}>{p.desc}</span>
-                </button>
-              ))}
-            </div>
+        {/* Carrier Frequency Slider */}
+        <div className="glass-card" style={{ padding: '18px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h3 style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-main)' }}>Frecuencia Portadora</h3>
+            <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--accent-cyan)' }}>{state.carrierFreq} Hz</span>
           </div>
+          <input
+            type="range"
+            min="100"
+            max="963"
+            step="1"
+            value={state.carrierFreq}
+            onChange={(e) => onChangeState({ carrierFreq: parseInt(e.target.value) })}
+          />
+        </div>
 
-          {/* Brainwave Binaural Presets */}
-          <div className="glass-panel" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            <h3 style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--accent-purple)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Disc size={16} />
-              <span>{lang === 'es' ? 'Ondas Cerebrales Binaurales' : 'Brainwave Entrainment'}</span>
-            </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {binauralPresets.map((b) => (
-                <button
-                  key={b.beat}
-                  onClick={() => onChangeState({ mode: 'binaural', beatFreq: b.beat, enabled: true })}
-                  style={{
-                    padding: '10px 14px',
-                    borderRadius: 'var(--radius-sm)',
-                    border: state.beatFreq === b.beat && state.mode === 'binaural' ? 'var(--border-accent)' : 'var(--border-glass)',
-                    background: state.beatFreq === b.beat && state.mode === 'binaural' ? 'rgba(168, 85, 247, 0.15)' : 'rgba(255, 255, 255, 0.03)',
-                    color: '#ffffff',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    cursor: 'pointer',
-                    fontSize: '0.82rem'
-                  }}
-                  className="glass-card"
-                >
-                  <strong style={{ color: 'var(--accent-purple)' }}>{b.name}</strong>
-                  <span style={{ color: 'var(--text-muted)' }}>{b.desc}</span>
-                </button>
-              ))}
-            </div>
+        {/* Volume */}
+        <div className="glass-card" style={{ padding: '18px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h3 style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-main)' }}>Volumen de Frecuencia</h3>
+            <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--accent-purple)' }}>{Math.round(state.volume * 100)}%</span>
           </div>
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value={state.volume}
+            onChange={(e) => onChangeState({ volume: parseFloat(e.target.value) })}
+          />
         </div>
       </div>
     </div>

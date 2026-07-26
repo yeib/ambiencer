@@ -26,7 +26,6 @@ const INITIAL_CHANNELS: SoundChannel[] = [
   { id: 'cave', nameKey: 'soundCave', icon: 'cave', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/large-ancient-stone-cave-acoustic_072526.webm' },
 
   // Urbanos & Espacios Acogedores
-  { id: 'cafe', nameKey: 'soundCafe', icon: 'cafe', category: 'urban', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/cozy-coffee-shop-interior-ambience_072526.webm' },
   { id: 'car_rain', nameKey: 'soundCarRain', icon: 'car', category: 'urban', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/night-rain-falling-on-car_072526.webm' },
   { id: 'train', nameKey: 'soundTrain', icon: 'train', category: 'urban', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/passenger-train-interior-gentle-rhythmic_072526.webm' },
   { id: 'library', nameKey: 'soundLibrary', icon: 'library', category: 'urban', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/quiet-library-interior-subtle-paper_072526.webm' },
@@ -34,17 +33,24 @@ const INITIAL_CHANNELS: SoundChannel[] = [
   // ASMR & Tactil
   { id: 'keyboard', nameKey: 'soundKeyboard', icon: 'keyboard', category: 'asmr', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/asmr-mechanical-keyboard-typing-thocky_072526.webm' },
   { id: 'pencil', nameKey: 'soundPencil', icon: 'pencil', category: 'asmr', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/pencil-writing-smoothly-on-thick_072526.webm' },
-  { id: 'cat', nameKey: 'soundCat', icon: 'cat', category: 'asmr', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/cat-purring-sleeping-peacefully-rhythmic_072526.webm' },
 
-  // Zen & Sintetizador
-  { id: 'space_pad', nameKey: 'soundSpacePad', icon: 'space', category: 'synth', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/deep-space-cosmic-ambient-pad_072526.webm' },
-  { id: 'solar_synth', nameKey: 'soundSolarSynth', icon: 'solar_synth', category: 'synth', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/warm-analog-synth-ambient-drone_072526.webm' },
+  // Zen & Sanación Sonora
   { id: 'singing_bowl', nameKey: 'soundSingingBowl', icon: 'singing_bowl', category: 'synth', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/meditative-singing-bowl-warm-drone_072526.webm' },
+  { id: 'solar_synth', nameKey: 'soundSolarSynth', icon: 'solar_synth', category: 'synth', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/warm-analog-synth-ambient-drone_072526.webm' },
+  { id: 'space_pad', nameKey: 'soundSpacePad', icon: 'space', category: 'synth', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/deep-space-cosmic-ambient-pad_072526.webm' },
   { id: 'pink_noise', nameKey: 'soundPinkNoise', icon: 'radio', category: 'synth', volume: 0.0, isMuted: false, type: 'pink_noise' },
   { id: 'white_noise', nameKey: 'soundWhiteNoise', icon: 'radio', category: 'synth', volume: 0.0, isMuted: false, type: 'white_noise' },
 ];
 
 const FOCUS_PRESETS: FocusPreset[] = [
+  {
+    id: 'yoga_chakra',
+    nameKey: 'presetYogaChakra',
+    descKey: 'presetYogaChakraDesc',
+    icon: 'sparkles',
+    badge: 'Yoga & Meditación',
+    volumes: { singing_bowl: 0.7, solar_synth: 0.45, bamboo: 0.3 }
+  },
   {
     id: 'rainy_night',
     nameKey: 'presetRainyNight',
@@ -54,20 +60,12 @@ const FOCUS_PRESETS: FocusPreset[] = [
     volumes: { rain: 0.7, thunder: 0.3, wind: 0.2, fire: 0.0 }
   },
   {
-    id: 'coffee_code',
-    nameKey: 'presetCoffeeCode',
-    descKey: 'presetCoffeeCodeDesc',
-    icon: 'cafe',
-    badge: 'Productividad',
-    volumes: { cafe: 0.65, keyboard: 0.5, rain: 0.0 }
-  },
-  {
     id: 'total_calm',
     nameKey: 'presetTotalCalm',
     descKey: 'presetTotalCalmDesc',
     icon: 'waves',
     badge: 'Relajación',
-    volumes: { waves: 0.6, fire: 0.45, wind: 0.15, cat: 0.4 }
+    volumes: { waves: 0.6, fire: 0.45, wind: 0.15 }
   },
   {
     id: 'alpha_study',
@@ -82,7 +80,7 @@ const FOCUS_PRESETS: FocusPreset[] = [
     nameKey: 'presetDeepSpace',
     descKey: 'presetDeepSpaceDesc',
     icon: 'moon',
-    badge: 'Zen',
+    badge: 'Zen Profundo',
     volumes: { space_pad: 0.5, singing_bowl: 0.4, solar_synth: 0.3 }
   }
 ];

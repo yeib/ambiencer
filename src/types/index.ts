@@ -41,7 +41,7 @@ export interface WallpaperState {
 
 export interface WidgetState {
   id: string;
-  type: 'clock' | 'pomodoro' | 'sysmonitor' | 'postit';
+  type: 'clock' | 'pomodoro' | 'sysmonitor' | 'postit' | 'breathwork';
   enabled: boolean;
   position: { x: number; y: number };
   settings?: Record<string, any>;

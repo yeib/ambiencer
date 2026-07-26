@@ -4,6 +4,7 @@ import { ClockWidget } from './ClockWidget';
 import { PomodoroWidget } from './PomodoroWidget';
 import { SysMonitorWidget } from './SysMonitorWidget';
 import { PostItWidget } from './PostItWidget';
+import { BreathworkWidget } from './BreathworkWidget';
 import { AppSettings, WidgetState } from '../../types';
 
 interface FloatingWidgetOverlayProps {
@@ -59,6 +60,7 @@ export const FloatingWidgetOverlay: React.FC<FloatingWidgetOverlayProps> = ({
       case 'pomodoro': return <PomodoroWidget settings={settings} />;
       case 'sysmonitor': return <SysMonitorWidget settings={settings} />;
       case 'postit': return <PostItWidget settings={settings} />;
+      case 'breathwork': return <BreathworkWidget settings={settings} />;
       default: return null;
     }
   };
