@@ -1,5 +1,5 @@
 import React from 'react';
-import { Settings, X, Globe, Volume2, ShieldCheck, Zap } from 'lucide-react';
+import { X, Globe, Palette, Volume2, ShieldCheck, Check } from 'lucide-react';
 import { AppSettings } from '../types';
 import { getTranslation } from '../i18n';
 
@@ -20,129 +20,147 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
   const lang = settings.language;
 
-  const colors = [
-    { name: 'Cyan Space', hex: '#38bdf8' },
-    { name: 'Purple Nebula', hex: '#a855f7' },
-    { name: 'Emerald Forest', hex: '#34d399' },
-    { name: 'Amber Sunset', hex: '#fbbf24' },
-    { name: 'Rose Quartz', hex: '#f43f5e' },
+  const accentColors = [
+    { hex: '#38bdf8', name: 'Cian Neón' },
+    { hex: '#a855f7', name: 'Púrpura Místico' },
+    { hex: '#fbbf24', name: 'Ámbar Cálido' },
+    { hex: '#4ade80', name: 'Verde Esmeralda' },
+    { hex: '#f43f5e', name: 'Rosa Neón' },
   ];
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        background: 'rgba(5, 7, 12, 0.75)',
-        backdropFilter: 'blur(16px)',
-        zIndex: 9999,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}
-      onClick={onClose}
-    >
-      <div
-        className="glass-panel animate-fade-in"
-        style={{
-          width: '90%',
-          maxWidth: '500px',
-          padding: '24px',
-          background: 'rgba(18, 24, 38, 0.92)',
-          boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6)',
-          border: 'var(--border-glass-bright)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '20px'
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: 'var(--border-glass)', paddingBottom: '12px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <Settings size={20} color="var(--accent-cyan)" />
-            <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#ffffff' }}>
-              {getTranslation(lang, 'settingsGeneral')}
-            </h2>
-          </div>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
-            <X size={18} />
-          </button>
-        </div>
-
-        {/* Settings Form */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          {/* Language */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem' }}>
-              <Globe size={16} color="var(--text-muted)" />
-              <span>{getTranslation(lang, 'settingsLang')}</span>
-            </div>
-            <select
-              value={settings.language}
-              onChange={(e) => onUpdateSettings({ language: e.target.value as 'es' | 'en' })}
+    <div style={{ width: '100%' }} className="animate-fade-in">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        {/* Language Selection */}
+        <div className="glass-card" style={{ padding: '20px' }}>
+          <h3 style={{ fontSize: '0.95rem', fontWeight: 600, color: '#ffffff', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Globe size={18} color="var(--accent-cyan)" />
+            <span>{getTranslation(lang, 'settingsLang')}</span>
+          </h3>
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <button
+              onClick={() => onUpdateSettings({ language: 'es' })}
               style={{
-                background: 'rgba(0,0,0,0.3)',
-                border: 'var(--border-glass)',
+                flex: 1,
+                padding: '12px',
                 borderRadius: 'var(--radius-sm)',
-                color: '#ffffff',
-                padding: '6px 12px',
-                fontSize: '0.8rem',
-                outline: 'none'
+                border: settings.language === 'es' ? 'var(--border-accent)' : 'var(--border-glass)',
+                background: settings.language === 'es' ? 'var(--accent-cyan-glow)' : 'rgba(255, 255, 255, 0.03)',
+                color: settings.language === 'es' ? 'var(--accent-cyan)' : 'var(--text-muted)',
+                fontSize: '0.88rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px'
               }}
             >
-              <option value="es" style={{ background: '#121826' }}>Español (ES)</option>
-              <option value="en" style={{ background: '#121826' }}>English (EN)</option>
-            </select>
-          </div>
+              <span>🇪🇸 Español</span>
+              {settings.language === 'es' && <Check size={16} />}
+            </button>
 
-          {/* Accent Color */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem' }}>
-              <Zap size={16} color="var(--text-muted)" />
-              <span>{getTranslation(lang, 'settingsAccent')}</span>
-            </div>
-            <div style={{ display: 'flex', gap: '10px' }}>
-              {colors.map((c) => (
+            <button
+              onClick={() => onUpdateSettings({ language: 'en' })}
+              style={{
+                flex: 1,
+                padding: '12px',
+                borderRadius: 'var(--radius-sm)',
+                border: settings.language === 'en' ? 'var(--border-accent)' : 'var(--border-glass)',
+                background: settings.language === 'en' ? 'var(--accent-cyan-glow)' : 'rgba(255, 255, 255, 0.03)',
+                color: settings.language === 'en' ? 'var(--accent-cyan)' : 'var(--text-muted)',
+                fontSize: '0.88rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px'
+              }}
+            >
+              <span>🇺🇸 English</span>
+              {settings.language === 'en' && <Check size={16} />}
+            </button>
+          </div>
+        </div>
+
+        {/* UI Theme Accent Color */}
+        <div className="glass-card" style={{ padding: '20px' }}>
+          <h3 style={{ fontSize: '0.95rem', fontWeight: 600, color: '#ffffff', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Palette size={18} color="var(--accent-purple)" />
+            <span>{getTranslation(lang, 'settingsAccent')}</span>
+          </h3>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            {accentColors.map((col) => {
+              const isSelected = settings.themeAccent === col.hex;
+              return (
                 <button
-                  key={c.hex}
-                  onClick={() => onUpdateSettings({ themeAccent: c.hex })}
+                  key={col.hex}
+                  onClick={() => onUpdateSettings({ themeAccent: col.hex })}
                   style={{
-                    width: '28px',
-                    height: '28px',
-                    borderRadius: '50%',
-                    background: c.hex,
-                    border: settings.themeAccent === c.hex ? '2px solid #ffffff' : 'none',
-                    boxShadow: settings.themeAccent === c.hex ? `0 0 10px ${c.hex}` : 'none',
-                    cursor: 'pointer'
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '8px 14px',
+                    borderRadius: 'var(--radius-full)',
+                    border: isSelected ? `2px solid ${col.hex}` : 'var(--border-glass)',
+                    background: isSelected ? `${col.hex}22` : 'rgba(255, 255, 255, 0.03)',
+                    color: isSelected ? '#ffffff' : 'var(--text-muted)',
+                    fontSize: '0.82rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
                   }}
-                  title={c.name}
-                />
-              ))}
-            </div>
+                >
+                  <span style={{ width: '12px', height: '12px', borderRadius: '50%', background: col.hex, display: 'inline-block' }} />
+                  <span>{col.name}</span>
+                </button>
+              );
+            })}
           </div>
+        </div>
 
-          {/* Audio Engine */}
+        {/* Audio Engine Quality */}
+        <div className="glass-card" style={{ padding: '20px' }}>
+          <h3 style={{ fontSize: '0.95rem', fontWeight: 600, color: '#ffffff', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Volume2 size={18} color="var(--accent-amber)" />
+            <span>{getTranslation(lang, 'settingsAudio')}</span>
+          </h3>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem' }}>
-              <Volume2 size={16} color="var(--text-muted)" />
-              <span>{getTranslation(lang, 'settingsHighQuality')}</span>
+            <div>
+              <div style={{ fontSize: '0.88rem', fontWeight: 600, color: '#ffffff' }}>
+                {getTranslation(lang, 'settingsHighQuality')}
+              </div>
+              <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                {lang === 'es' ? 'Procesamiento de 24-bit a 48kHz con baja latencia WebAudio' : '24-bit 48kHz processing with low latency WebAudio'}
+              </div>
             </div>
-            <input
-              type="checkbox"
-              checked={settings.highQualityAudio}
-              onChange={(e) => onUpdateSettings({ highQualityAudio: e.target.checked })}
-              style={{ accentColor: 'var(--accent-cyan)', cursor: 'pointer' }}
-            />
-          </div>
 
-          {/* Ecosystem Banner */}
-          <div style={{ background: 'rgba(56, 189, 248, 0.08)', border: 'var(--border-accent)', borderRadius: 'var(--radius-sm)', padding: '12px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <ShieldCheck size={20} color="var(--accent-cyan)" />
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-              <strong>Yeib Ecosystem — Native Windows App</strong><br />
-              100% Offline, Privacy First, Zero cloud tracking.
-            </div>
+            <button
+              onClick={() => onUpdateSettings({ highQualityAudio: !settings.highQualityAudio })}
+              style={{
+                width: '48px',
+                height: '26px',
+                borderRadius: '13px',
+                border: 'none',
+                background: settings.highQualityAudio ? 'var(--accent-cyan)' : 'rgba(255, 255, 255, 0.1)',
+                cursor: 'pointer',
+                position: 'relative',
+                transition: 'background 0.2s'
+              }}
+            >
+              <div
+                style={{
+                  width: '20px',
+                  height: '20px',
+                  borderRadius: '50%',
+                  background: '#ffffff',
+                  position: 'absolute',
+                  top: '3px',
+                  left: settings.highQualityAudio ? '25px' : '3px',
+                  transition: 'left 0.2s'
+                }}
+              />
+            </button>
           </div>
         </div>
       </div>
