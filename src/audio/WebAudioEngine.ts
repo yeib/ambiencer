@@ -1,11 +1,23 @@
 // Web Audio API Procedural & Media Audio Sound Engine — 100% Offline
 import { FrequencyGeneratorState } from '../types';
 
+interface ChannelRecord {
+  id: string;
+  gain: GainNode;
+  nodes: any[];
+  sourceNode?: AudioBufferSourceNode;
+  audioBuffer?: AudioBuffer;
+  isLoading: boolean;
+  targetVolume: number;
+  isMuted: boolean;
+  cleanup?: () => void;
+}
+
 class WebAudioEngine {
   private ctx: AudioContext | null = null;
   private masterGain: GainNode | null = null;
   private analyser: AnalyserNode | null = null;
-  private channels: Map<string, { gain: GainNode; nodes: any[]; sourceNode?: AudioBufferSourceNode; audioBuffer?: AudioBuffer; cleanup?: () => void }> = new Map();
+  private channels: Map<string, ChannelRecord> = new Map();
   private isMasterMuted: boolean = false;
   private masterVolume: number = 0.8;
 
@@ -53,6 +65,18 @@ class WebAudioEngine {
     if (this.masterGain) {
       this.masterGain.gain.setTargetAtTime(muted ? 0 : this.masterVolume, this.ctx?.currentTime || 0, 0.05);
     }
+  }
+
+  public stopAllChannels() {
+    this.channels.forEach((ch, id) => {
+      ch.targetVolume = 0;
+      ch.gain.gain.setValueAtTime(0, this.ctx?.currentTime || 0);
+      if (ch.sourceNode) {
+        try { ch.sourceNode.stop(); ch.sourceNode.disconnect(); } catch (e) {}
+      }
+      if (ch.cleanup) ch.cleanup();
+    });
+    this.channels.clear();
   }
 
   // --- Custom Frequency / Solfeggio & Binaural Generator ---
@@ -114,26 +138,49 @@ class WebAudioEngine {
   public updateChannelVolume(channelId: string, vol: number, isMuted: boolean, type: string, fileUrl?: string) {
     if (!this.ctx) this.init();
     const effectiveVol = isMuted ? 0 : vol;
+    const now = this.ctx?.currentTime || 0;
 
     let ch = this.channels.get(channelId);
+
     if (!ch) {
       if (effectiveVol > 0) {
-        this.createChannel(channelId, type, effectiveVol, fileUrl);
+        this.createChannel(channelId, type, effectiveVol, isMuted, fileUrl);
       }
     } else {
-      ch.gain.gain.setTargetAtTime(effectiveVol, this.ctx?.currentTime || 0, 0.05);
+      ch.targetVolume = effectiveVol;
+      ch.isMuted = isMuted;
+      ch.gain.gain.setTargetAtTime(effectiveVol, now, 0.05);
+
+      if (effectiveVol === 0 && ch.sourceNode) {
+        try {
+          ch.sourceNode.stop();
+          ch.sourceNode.disconnect();
+          ch.sourceNode = undefined;
+        } catch (e) {}
+      }
     }
   }
 
-  private async createChannel(channelId: string, type: string, initialVol: number, fileUrl?: string) {
+  private async createChannel(channelId: string, type: string, initialVol: number, isMuted: boolean, fileUrl?: string) {
     if (!this.ctx || !this.masterGain) return;
-    
+    if (this.channels.has(channelId)) return; // Prevent duplicate race condition
+
     const gainNode = this.ctx.createGain();
-    gainNode.gain.value = initialVol;
+    const effectiveVol = isMuted ? 0 : initialVol;
+    gainNode.gain.setValueAtTime(effectiveVol, this.ctx.currentTime);
     gainNode.connect(this.masterGain);
 
-    const activeNodes: any[] = [];
-    let cleanupFunc: (() => void) | undefined = undefined;
+    const record: ChannelRecord = {
+      id: channelId,
+      gain: gainNode,
+      nodes: [],
+      isLoading: true,
+      targetVolume: effectiveVol,
+      isMuted: isMuted
+    };
+
+    // Registrar en el mapa inmediatamente de forma SÍNCRONA
+    this.channels.set(channelId, record);
 
     if (fileUrl) {
       try {
@@ -141,24 +188,32 @@ class WebAudioEngine {
         const arrayBuffer = await response.arrayBuffer();
         const audioBuffer = await this.ctx.decodeAudioData(arrayBuffer);
 
+        // Si mientras descargaba el volumen bajó a 0 o se silenció, no reproducir
+        if (record.targetVolume === 0 || record.isMuted) {
+          record.isLoading = false;
+          return;
+        }
+
         const sourceNode = this.ctx.createBufferSource();
         sourceNode.buffer = audioBuffer;
         sourceNode.loop = true;
-        // Bucle perfecto sin brechas de muestra usando WebAudio AudioBufferSourceNode
         sourceNode.loopStart = 0.05;
         sourceNode.loopEnd = Math.max(0.1, audioBuffer.duration - 0.05);
 
         sourceNode.connect(gainNode);
         sourceNode.start(0);
-        activeNodes.push(sourceNode);
 
-        cleanupFunc = () => {
+        record.sourceNode = sourceNode;
+        record.audioBuffer = audioBuffer;
+        record.nodes.push(sourceNode);
+        record.isLoading = false;
+
+        record.cleanup = () => {
           try { sourceNode.stop(); sourceNode.disconnect(); } catch (e) {}
         };
-
-        this.channels.set(channelId, { gain: gainNode, nodes: activeNodes, sourceNode, audioBuffer, cleanup: cleanupFunc });
       } catch (err) {
         console.error(`Error loading WebAudio sample ${fileUrl}:`, err);
+        record.isLoading = false;
       }
     } else {
       // Procedural fallback node synthesis
@@ -170,7 +225,8 @@ class WebAudioEngine {
           src.loop = true;
           src.connect(gainNode);
           src.start();
-          activeNodes.push(src);
+          record.nodes.push(src);
+          record.sourceNode = src;
           break;
         }
         case 'white_noise': {
@@ -180,7 +236,8 @@ class WebAudioEngine {
           src.loop = true;
           src.connect(gainNode);
           src.start();
-          activeNodes.push(src);
+          record.nodes.push(src);
+          record.sourceNode = src;
           break;
         }
         default: {
@@ -190,11 +247,12 @@ class WebAudioEngine {
           src.loop = true;
           src.connect(gainNode);
           src.start();
-          activeNodes.push(src);
+          record.nodes.push(src);
+          record.sourceNode = src;
           break;
         }
       }
-      this.channels.set(channelId, { gain: gainNode, nodes: activeNodes, cleanup: cleanupFunc });
+      record.isLoading = false;
     }
   }
 

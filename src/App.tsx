@@ -143,9 +143,7 @@ export const App: React.FC = () => {
       });
       audioEngine.updateFrequencyGenerator(freqState);
     } else {
-      channels.forEach((ch) => {
-        audioEngine.updateChannelVolume(ch.id, 0, true, ch.type, ch.fileUrl);
-      });
+      audioEngine.stopAllChannels();
       audioEngine.updateFrequencyGenerator({ ...freqState, enabled: false });
     }
   }, [channels, freqState, isPlaying]);
@@ -175,6 +173,7 @@ export const App: React.FC = () => {
 
   const handleTogglePlay = () => {
     if (!isPlaying) audioEngine.resume();
+    else audioEngine.stopAllChannels();
     setIsPlaying(!isPlaying);
   };
 
@@ -194,9 +193,11 @@ export const App: React.FC = () => {
   const handleResetMixer = () => {
     setChannels((prev) => prev.map((c) => ({ ...c, volume: 0, isMuted: false })));
     setFreqState((prev) => ({ ...prev, enabled: false }));
+    audioEngine.stopAllChannels();
   };
 
   const handleApplyPreset = (preset: FocusPreset) => {
+    audioEngine.stopAllChannels();
     setChannels((prev) =>
       prev.map((c) => ({
         ...c,
