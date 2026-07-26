@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Volume2, VolumeX, RotateCcw, CloudRain, Zap, Waves, Wind, Flame, Coffee, Keyboard, Radio, Disc, Car, Train, BookOpen, PenTool, Heart, Trees, Cpu, Headphones, Compass, Sparkles, Moon } from 'lucide-react';
+import { Volume2, VolumeX, RotateCcw, CloudRain, Zap, Waves, Wind, Flame, Coffee, Keyboard, Radio, Disc, Car, Train, BookOpen, PenTool, Heart, Trees, Cpu, Headphones, Compass, Sparkles, Moon, Star } from 'lucide-react';
 import { SoundChannel, SoundCategory, AppSettings } from '../types';
+import { SavePresetModal } from './SavePresetModal';
 import { getTranslation } from '../i18n';
 
 interface SoundMixerProps {
@@ -9,6 +10,7 @@ interface SoundMixerProps {
   onVolumeChange: (id: string, volume: number) => void;
   onToggleMuteChannel: (id: string) => void;
   onResetMixer: () => void;
+  onSaveCustomPreset: (name: string, icon: string) => void;
 }
 
 export const SoundMixer: React.FC<SoundMixerProps> = ({
@@ -17,8 +19,10 @@ export const SoundMixer: React.FC<SoundMixerProps> = ({
   onVolumeChange,
   onToggleMuteChannel,
   onResetMixer,
+  onSaveCustomPreset,
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<SoundCategory>('all');
+  const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
   const lang = settings.language;
 
   const getIconComponent = (iconName: string) => {
@@ -58,11 +62,11 @@ export const SoundMixer: React.FC<SoundMixerProps> = ({
     (c) => selectedCategory === 'all' || c.category === selectedCategory
   );
 
-  const activeChannelsCount = channels.filter((c) => c.volume > 0 && !c.isMuted).length;
+  const activeChannels = channels.filter((c) => c.volume > 0 && !c.isMuted);
 
   return (
     <div className="animate-fade-in">
-      {/* Category Pills & Reset Header */}
+      {/* Category Pills & Controls Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
         <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
           {categories.map((cat) => {
@@ -89,10 +93,35 @@ export const SoundMixer: React.FC<SoundMixerProps> = ({
           })}
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-            {getTranslation(lang, 'activeChannels')}: <strong style={{ color: 'var(--accent-cyan)' }}>{activeChannelsCount}</strong>
+            {getTranslation(lang, 'activeChannels')}: <strong style={{ color: 'var(--accent-cyan)' }}>{activeChannels.length}</strong>
           </span>
+
+          {/* Guardar Mezcla como Preset */}
+          {activeChannels.length > 0 && (
+            <button
+              onClick={() => setIsSaveModalOpen(true)}
+              style={{
+                background: 'rgba(251, 191, 36, 0.15)',
+                border: '1px solid var(--accent-amber)',
+                borderRadius: 'var(--radius-sm)',
+                padding: '6px 12px',
+                color: 'var(--accent-amber)',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                fontSize: '0.8rem',
+                fontWeight: 600,
+                transition: 'all 0.2s'
+              }}
+            >
+              <Star size={14} fill="currentColor" />
+              <span>{lang === 'es' ? 'Guardar Preset' : 'Save Preset'}</span>
+            </button>
+          )}
+
           <button
             onClick={onResetMixer}
             style={{
@@ -114,7 +143,7 @@ export const SoundMixer: React.FC<SoundMixerProps> = ({
         </div>
       </div>
 
-      {/* Grid of Sound Cards (Fixed Strict Card Dimensions) */}
+      {/* Grid of Sound Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '16px' }}>
         {filteredChannels.map((ch) => {
           const isActive = ch.volume > 0 && !ch.isMuted;
@@ -248,6 +277,15 @@ export const SoundMixer: React.FC<SoundMixerProps> = ({
           );
         })}
       </div>
+
+      {/* Modal para Guardar Preset */}
+      <SavePresetModal
+        isOpen={isSaveModalOpen}
+        settings={settings}
+        activeChannels={channels}
+        onClose={() => setIsSaveModalOpen(false)}
+        onSavePreset={onSaveCustomPreset}
+      />
     </div>
   );
 };

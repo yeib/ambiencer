@@ -14,10 +14,11 @@ export interface SoundChannel {
 export interface FocusPreset {
   id: string;
   nameKey: string;
-  descKey: string;
+  descKey?: string;
   icon: string;
   badge: string;
   volumes: Record<string, number>; // soundId -> volume
+  isCustom?: boolean;
 }
 
 export interface FrequencyGeneratorState {

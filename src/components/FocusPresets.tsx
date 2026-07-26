@@ -1,5 +1,5 @@
-import React from 'react';
-import { Sparkles, CloudRain, Coffee, Waves, Brain, Moon, Play } from 'lucide-react';
+import React, { useState } from 'react';
+import { Play, Sparkles, CloudRain, Coffee, Waves, Brain, Moon, Trash2, Star, ShieldCheck } from 'lucide-react';
 import { FocusPreset, AppSettings } from '../types';
 import { getTranslation } from '../i18n';
 
@@ -7,114 +7,229 @@ interface FocusPresetsProps {
   presets: FocusPreset[];
   settings: AppSettings;
   onApplyPreset: (preset: FocusPreset) => void;
+  onDeleteCustomPreset?: (id: string) => void;
 }
 
-export const FocusPresets: React.FC<FocusPresetsProps> = ({ presets, settings, onApplyPreset }) => {
+export const FocusPresets: React.FC<FocusPresetsProps> = ({
+  presets,
+  settings,
+  onApplyPreset,
+  onDeleteCustomPreset,
+}) => {
+  const [filterCategory, setFilterCategory] = useState<'all' | 'system' | 'custom'>('all');
   const lang = settings.language;
 
-  const getPresetIcon = (icon: string) => {
-    switch (icon) {
-      case 'rain': return <CloudRain size={28} />;
-      case 'cafe': return <Coffee size={28} />;
-      case 'waves': return <Waves size={28} />;
-      case 'brain': return <Brain size={28} />;
-      case 'moon': return <Moon size={28} />;
-      default: return <Sparkles size={28} />;
+  const getPresetIcon = (iconName: string) => {
+    switch (iconName) {
+      case 'sparkles': return <Sparkles size={24} />;
+      case 'rain': return <CloudRain size={24} />;
+      case 'cafe': return <Coffee size={24} />;
+      case 'waves': return <Waves size={24} />;
+      case 'brain': return <Brain size={24} />;
+      case 'moon': return <Moon size={24} />;
+      case 'star': return <Star size={24} />;
+      default: return <Sparkles size={24} />;
     }
   };
 
+  const filteredPresets = presets.filter((p) => {
+    if (filterCategory === 'system') return !p.isCustom;
+    if (filterCategory === 'custom') return p.isCustom;
+    return true; // 'all'
+  });
+
+  const customCount = presets.filter(p => p.isCustom).length;
+  const systemCount = presets.filter(p => !p.isCustom).length;
+
   return (
     <div className="animate-fade-in">
-      <div style={{ marginBottom: '20px' }}>
-        <h2 style={{ fontSize: '1.2rem', fontWeight: 600, color: 'var(--text-main)', marginBottom: '4px' }}>
-          ⚡ {getTranslation(lang, 'tabPresets')}
-        </h2>
-        <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-          {lang === 'es' ? 'Selecciona una atmósfera prediseñada para entrar instantáneamente en estado de flujo.' : 'Select a pre-designed soundscape atmosphere to immediately enter a flow state.'}
-        </p>
-      </div>
+      {/* Category Pills & Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
+        <div>
+          <h2 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#ffffff', marginBottom: '4px' }}>
+            ✨ {lang === 'es' ? 'Presets de Enfoque & Personalizados' : 'Focus & Custom Presets'}
+          </h2>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+            {lang === 'es'
+              ? 'Mezclas prediseñadas y tus propias combinaciones personalizadas guardadas.'
+              : 'Pre-designed soundscapes and your saved custom mixes.'}
+          </p>
+        </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
-        {presets.map((preset) => (
-          <div
-            key={preset.id}
-            className="glass-panel"
+        {/* Filter Pills */}
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button
+            onClick={() => setFilterCategory('all')}
             style={{
-              padding: '24px',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              gap: '20px',
-              position: 'relative',
-              overflow: 'hidden',
-              background: 'linear-gradient(145deg, rgba(22, 30, 48, 0.6) 0%, rgba(12, 16, 26, 0.7) 100%)'
+              padding: '6px 14px',
+              borderRadius: 'var(--radius-full)',
+              border: filterCategory === 'all' ? 'var(--border-accent)' : 'var(--border-glass)',
+              background: filterCategory === 'all' ? 'var(--accent-cyan-glow)' : 'rgba(255, 255, 255, 0.04)',
+              color: filterCategory === 'all' ? 'var(--accent-cyan)' : 'var(--text-muted)',
+              fontSize: '0.8rem',
+              fontWeight: filterCategory === 'all' ? 600 : 400,
+              cursor: 'pointer'
             }}
           >
-            {/* Top Badge */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div style={{
-                width: '50px',
-                height: '50px',
-                borderRadius: 'var(--radius-md)',
-                background: 'var(--accent-cyan-glow)',
-                color: 'var(--accent-cyan)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: '0 0 15px rgba(56, 189, 248, 0.2)'
-              }}>
-                {getPresetIcon(preset.icon)}
-              </div>
-              <span style={{
-                fontSize: '0.7rem',
-                fontWeight: 700,
-                letterSpacing: '0.5px',
-                padding: '4px 10px',
-                borderRadius: 'var(--radius-full)',
-                background: 'rgba(255, 255, 255, 0.08)',
-                color: 'var(--accent-cyan)',
-                border: 'var(--border-glass)'
-              }}>
-                {preset.badge}
-              </span>
-            </div>
+            {lang === 'es' ? `Todos (${presets.length})` : `All (${presets.length})`}
+          </button>
 
-            {/* Info */}
-            <div>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '6px', color: '#ffffff' }}>
-                {getTranslation(lang, preset.nameKey as any)}
-              </h3>
-              <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: '1.4' }}>
-                {getTranslation(lang, preset.descKey as any)}
-              </p>
-            </div>
+          <button
+            onClick={() => setFilterCategory('system')}
+            style={{
+              padding: '6px 14px',
+              borderRadius: 'var(--radius-full)',
+              border: filterCategory === 'system' ? 'var(--border-accent)' : 'var(--border-glass)',
+              background: filterCategory === 'system' ? 'var(--accent-cyan-glow)' : 'rgba(255, 255, 255, 0.04)',
+              color: filterCategory === 'system' ? 'var(--accent-cyan)' : 'var(--text-muted)',
+              fontSize: '0.8rem',
+              fontWeight: filterCategory === 'system' ? 600 : 400,
+              cursor: 'pointer'
+            }}
+          >
+            {lang === 'es' ? `Sistema (${systemCount})` : `System (${systemCount})`}
+          </button>
 
-            {/* Activate Button */}
-            <button
-              onClick={() => onApplyPreset(preset)}
+          <button
+            onClick={() => setFilterCategory('custom')}
+            style={{
+              padding: '6px 14px',
+              borderRadius: 'var(--radius-full)',
+              border: filterCategory === 'custom' ? '1px solid var(--accent-amber)' : 'var(--border-glass)',
+              background: filterCategory === 'custom' ? 'rgba(251, 191, 36, 0.15)' : 'rgba(255, 255, 255, 0.04)',
+              color: filterCategory === 'custom' ? 'var(--accent-amber)' : 'var(--text-muted)',
+              fontSize: '0.8rem',
+              fontWeight: filterCategory === 'custom' ? 600 : 400,
+              cursor: 'pointer'
+            }}
+          >
+            ⭐ {lang === 'es' ? `Mis Presets (${customCount})` : `My Presets (${customCount})`}
+          </button>
+        </div>
+      </div>
+
+      {/* Grid of Presets */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '20px' }}>
+        {filteredPresets.map((preset) => {
+          const isCustom = preset.isCustom;
+          const name = isCustom ? preset.nameKey : getTranslation(lang, preset.nameKey as any);
+          const desc = isCustom
+            ? (preset.descKey || `${Object.keys(preset.volumes).length} ${lang === 'es' ? 'canales configurados' : 'channels configured'}`)
+            : getTranslation(lang, preset.descKey as any);
+
+          return (
+            <div
+              key={preset.id}
+              className="glass-card"
               style={{
-                width: '100%',
-                padding: '12px',
-                borderRadius: 'var(--radius-sm)',
-                border: 'none',
-                background: 'var(--accent-cyan)',
-                color: '#090b10',
-                fontWeight: 700,
-                fontSize: '0.9rem',
-                cursor: 'pointer',
+                padding: '20px',
                 display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                boxShadow: '0 0 16px var(--accent-cyan-glow)',
-                transition: 'transform 0.15s cubic-bezier(0.4, 0, 0.2, 1)'
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                gap: '16px',
+                border: isCustom ? '1px solid var(--accent-amber)' : 'var(--border-glass)',
+                background: isCustom ? 'rgba(38, 30, 22, 0.55)' : 'var(--bg-glass-card)',
+                boxShadow: isCustom ? '0 0 20px rgba(251, 191, 36, 0.12)' : 'none',
+                position: 'relative'
               }}
             >
-              <Play size={16} fill="currentColor" />
-              <span>{lang === 'es' ? 'Activar Preset' : 'Apply Preset'}</span>
-            </button>
-          </div>
-        ))}
+              {/* Badge & Top Info */}
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                  <div
+                    style={{
+                      width: '44px',
+                      height: '44px',
+                      borderRadius: '12px',
+                      background: isCustom ? 'rgba(251, 191, 36, 0.15)' : 'var(--accent-cyan-glow)',
+                      color: isCustom ? 'var(--accent-amber)' : 'var(--accent-cyan)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    {getPresetIcon(preset.icon)}
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span
+                      style={{
+                        fontSize: '0.7rem',
+                        fontWeight: 700,
+                        padding: '3px 8px',
+                        borderRadius: 'var(--radius-full)',
+                        background: isCustom ? 'rgba(251, 191, 36, 0.15)' : 'rgba(56, 189, 248, 0.15)',
+                        border: isCustom ? '1px solid rgba(251, 191, 36, 0.3)' : '1px solid rgba(56, 189, 248, 0.3)',
+                        color: isCustom ? 'var(--accent-amber)' : 'var(--accent-cyan)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px'
+                      }}
+                    >
+                      {isCustom ? <Star size={11} fill="currentColor" /> : <ShieldCheck size={11} />}
+                      {preset.badge}
+                    </span>
+
+                    {/* Delete Custom Preset Button */}
+                    {isCustom && onDeleteCustomPreset && (
+                      <button
+                        onClick={() => onDeleteCustomPreset(preset.id)}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          color: 'var(--accent-rose)',
+                          cursor: 'pointer',
+                          padding: '4px',
+                          display: 'flex',
+                          alignItems: 'center'
+                        }}
+                        title={lang === 'es' ? 'Eliminar preset' : 'Delete preset'}
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#ffffff', marginBottom: '6px' }}>
+                  {name}
+                </h3>
+                <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>
+                  {desc}
+                </p>
+              </div>
+
+              {/* Bottom Actions */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '12px', borderTop: 'var(--border-glass)' }}>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                  {Object.keys(preset.volumes).length} {lang === 'es' ? 'canales' : 'channels'}
+                </span>
+
+                <button
+                  onClick={() => onApplyPreset(preset)}
+                  style={{
+                    padding: '8px 16px',
+                    borderRadius: 'var(--radius-sm)',
+                    border: 'none',
+                    background: isCustom ? 'var(--accent-amber)' : 'var(--accent-cyan)',
+                    color: '#090b10',
+                    fontSize: '0.82rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    boxShadow: isCustom ? '0 0 14px rgba(251, 191, 36, 0.3)' : '0 0 14px rgba(56, 189, 248, 0.3)',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <Play size={14} fill="currentColor" />
+                  <span>{lang === 'es' ? 'Cargar Preset' : 'Load Preset'}</span>
+                </button>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

@@ -42,7 +42,7 @@ const INITIAL_CHANNELS: SoundChannel[] = [
   { id: 'white_noise', nameKey: 'soundWhiteNoise', icon: 'radio', category: 'synth', volume: 0.0, isMuted: false, type: 'white_noise' },
 ];
 
-const FOCUS_PRESETS: FocusPreset[] = [
+const SYSTEM_PRESETS: FocusPreset[] = [
   {
     id: 'yoga_chakra',
     nameKey: 'presetYogaChakra',
@@ -90,6 +90,16 @@ export const App: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [channels, setChannels] = useState<SoundChannel[]>(INITIAL_CHANNELS);
   
+  // Custom Presets State (localStorage persistence)
+  const [customPresets, setCustomPresets] = useState<FocusPreset[]>(() => {
+    try {
+      const saved = localStorage.getItem('ambiencer_custom_presets');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+
   // Frequency & Binaural Synthesizer State
   const [freqState, setFreqState] = useState<FrequencyGeneratorState>({
     enabled: false,
@@ -114,6 +124,7 @@ export const App: React.FC = () => {
     { id: 'pomodoro', type: 'pomodoro', enabled: false, position: { x: 0, y: 0 } },
     { id: 'sysmonitor', type: 'sysmonitor', enabled: false, position: { x: 0, y: 0 } },
     { id: 'postit', type: 'postit', enabled: false, position: { x: 0, y: 0 } },
+    { id: 'breathwork', type: 'breathwork', enabled: false, position: { x: 0, y: 0 } },
   ]);
 
   const [settings, setSettings] = useState<AppSettings>({
@@ -129,6 +140,13 @@ export const App: React.FC = () => {
   const [isOmnibarOpen, setIsOmnibarOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [sleepTimer, setSleepTimer] = useState<number | null>(null);
+
+  // Save custom presets to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('ambiencer_custom_presets', JSON.stringify(customPresets));
+    } catch (e) {}
+  }, [customPresets]);
 
   // Sync Master Volume & Mute to AudioEngine
   useEffect(() => {
@@ -198,6 +216,31 @@ export const App: React.FC = () => {
     audioEngine.stopAllChannels();
   };
 
+  const handleSaveCustomPreset = (name: string, icon: string) => {
+    const activeVolumes: Record<string, number> = {};
+    channels.forEach(c => {
+      if (c.volume > 0 && !c.isMuted) {
+        activeVolumes[c.id] = c.volume;
+      }
+    });
+
+    const newPreset: FocusPreset = {
+      id: `custom_${Date.now()}`,
+      nameKey: name,
+      descKey: `${Object.keys(activeVolumes).length} ${settings.language === 'es' ? 'canales guardados' : 'channels saved'}`,
+      icon,
+      badge: 'Personalizado',
+      volumes: activeVolumes,
+      isCustom: true
+    };
+
+    setCustomPresets(prev => [newPreset, ...prev]);
+  };
+
+  const handleDeleteCustomPreset = (id: string) => {
+    setCustomPresets(prev => prev.filter(p => p.id !== id));
+  };
+
   const handleApplyPreset = (preset: FocusPreset) => {
     audioEngine.stopAllChannels();
     setChannels((prev) =>
@@ -210,6 +253,8 @@ export const App: React.FC = () => {
     setIsPlaying(true);
     setActiveTab('mixer');
   };
+
+  const allPresets = [...customPresets, ...SYSTEM_PRESETS];
 
   return (
     <div style={{ position: 'relative', minHeight: '100vh', overflow: 'hidden' }}>
@@ -263,6 +308,7 @@ export const App: React.FC = () => {
               onVolumeChange={handleChannelVolumeChange}
               onToggleMuteChannel={handleToggleMuteChannel}
               onResetMixer={handleResetMixer}
+              onSaveCustomPreset={handleSaveCustomPreset}
             />
           )}
           {activeTab === 'generator' && (
@@ -284,9 +330,10 @@ export const App: React.FC = () => {
           )}
           {activeTab === 'presets' && (
             <FocusPresets
-              presets={FOCUS_PRESETS}
+              presets={allPresets}
               settings={settings}
               onApplyPreset={handleApplyPreset}
+              onDeleteCustomPreset={handleDeleteCustomPreset}
             />
           )}
           {activeTab === 'widgets' && (
@@ -314,7 +361,7 @@ export const App: React.FC = () => {
           isOpen={isOmnibarOpen}
           settings={settings}
           channels={channels}
-          presets={FOCUS_PRESETS}
+          presets={allPresets}
           onClose={() => setIsOmnibarOpen(false)}
           onApplyPreset={handleApplyPreset}
           onSelectSound={(id) => {
