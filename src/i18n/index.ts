@@ -53,6 +53,16 @@ export const translations = {
     settingsAccent: 'Color de Acento UI',
     settingsAudio: 'Motor de Audio local WebAudio',
     settingsHighQuality: 'Síntesis de Alta Fidelidad (24-bit procedimental)',
+    settingsTrayHeader: 'Bandeja del Sistema de Windows (System Tray)',
+    settingsMinimizeToTray: 'Minimizar a la Bandeja del Sistema',
+    settingsCloseToTray: 'Cerrar a la Bandeja del Sistema (Seguir sonando de fondo)',
+
+    // Color names
+    colorCyan: 'Cian Neón',
+    colorPurple: 'Púrpura Místico',
+    colorAmber: 'Ámbar Cálido',
+    colorEmerald: 'Verde Esmeralda',
+    colorRose: 'Rosa Neón',
 
     // 22 Soundscapes HD
     soundRain: 'Lluvia en Ventana',
@@ -134,6 +144,16 @@ export const translations = {
     settingsAccent: 'UI Accent Color',
     settingsAudio: 'WebAudio Procedural Engine',
     settingsHighQuality: 'High-Fidelity Synthesis (24-bit procedural)',
+    settingsTrayHeader: 'Windows System Tray Options',
+    settingsMinimizeToTray: 'Minimize to System Tray',
+    settingsCloseToTray: 'Close to System Tray (Keep audio playing in background)',
+
+    // Color names
+    colorCyan: 'Neon Cyan',
+    colorPurple: 'Mystic Purple',
+    colorAmber: 'Warm Amber',
+    colorEmerald: 'Emerald Green',
+    colorRose: 'Neon Pink',
 
     // 22 Soundscapes HD
     soundRain: 'Window Rain',

@@ -139,6 +139,8 @@ export const App: React.FC = () => {
     masterVolume: 0.8,
     isMuted: false,
     autoStartDesktop: false,
+    minimizeToTray: true,
+    closeToTray: true,
     visualizerMode: 'bars',
     highQualityAudio: true
   });
@@ -146,6 +148,14 @@ export const App: React.FC = () => {
   const [isOmnibarOpen, setIsOmnibarOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [sleepTimer, setSleepTimer] = useState<number | null>(null);
+
+  // Dynamic Global CSS Theme Accent Variable Propagation
+  useEffect(() => {
+    const accent = settings.themeAccent;
+    document.documentElement.style.setProperty('--accent-cyan', accent);
+    document.documentElement.style.setProperty('--accent-cyan-glow', `${accent}33`);
+    document.documentElement.style.setProperty('--border-accent', `1px solid ${accent}66`);
+  }, [settings.themeAccent]);
 
   // Save custom presets to localStorage
   useEffect(() => {

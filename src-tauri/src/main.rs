@@ -39,6 +39,13 @@ fn main() {
       get_system_stats,
       toggle_main_window
     ])
+    .on_window_event(|window, event| match event {
+      tauri::WindowEvent::CloseRequested { api, .. } => {
+        let _ = window.hide();
+        api.prevent_close();
+      }
+      _ => {}
+    })
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }

@@ -54,6 +54,8 @@ export interface AppSettings {
   masterVolume: number;
   isMuted: boolean;
   autoStartDesktop: boolean;
+  minimizeToTray: boolean;
+  closeToTray: boolean;
   visualizerMode: 'wave' | 'bars' | 'circle';
   highQualityAudio: boolean;
 }
