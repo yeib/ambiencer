@@ -9,6 +9,7 @@ import { WallpapersTab } from './components/WallpapersTab';
 import { WallpaperEngine } from './components/WallpaperEngine';
 import { OmnibarModal } from './components/OmnibarModal';
 import { SettingsModal } from './components/SettingsModal';
+import { FloatingWidgetOverlay } from './components/widgets/FloatingWidgetOverlay';
 import { audioEngine } from './audio/WebAudioEngine';
 import { SoundChannel, FocusPreset, WidgetState, AppSettings, ActiveTab, FrequencyGeneratorState, WallpaperState } from './types';
 import './styles/main.css';
@@ -107,10 +108,10 @@ export const App: React.FC = () => {
   });
 
   const [widgets, setWidgets] = useState<WidgetState[]>([
-    { id: 'clock', type: 'clock', enabled: true, position: { x: 0, y: 0 } },
-    { id: 'pomodoro', type: 'pomodoro', enabled: true, position: { x: 0, y: 0 } },
-    { id: 'sysmonitor', type: 'sysmonitor', enabled: true, position: { x: 0, y: 0 } },
-    { id: 'postit', type: 'postit', enabled: true, position: { x: 0, y: 0 } },
+    { id: 'clock', type: 'clock', enabled: false, position: { x: 0, y: 0 } },
+    { id: 'pomodoro', type: 'pomodoro', enabled: false, position: { x: 0, y: 0 } },
+    { id: 'sysmonitor', type: 'sysmonitor', enabled: false, position: { x: 0, y: 0 } },
+    { id: 'postit', type: 'postit', enabled: false, position: { x: 0, y: 0 } },
   ]);
 
   const [settings, setSettings] = useState<AppSettings>({
@@ -216,6 +217,16 @@ export const App: React.FC = () => {
         speed={wallpaperState.speed}
         brightness={wallpaperState.brightness}
       />
+
+      {/* Floating Active Widgets Overlay System */}
+      {widgets.filter(w => w.enabled).map((w) => (
+        <FloatingWidgetOverlay
+          key={w.id}
+          widget={w}
+          settings={settings}
+          onClose={() => setWidgets(prev => prev.map(item => item.id === w.id ? { ...item, enabled: false } : item))}
+        />
+      ))}
 
       {/* Main Glass Layout Container */}
       <div style={{ position: 'relative', zIndex: 1, maxWidth: '1200px', margin: '0 auto', padding: '24px 20px', minHeight: '100vh' }}>

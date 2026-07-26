@@ -21,22 +21,23 @@ if (!fs.existsSync(rawDir)) {
 
 const files = fs.readdirSync(rawDir).filter(f => f.endsWith('.mp3') || f.endsWith('.wav') || f.endsWith('.m4a'));
 
-console.log(`\n🎧 Procesando ${files.length} audios para Ambiencer Pro...`);
+console.log(`\n🎧 Procesando y eliminando silencios de encoder para ${files.length} audios...`);
 
 files.forEach((file) => {
   const srcPath = path.join(rawDir, file);
   const baseName = path.basename(file, path.extname(file));
   const destWebm = path.join(outDir, `${baseName}.webm`);
 
-  console.log(`  🎵 Convirtiendo: ${file} -> ${baseName}.webm (Opus 64kbps)`);
+  console.log(`  🎵 Recortando silencio y convirtiendo: ${file} -> ${baseName}.webm (Opus 64kbps)`);
   try {
-    // Convierte a WebM / Opus 64kbps para compresión HD con mínimo tamaño de archivo
-    execSync(`ffmpeg -y -i "${srcPath}" -c:a libopus -b:a 64k -vbr on "${destWebm}"`, { stdio: 'pipe' });
+    // Filtro ffmpeg silenceremove para eliminar rellenos de silencio al inicio y final del MP3 encoder
+    const ffmpegCmd = `ffmpeg -y -i "${srcPath}" -af "silenceremove=start_periods=1:start_duration=0.02:start_threshold=-55dB,areverse,silenceremove=start_periods=1:start_duration=0.02:start_threshold=-55dB,areverse" -c:a libopus -b:a 64k -vbr on "${destWebm}"`;
+    execSync(ffmpegCmd, { stdio: 'pipe' });
     const stat = fs.statSync(destWebm);
-    console.log(`     ✅ Generado: ${baseName}.webm (${Math.round(stat.size / 1024)} KB)`);
+    console.log(`     ✅ Bucle perfecto generado: ${baseName}.webm (${Math.round(stat.size / 1024)} KB)`);
   } catch (err) {
-    console.error(`     ❌ Error al convertir ${file}:`, err.message);
+    console.error(`     ❌ Error al procesar ${file}:`, err.message);
   }
 });
 
-console.log(`\n🚀 ¡Todos los audios fueron procesados exitosamente en public/sounds/!`);
+console.log(`\n🚀 ¡Procesamiento de audios sin huecos de silencio finalizado en public/sounds/!`);

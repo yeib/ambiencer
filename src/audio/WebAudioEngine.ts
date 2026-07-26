@@ -5,7 +5,7 @@ class WebAudioEngine {
   private ctx: AudioContext | null = null;
   private masterGain: GainNode | null = null;
   private analyser: AnalyserNode | null = null;
-  private channels: Map<string, { gain: GainNode; nodes: any[]; audioEl?: HTMLAudioElement; cleanup?: () => void }> = new Map();
+  private channels: Map<string, { gain: GainNode; nodes: any[]; sourceNode?: AudioBufferSourceNode; audioBuffer?: AudioBuffer; cleanup?: () => void }> = new Map();
   private isMasterMuted: boolean = false;
   private masterVolume: number = 0.8;
 
@@ -122,17 +122,10 @@ class WebAudioEngine {
       }
     } else {
       ch.gain.gain.setTargetAtTime(effectiveVol, this.ctx?.currentTime || 0, 0.05);
-      if (ch.audioEl) {
-        if (effectiveVol > 0 && ch.audioEl.paused) {
-          ch.audioEl.play().catch(() => {});
-        } else if (effectiveVol === 0 && !ch.audioEl.paused) {
-          ch.audioEl.pause();
-        }
-      }
     }
   }
 
-  private createChannel(channelId: string, type: string, initialVol: number, fileUrl?: string) {
+  private async createChannel(channelId: string, type: string, initialVol: number, fileUrl?: string) {
     if (!this.ctx || !this.masterGain) return;
     
     const gainNode = this.ctx.createGain();
@@ -140,25 +133,33 @@ class WebAudioEngine {
     gainNode.connect(this.masterGain);
 
     const activeNodes: any[] = [];
-    let audioEl: HTMLAudioElement | undefined = undefined;
     let cleanupFunc: (() => void) | undefined = undefined;
 
     if (fileUrl) {
-      audioEl = new Audio(fileUrl);
-      audioEl.loop = true;
-      audioEl.crossOrigin = 'anonymous';
+      try {
+        const response = await fetch(fileUrl);
+        const arrayBuffer = await response.arrayBuffer();
+        const audioBuffer = await this.ctx.decodeAudioData(arrayBuffer);
 
-      const sourceNode = this.ctx.createMediaElementSource(audioEl);
-      sourceNode.connect(gainNode);
-      activeNodes.push(sourceNode);
+        const sourceNode = this.ctx.createBufferSource();
+        sourceNode.buffer = audioBuffer;
+        sourceNode.loop = true;
+        // Bucle perfecto sin brechas de muestra usando WebAudio AudioBufferSourceNode
+        sourceNode.loopStart = 0.05;
+        sourceNode.loopEnd = Math.max(0.1, audioBuffer.duration - 0.05);
 
-      audioEl.play().catch(e => console.warn(`Audio play deferred for ${channelId}:`, e));
-      cleanupFunc = () => {
-        if (audioEl) {
-          audioEl.pause();
-          audioEl.src = '';
-        }
-      };
+        sourceNode.connect(gainNode);
+        sourceNode.start(0);
+        activeNodes.push(sourceNode);
+
+        cleanupFunc = () => {
+          try { sourceNode.stop(); sourceNode.disconnect(); } catch (e) {}
+        };
+
+        this.channels.set(channelId, { gain: gainNode, nodes: activeNodes, sourceNode, audioBuffer, cleanup: cleanupFunc });
+      } catch (err) {
+        console.error(`Error loading WebAudio sample ${fileUrl}:`, err);
+      }
     } else {
       // Procedural fallback node synthesis
       switch (type) {
@@ -193,9 +194,8 @@ class WebAudioEngine {
           break;
         }
       }
+      this.channels.set(channelId, { gain: gainNode, nodes: activeNodes, cleanup: cleanupFunc });
     }
-
-    this.channels.set(channelId, { gain: gainNode, nodes: activeNodes, audioEl, cleanup: cleanupFunc });
   }
 
   private generatePinkNoiseBuffer(durationSeconds: number): AudioBuffer {
