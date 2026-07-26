@@ -41,12 +41,12 @@ export const Header: React.FC<HeaderProps> = ({
         justifyContent: 'space-between',
         marginBottom: '20px',
         gap: '16px',
-        height: '66px',
+        height: '68px',
         boxSizing: 'border-box'
       }}
     >
       {/* Brand & Official Logo */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: '220px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: '220px', flexShrink: 0 }}>
         <img
           src="/logo.png"
           alt="Ambiencer Logo"
@@ -67,20 +67,21 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      {/* Center: Audio Controls & Visualizer Dock (Fixed Dimensions) */}
+      {/* Center Dock: Perfectly Spaced Audio Controls */}
       <div
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '14px',
-          background: 'rgba(0, 0, 0, 0.3)',
-          padding: '6px 14px',
+          gap: '12px',
+          background: 'rgba(0, 0, 0, 0.35)',
+          padding: '6px 16px',
           borderRadius: 'var(--radius-full)',
           border: 'var(--border-glass)',
-          boxShadow: 'inset 0 1px 3px rgba(0, 0, 0, 0.4)'
+          boxShadow: 'inset 0 1px 3px rgba(0, 0, 0, 0.4)',
+          flexShrink: 0
         }}
       >
-        {/* Play / Pause */}
+        {/* Play / Pause Button */}
         <button
           onClick={onTogglePlay}
           style={{
@@ -103,11 +104,14 @@ export const Header: React.FC<HeaderProps> = ({
           {isPlaying ? <Pause size={16} fill="currentColor" /> : <Play size={16} fill="currentColor" style={{ marginLeft: '2px' }} />}
         </button>
 
-        {/* Master Volume Slider (Fixed 100px Width) */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', width: '100px', flexShrink: 0 }}>
+        {/* Separator Line */}
+        <div style={{ width: '1px', height: '22px', background: 'rgba(255, 255, 255, 0.1)' }} />
+
+        {/* Master Volume Slider (No overlap) */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100px', flexShrink: 0 }}>
           <button
             onClick={onToggleMute}
-            style={{ background: 'none', border: 'none', color: settings.isMuted ? 'var(--accent-rose)' : 'var(--text-muted)', cursor: 'pointer', padding: 0 }}
+            style={{ background: 'none', border: 'none', color: settings.isMuted ? 'var(--accent-rose)' : 'var(--text-muted)', cursor: 'pointer', padding: 0, flexShrink: 0 }}
           >
             {settings.isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
           </button>
@@ -118,18 +122,24 @@ export const Header: React.FC<HeaderProps> = ({
             step="0.01"
             value={settings.isMuted ? 0 : settings.masterVolume}
             onChange={(e) => onMasterVolumeChange(parseFloat(e.target.value))}
-            style={{ width: '80px' }}
+            style={{ width: '70px', flexShrink: 0 }}
           />
         </div>
 
-        {/* Live Spectrum Visualizer (Fixed Width) */}
-        <div style={{ width: '90px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {/* Separator Line */}
+        <div style={{ width: '1px', height: '22px', background: 'rgba(255, 255, 255, 0.1)' }} />
+
+        {/* Live Spectrum Visualizer (Clean 75px Width) */}
+        <div style={{ width: '75px', height: '24px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
           <VisualizerCanvas isPlaying={isPlaying} accentColor={settings.themeAccent} />
         </div>
 
-        {/* Sleep Timer (Fixed 110px Width) */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', width: '110px', flexShrink: 0 }}>
-          <Timer size={14} color={activeSleepTimer ? 'var(--accent-amber)' : 'var(--text-muted)'} />
+        {/* Separator Line */}
+        <div style={{ width: '1px', height: '22px', background: 'rgba(255, 255, 255, 0.1)' }} />
+
+        {/* Sleep Timer Dropdown (No overlap) */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', width: '110px', flexShrink: 0 }}>
+          <Timer size={14} color={activeSleepTimer ? 'var(--accent-amber)' : 'var(--text-muted)'} style={{ flexShrink: 0 }} />
           <select
             value={activeSleepTimer || ''}
             onChange={(e) => onSetSleepTimer(e.target.value ? parseInt(e.target.value) : null)}
@@ -140,7 +150,8 @@ export const Header: React.FC<HeaderProps> = ({
               fontSize: '0.78rem',
               cursor: 'pointer',
               outline: 'none',
-              width: '90px'
+              width: '90px',
+              fontWeight: 500
             }}
           >
             <option value="" style={{ background: '#121826' }}>{getTranslation(lang, 'sleepTimer')}</option>
@@ -153,8 +164,8 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      {/* Right Controls (Fixed Width Buttons) */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: '220px', justifyContent: 'flex-end' }}>
+      {/* Right Controls */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: '220px', justifyContent: 'flex-end', flexShrink: 0 }}>
         {/* Omnibar Button */}
         <button
           onClick={onOpenOmnibar}
@@ -178,7 +189,7 @@ export const Header: React.FC<HeaderProps> = ({
           <span>/ (Ctrl+Space)</span>
         </button>
 
-        {/* Language Switch Button (Fixed Width 60px) */}
+        {/* Language Switch Button */}
         <button
           onClick={onToggleLanguage}
           style={{

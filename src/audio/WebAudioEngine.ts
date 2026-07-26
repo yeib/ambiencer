@@ -68,7 +68,7 @@ class WebAudioEngine {
   }
 
   public stopAllChannels() {
-    this.channels.forEach((ch, id) => {
+    this.channels.forEach((ch) => {
       ch.targetVolume = 0;
       ch.gain.gain.setValueAtTime(0, this.ctx?.currentTime || 0);
       if (ch.sourceNode) {
@@ -161,9 +161,54 @@ class WebAudioEngine {
     }
   }
 
+  // Algoritmo de Crossfade Equal-Power para bucles infinitos 100% invisibles sin cortes ni fades de IA
+  private makeCrossfadedLoopBuffer(originalBuffer: AudioBuffer, crossfadeDurationSec: number = 1.5): AudioBuffer {
+    if (!this.ctx) return originalBuffer;
+    
+    const sampleRate = originalBuffer.sampleRate;
+    const numChannels = originalBuffer.numberOfChannels;
+    const crossfadeSamples = Math.min(
+      Math.floor(sampleRate * crossfadeDurationSec),
+      Math.floor(originalBuffer.length / 4)
+    );
+
+    if (crossfadeSamples <= 0) return originalBuffer;
+
+    const newLength = originalBuffer.length - crossfadeSamples;
+    const resultBuffer = this.ctx.createBuffer(numChannels, newLength, sampleRate);
+
+    for (let c = 0; c < numChannels; c++) {
+      const srcData = originalBuffer.getChannelData(c);
+      const destData = resultBuffer.getChannelData(c);
+
+      // Copiar el cuerpo central
+      for (let i = 0; i < newLength; i++) {
+        destData[i] = srcData[i];
+      }
+
+      // Mezclar los últimos N milisegundos del final con el inicio usando curva Equal-Power (Cos/Sin)
+      const fadeStart = newLength - crossfadeSamples;
+      const originalEndStart = originalBuffer.length - crossfadeSamples;
+
+      for (let i = 0; i < crossfadeSamples; i++) {
+        const progress = i / crossfadeSamples;
+        // Curva Equal-Power Cosine / Sine
+        const fadeIn = Math.sin(progress * (Math.PI / 2));
+        const fadeOut = Math.cos(progress * (Math.PI / 2));
+
+        const sampleFromStart = srcData[i];
+        const sampleFromEnd = srcData[originalEndStart + i];
+
+        destData[fadeStart + i] = (sampleFromStart * fadeIn) + (sampleFromEnd * fadeOut);
+      }
+    }
+
+    return resultBuffer;
+  }
+
   private async createChannel(channelId: string, type: string, initialVol: number, isMuted: boolean, fileUrl?: string) {
     if (!this.ctx || !this.masterGain) return;
-    if (this.channels.has(channelId)) return; // Prevent duplicate race condition
+    if (this.channels.has(channelId)) return;
 
     const gainNode = this.ctx.createGain();
     const effectiveVol = isMuted ? 0 : initialVol;
@@ -179,32 +224,31 @@ class WebAudioEngine {
       isMuted: isMuted
     };
 
-    // Registrar en el mapa inmediatamente de forma SÍNCRONA
     this.channels.set(channelId, record);
 
     if (fileUrl) {
       try {
         const response = await fetch(fileUrl);
         const arrayBuffer = await response.arrayBuffer();
-        const audioBuffer = await this.ctx.decodeAudioData(arrayBuffer);
+        const rawAudioBuffer = await this.ctx.decodeAudioData(arrayBuffer);
 
-        // Si mientras descargaba el volumen bajó a 0 o se silenció, no reproducir
         if (record.targetVolume === 0 || record.isMuted) {
           record.isLoading = false;
           return;
         }
 
+        // Genera bucle procesado con Crossfade Equal-Power de 1.5 segundos
+        const seamlessLoopBuffer = this.makeCrossfadedLoopBuffer(rawAudioBuffer, 1.5);
+
         const sourceNode = this.ctx.createBufferSource();
-        sourceNode.buffer = audioBuffer;
+        sourceNode.buffer = seamlessLoopBuffer;
         sourceNode.loop = true;
-        sourceNode.loopStart = 0.05;
-        sourceNode.loopEnd = Math.max(0.1, audioBuffer.duration - 0.05);
 
         sourceNode.connect(gainNode);
         sourceNode.start(0);
 
         record.sourceNode = sourceNode;
-        record.audioBuffer = audioBuffer;
+        record.audioBuffer = seamlessLoopBuffer;
         record.nodes.push(sourceNode);
         record.isLoading = false;
 
@@ -216,7 +260,7 @@ class WebAudioEngine {
         record.isLoading = false;
       }
     } else {
-      // Procedural fallback node synthesis
+      // Procedural noise synthesis
       switch (type) {
         case 'pink_noise': {
           const buffer = this.generatePinkNoiseBuffer(3);
