@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Volume2, VolumeX, RotateCcw, CloudRain, Zap, Waves, Wind, Flame, Coffee, Keyboard, Radio, Disc, Car, Train, BookOpen, PenTool, Heart, Trees } from 'lucide-react';
+import { Volume2, VolumeX, RotateCcw, CloudRain, Zap, Waves, Wind, Flame, Coffee, Keyboard, Radio, Disc, Car, Train, BookOpen, PenTool, Heart, Trees, Cpu, Headphones } from 'lucide-react';
 import { SoundChannel, SoundCategory, AppSettings } from '../types';
 import { getTranslation } from '../i18n';
 
@@ -23,22 +23,22 @@ export const SoundMixer: React.FC<SoundMixerProps> = ({
 
   const getIconComponent = (iconName: string) => {
     switch (iconName) {
-      case 'rain': return <CloudRain size={22} />;
-      case 'thunder': return <Zap size={22} />;
-      case 'waves': return <Waves size={22} />;
-      case 'wind': return <Wind size={22} />;
-      case 'fire': return <Flame size={22} />;
-      case 'cafe': return <Coffee size={22} />;
-      case 'keyboard': return <Keyboard size={22} />;
-      case 'car': return <Car size={22} />;
-      case 'train': return <Train size={22} />;
-      case 'library': return <BookOpen size={22} />;
-      case 'pencil': return <PenTool size={22} />;
-      case 'cat': return <Heart size={22} />;
-      case 'bamboo': return <Trees size={22} />;
-      case 'space': return <Disc size={22} />;
-      case 'radio': return <Radio size={22} />;
-      default: return <Disc size={22} />;
+      case 'rain': return <CloudRain size={20} />;
+      case 'thunder': return <Zap size={20} />;
+      case 'waves': return <Waves size={20} />;
+      case 'wind': return <Wind size={20} />;
+      case 'fire': return <Flame size={20} />;
+      case 'cafe': return <Coffee size={20} />;
+      case 'keyboard': return <Keyboard size={20} />;
+      case 'car': return <Car size={20} />;
+      case 'train': return <Train size={20} />;
+      case 'library': return <BookOpen size={20} />;
+      case 'pencil': return <PenTool size={20} />;
+      case 'cat': return <Heart size={20} />;
+      case 'bamboo': return <Trees size={20} />;
+      case 'space': return <Disc size={20} />;
+      case 'radio': return <Radio size={20} />;
+      default: return <Disc size={20} />;
     }
   };
 
@@ -111,10 +111,22 @@ export const SoundMixer: React.FC<SoundMixerProps> = ({
       </div>
 
       {/* Grid of Sound Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '16px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '16px' }}>
         {filteredChannels.map((ch) => {
           const isActive = ch.volume > 0 && !ch.isMuted;
+          const isRealAudio = ch.type === 'media';
           const percent = Math.round(ch.volume * 100);
+
+          // Estilo distintivo por tipo de audio
+          const iconBg = isRealAudio
+            ? (isActive ? 'var(--accent-cyan-glow)' : 'rgba(56, 189, 248, 0.08)')
+            : (isActive ? 'var(--accent-purple-glow)' : 'rgba(168, 85, 247, 0.08)');
+
+          const iconColor = isRealAudio ? 'var(--accent-cyan)' : 'var(--accent-purple)';
+
+          const badgeBg = isRealAudio ? 'rgba(56, 189, 248, 0.12)' : 'rgba(168, 85, 247, 0.12)';
+          const badgeBorder = isRealAudio ? '1px solid rgba(56, 189, 248, 0.3)' : '1px solid rgba(168, 85, 247, 0.3)';
+          const badgeText = isRealAudio ? 'var(--accent-cyan)' : 'var(--accent-purple)';
 
           return (
             <div
@@ -125,11 +137,19 @@ export const SoundMixer: React.FC<SoundMixerProps> = ({
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '14px',
-                border: isActive ? 'var(--border-accent)' : 'var(--border-glass)',
-                background: isActive ? 'rgba(38, 50, 78, 0.45)' : 'var(--bg-glass-card)',
-                boxShadow: isActive ? '0 0 20px rgba(56, 189, 248, 0.15)' : 'none'
+                border: isActive
+                  ? (isRealAudio ? '1px solid var(--accent-cyan)' : '1px solid var(--accent-purple)')
+                  : 'var(--border-glass)',
+                background: isActive
+                  ? (isRealAudio ? 'rgba(22, 38, 56, 0.55)' : 'rgba(38, 22, 56, 0.55)')
+                  : 'var(--bg-glass-card)',
+                boxShadow: isActive
+                  ? (isRealAudio ? '0 0 20px rgba(56, 189, 248, 0.18)' : '0 0 20px rgba(168, 85, 247, 0.18)')
+                  : 'none',
+                position: 'relative'
               }}
             >
+              {/* Top Header info */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <div
@@ -137,8 +157,8 @@ export const SoundMixer: React.FC<SoundMixerProps> = ({
                       width: '38px',
                       height: '38px',
                       borderRadius: '10px',
-                      background: isActive ? 'var(--accent-cyan-glow)' : 'rgba(255, 255, 255, 0.05)',
-                      color: isActive ? 'var(--accent-cyan)' : 'var(--text-muted)',
+                      background: iconBg,
+                      color: iconColor,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -148,10 +168,33 @@ export const SoundMixer: React.FC<SoundMixerProps> = ({
                     {getIconComponent(ch.icon)}
                   </div>
                   <div>
-                    <h3 style={{ fontSize: '0.9rem', fontWeight: 600, color: isActive ? '#ffffff' : 'var(--text-main)' }}>
+                    <h3 style={{ fontSize: '0.88rem', fontWeight: 600, color: isActive ? '#ffffff' : 'var(--text-main)', marginBottom: '2px' }}>
                       {getTranslation(lang, ch.nameKey as any)}
                     </h3>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{percent}%</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      {/* Distinción visual: Badge Audio Real vs Sintetizado por Código */}
+                      <span
+                        style={{
+                          fontSize: '0.65rem',
+                          fontWeight: 700,
+                          padding: '2px 6px',
+                          borderRadius: '4px',
+                          background: badgeBg,
+                          border: badgeBorder,
+                          color: badgeText,
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '3px'
+                        }}
+                      >
+                        {isRealAudio ? <Headphones size={10} /> : <Cpu size={10} />}
+                        {isRealAudio
+                          ? (lang === 'es' ? 'Audio HD' : 'HD Audio')
+                          : (lang === 'es' ? 'Sintetizado 0KB' : 'Code Synth 0KB')
+                        }
+                      </span>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{percent}%</span>
+                    </div>
                   </div>
                 </div>
 
@@ -160,7 +203,7 @@ export const SoundMixer: React.FC<SoundMixerProps> = ({
                   style={{
                     background: 'none',
                     border: 'none',
-                    color: ch.isMuted ? 'var(--accent-rose)' : isActive ? 'var(--accent-cyan)' : 'var(--text-dim)',
+                    color: ch.isMuted ? 'var(--accent-rose)' : isActive ? iconColor : 'var(--text-dim)',
                     cursor: 'pointer',
                     padding: '4px'
                   }}
@@ -177,6 +220,9 @@ export const SoundMixer: React.FC<SoundMixerProps> = ({
                 step="0.01"
                 value={ch.isMuted ? 0 : ch.volume}
                 onChange={(e) => onVolumeChange(ch.id, parseFloat(e.target.value))}
+                style={{
+                  accentColor: iconColor
+                }}
               />
             </div>
           );
