@@ -205,3 +205,112 @@ export const WallpaperEngine: React.FC<WallpaperEngineProps> = ({
     />
   );
 };
+
+export function generateWallpaperSnapshot(
+  type: WallpaperType,
+  brightness: number = 1.0,
+  width: number = 1920,
+  height: number = 1080
+): string {
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return '';
+
+  const time = Math.random() * 10;
+
+  if (type === 'rain_drops') {
+    const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
+    bgGrad.addColorStop(0, '#0c1220');
+    bgGrad.addColorStop(1, '#05070c');
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, width, height);
+
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    for (let i = 0; i < 160; i++) {
+      const x = Math.random() * width;
+      const y = Math.random() * height;
+      const length = Math.random() * 30 + 15;
+      const opacity = Math.random() * 0.45 + 0.15;
+      ctx.strokeStyle = `rgba(180, 220, 255, ${opacity * brightness})`;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x, y + length);
+      ctx.stroke();
+    }
+  } else if (type === 'aurora_stars') {
+    const bgGrad = ctx.createRadialGradient(width / 2, height / 2, 0, width / 2, height / 2, width * 0.8);
+    bgGrad.addColorStop(0, '#131b2e');
+    bgGrad.addColorStop(1, '#07090e');
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, width, height);
+
+    const waveY = height * 0.35;
+    const auroraGrad = ctx.createLinearGradient(0, waveY - 120, width, waveY + 120);
+    auroraGrad.addColorStop(0, 'rgba(56, 189, 248, 0)');
+    auroraGrad.addColorStop(0.5, `rgba(52, 211, 153, ${0.25 * brightness})`);
+    auroraGrad.addColorStop(1, 'rgba(168, 85, 247, 0)');
+    ctx.fillStyle = auroraGrad;
+    ctx.beginPath();
+    ctx.moveTo(0, waveY);
+    for (let x = 0; x < width; x += 30) {
+      ctx.lineTo(x, waveY + Math.sin(x * 0.005 + time) * 50);
+    }
+    ctx.lineTo(width, height);
+    ctx.lineTo(0, height);
+    ctx.fill();
+
+    for (let i = 0; i < 200; i++) {
+      const x = Math.random() * width;
+      const y = Math.random() * height;
+      const radius = Math.random() * 2 + 0.5;
+      const alpha = Math.random() * 0.8 + 0.2;
+      ctx.fillStyle = `rgba(255, 255, 255, ${alpha * brightness})`;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  } else if (type === 'fireplace_glow') {
+    const bgGrad = ctx.createRadialGradient(width / 2, height, 0, width / 2, height, height);
+    bgGrad.addColorStop(0, '#2d140e');
+    bgGrad.addColorStop(1, '#090b10');
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, width, height);
+
+    for (let i = 0; i < 120; i++) {
+      const x = Math.random() * width;
+      const y = Math.random() * height;
+      const radius = Math.random() * 4 + 1;
+      const alpha = Math.random() * 0.85 + 0.15;
+      ctx.fillStyle = `rgba(251, 191, 36, ${alpha * brightness})`;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  } else if (type === 'cyber_grid') {
+    ctx.fillStyle = '#080a11';
+    ctx.fillRect(0, 0, width, height);
+
+    ctx.strokeStyle = `rgba(56, 189, 248, ${0.25 * brightness})`;
+    ctx.lineWidth = 1.5;
+    const gridStep = 40;
+
+    for (let x = 0; x < width; x += gridStep) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, height);
+      ctx.stroke();
+    }
+    for (let y = 0; y < height; y += gridStep) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(width, y);
+      ctx.stroke();
+    }
+  }
+
+  return canvas.toDataURL('image/png');
+}
+

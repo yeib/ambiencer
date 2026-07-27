@@ -37,12 +37,71 @@ fn toggle_main_window(app: AppHandle) {
   }
 }
 
+#[tauri::command]
+fn set_desktop_wallpaper(image_data_base64: String) -> Result<String, String> {
+  use base64::Engine;
+  use std::fs;
+  use std::process::Command;
+
+  let clean_base64 = image_data_base64
+    .trim_start_matches("data:image/png;base64,")
+    .trim_start_matches("data:image/jpeg;base64,");
+
+  let image_bytes = match base64::engine::general_purpose::STANDARD.decode(clean_base64) {
+    Ok(bytes) => bytes,
+    Err(e) => return Err(format!("Error al decodificar imagen: {}", e)),
+  };
+
+  let temp_dir = std::env::temp_dir();
+  let wallpaper_path = temp_dir.join("ambiencer_desktop_wallpaper.png");
+
+  if let Err(e) = fs::write(&wallpaper_path, image_bytes) {
+    return Err(format!("Error al guardar imagen temporal: {}", e));
+  }
+
+  let path_str = wallpaper_path.to_str().unwrap_or("");
+
+  let ps_script = format!(
+    r#"
+    $path = "{}"
+    Set-ItemProperty -Path 'HKCU:\Control Panel\Desktop' -Name Wallpaper -Value $path
+    $code = @'
+    using System.Runtime.InteropServices;
+    public class Wallpaper {{
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        public static extern int SystemParametersInfo(int uAction, int uParam, string lpvParam, int fuWinIni);
+    }}
+'@
+    Add-Type -TypeDefinition $code
+    [Wallpaper]::SystemParametersInfo(20, 0, $path, 3)
+    "#,
+    path_str.replace('\\', "\\\\")
+  );
+
+  let output = Command::new("powershell")
+    .args(["-NoProfile", "-Command", &ps_script])
+    .output();
+
+  match output {
+    Ok(out) => {
+      if out.status.success() {
+        Ok("¡Fondo de escritorio de Windows actualizado con éxito!".into())
+      } else {
+        let err_str = String::from_utf8_lossy(&out.stderr);
+        Err(format!("Error de PowerShell: {}", err_str))
+      }
+    }
+    Err(e) => Err(format!("Error al ejecutar comando de sistema: {}", e)),
+  }
+}
+
 fn main() {
   tauri::Builder::default()
     .plugin(tauri_plugin_opener::init())
     .invoke_handler(tauri::generate_handler![
       get_system_stats,
-      toggle_main_window
+      toggle_main_window,
+      set_desktop_wallpaper
     ])
     .setup(|app| {
       let quit_i = MenuItem::with_id(app, "quit", "Salir de Ambiencer", true, None::<&str>)?;
