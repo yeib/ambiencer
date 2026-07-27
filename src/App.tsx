@@ -54,16 +54,8 @@ const SYSTEM_PRESETS: FocusPreset[] = [
     nameKey: 'presetYogaChakra',
     descKey: 'presetYogaChakraDesc',
     icon: 'sparkles',
-    badge: 'Yoga & Meditación',
+    badge: 'Yoga & Sanación',
     volumes: { singing_bowl: 0.7, om_chant: 0.5, solar_synth: 0.35 }
-  },
-  {
-    id: 'rainy_night',
-    nameKey: 'presetRainyNight',
-    descKey: 'presetRainyNightDesc',
-    icon: 'rain',
-    badge: 'Naturaleza',
-    volumes: { rain: 0.7, thunder: 0.3, wind: 0.2, fire: 0.0 }
   },
   {
     id: 'total_calm',
@@ -71,7 +63,31 @@ const SYSTEM_PRESETS: FocusPreset[] = [
     descKey: 'presetTotalCalmDesc',
     icon: 'waves',
     badge: 'Relajación',
-    volumes: { waves: 0.65, fire: 0.45, morning_forest: 0.25 }
+    volumes: { waves: 0.65, fire: 0.4, morning_forest: 0.25 }
+  },
+  {
+    id: 'rainy_night',
+    nameKey: 'presetRainyNight',
+    descKey: 'presetRainyNightDesc',
+    icon: 'rain',
+    badge: 'Clima & Naturaleza',
+    volumes: { rain: 0.7, thunder: 0.3, wind: 0.2, car_rain: 0.25 }
+  },
+  {
+    id: 'mountain_sanctuary',
+    nameKey: 'presetMountainSanctuary',
+    descKey: 'presetMountainSanctuaryDesc',
+    icon: 'compass',
+    badge: 'Refugio Natural',
+    volumes: { waterfall: 0.6, morning_forest: 0.5, meadow: 0.3 }
+  },
+  {
+    id: 'amazon_zen',
+    nameKey: 'presetAmazonZen',
+    descKey: 'presetAmazonZenDesc',
+    icon: 'trees',
+    badge: 'Zen Tropical',
+    volumes: { jungle: 0.55, bamboo: 0.45, zen_pond: 0.35 }
   },
   {
     id: 'alpha_study',
@@ -79,15 +95,39 @@ const SYSTEM_PRESETS: FocusPreset[] = [
     descKey: 'presetAlphaStudyDesc',
     icon: 'brain',
     badge: 'Enfoque Alfa',
-    volumes: { pink_noise: 0.3, library: 0.4, pencil: 0.3 }
+    volumes: { pink_noise: 0.3, library: 0.4, pencil: 0.35, keyboard: 0.2 }
   },
   {
     id: 'deep_space',
     nameKey: 'presetDeepSpace',
     descKey: 'presetDeepSpaceDesc',
     icon: 'moon',
-    badge: 'Zen Profundo',
+    badge: 'Meditación Profunda',
     volumes: { space_pad: 0.5, singing_bowl: 0.4, solar_synth: 0.3 }
+  },
+  {
+    id: 'night_train',
+    nameKey: 'presetNightTrain',
+    descKey: 'presetNightTrainDesc',
+    icon: 'train',
+    badge: 'Viaje & Calma',
+    volumes: { train: 0.6, car_rain: 0.3, wind: 0.2 }
+  },
+  {
+    id: 'mystic_cave',
+    nameKey: 'presetMysticCave',
+    descKey: 'presetMysticCaveDesc',
+    icon: 'disc',
+    badge: 'Sanación Sonora',
+    volumes: { cave: 0.65, om_chant: 0.55, white_noise: 0.25 }
+  },
+  {
+    id: 'spring_breeze',
+    nameKey: 'presetSpringBreeze',
+    descKey: 'presetSpringBreezeDesc',
+    icon: 'wind',
+    badge: 'Aire Puro',
+    volumes: { meadow: 0.6, night_forest: 0.35, wind: 0.3 }
   }
 ];
 
