@@ -1,5 +1,5 @@
 import React from 'react';
-import { Activity, Radio, Volume2, Sparkles, Sliders, Zap, Waveform } from 'lucide-react';
+import { Activity, Radio, Volume2, Sparkles, Sliders, Zap } from 'lucide-react';
 import { FrequencyGeneratorState, AppSettings } from '../types';
 import { getTranslation } from '../i18n';
 
