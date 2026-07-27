@@ -35,7 +35,7 @@ export const WidgetsTab: React.FC<WidgetsTabProps> = ({
     switch (w.type) {
       case 'clock': return getTranslation(lang, 'widgetClock');
       case 'sysmonitor': return isEs ? 'Monitor de Hardware Real (RAM / CPU / Temp / Discos)' : 'Real Hardware Monitor (RAM / CPU / Temp / Disks)';
-      case 'postit': return isEs ? `Meta & Recordatorio del Día (${w.id.replace('postit_', 'N°')})` : `Daily Goal & Focus Target (${w.id})`;
+      case 'postit': return isEs ? `Meta & Recordatorio del Día (${w.id === 'postit' ? 'Principal' : w.id.replace('postit_', 'N°')})` : `Daily Goal & Focus Target (${w.id})`;
       default: return w.type;
     }
   };
@@ -60,61 +60,52 @@ export const WidgetsTab: React.FC<WidgetsTabProps> = ({
 
   const setPresetPosition = (id: string, key: 'top-left' | 'top-right' | 'center' | 'bottom-left' | 'bottom-right') => {
     const screenW = window.screen.width || window.innerWidth || 1920;
-    const screenH = window.screen.height || window.innerHeight || 1080;
+    // Account for Windows Taskbar height (screen.availHeight excludes taskbar)
+    const availH = window.screen.availHeight || (window.innerHeight - 60);
+
+    // Count existing active desktop widgets in the same corner to stack them neatly
+    const sameCornerCount = widgets.filter(
+      (w) => w.id !== id && (w.desktopActive || w.enabled) && w.settings?.cornerPreset === key
+    ).length;
+
+    const stackOffsetY = sameCornerCount * 190;
     let pos = { x: 40, y: 40 };
 
     switch (key) {
       case 'top-left':
-        pos = { x: 40, y: 40 };
+        pos = { x: 40, y: 40 + stackOffsetY };
         break;
       case 'top-right':
-        pos = { x: Math.max(40, screenW - 360), y: 40 };
+        pos = { x: Math.max(40, screenW - 360), y: 40 + stackOffsetY };
         break;
       case 'center':
-        pos = { x: Math.max(40, Math.floor((screenW - 320) / 2)), y: Math.max(40, Math.floor((screenH - 200) / 2)) };
+        pos = { x: Math.max(40, Math.floor((screenW - 320) / 2)), y: Math.max(40, Math.floor((availH - 220) / 2) + stackOffsetY) };
         break;
       case 'bottom-left':
-        pos = { x: 40, y: Math.max(40, screenH - 240) };
+        pos = { x: 40, y: Math.max(40, availH - 250 - stackOffsetY) };
         break;
       case 'bottom-right':
-        pos = { x: Math.max(40, screenW - 360), y: Math.max(40, screenH - 240) };
+        pos = { x: Math.max(40, screenW - 360), y: Math.max(40, availH - 250 - stackOffsetY) };
         break;
     }
+
+    onUpdateWidgetSettings(id, { cornerPreset: key });
     onUpdateWidgetPosition(id, pos);
   };
 
+  const activeWidgetsList = widgets.filter((w) => ['clock', 'sysmonitor', 'postit'].includes(w.type));
+
   return (
     <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div>
-          <h2 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#ffffff', marginBottom: '4px' }}>
-            ✨ {getTranslation(lang, 'tabWidgets')}
-          </h2>
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-            {isEs
-              ? 'Widgets flotantes personalizables para probar en tiempo real o fijar limpiamente en tu escritorio de Windows.'
-              : 'Customizable floating widgets to test in-app or pin cleanly to your Windows desktop.'}
-          </p>
-        </div>
-
-        {/* Add Extra Post-It Button */}
-        <button
-          onClick={onAddPostItWidget}
-          className="btn-primary-glow"
-          style={{
-            padding: '8px 14px',
-            borderRadius: 'var(--radius-md)',
-            fontSize: '0.8rem',
-            fontWeight: 600,
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            cursor: 'pointer'
-          }}
-        >
-          <Plus size={16} />
-          <span>{isEs ? 'Agregar Nota / Meta' : 'Add Note / Goal'}</span>
-        </button>
+      <div>
+        <h2 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#ffffff', marginBottom: '4px' }}>
+          ✨ {getTranslation(lang, 'tabWidgets')}
+        </h2>
+        <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+          {isEs
+            ? 'Widgets flotantes personalizables para probar en tiempo real o fijar limpiamente en tu escritorio de Windows.'
+            : 'Customizable floating widgets to test in-app or pin cleanly to your Windows desktop.'}
+        </p>
       </div>
 
       {/* Instructional Banner */}
@@ -135,9 +126,7 @@ export const WidgetsTab: React.FC<WidgetsTabProps> = ({
 
       {/* Grid of Widgets */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '20px' }}>
-        {widgets
-          .filter((w) => ['clock', 'sysmonitor', 'postit'].includes(w.type))
-          .map((w) => {
+        {activeWidgetsList.map((w) => {
           const isDesktopActive = !!(w.desktopActive || w.enabled);
           const isTestActive = !!w.testActive;
           const isExpanded = expandedEditId === w.id;
@@ -205,7 +194,7 @@ export const WidgetsTab: React.FC<WidgetsTabProps> = ({
                   {isExtraPostIt && (
                     <button
                       onClick={() => onDeleteWidget(w.id)}
-                      title={isEs ? 'Eliminar este Post-It' : 'Delete this note'}
+                      title={isEs ? 'Eliminar esta nota' : 'Delete this note'}
                       style={{
                         background: 'rgba(244, 63, 94, 0.15)',
                         border: '1px solid rgba(244, 63, 94, 0.3)',
@@ -506,6 +495,32 @@ export const WidgetsTab: React.FC<WidgetsTabProps> = ({
               >
                 {renderWidgetPreview(w)}
               </div>
+
+              {/* Add Extra Post-It button directly inside the Post-It card footer */}
+              {w.type === 'postit' && (
+                <button
+                  onClick={onAddPostItWidget}
+                  style={{
+                    padding: '8px',
+                    borderRadius: 'var(--radius-sm)',
+                    border: '1px dashed rgba(251, 191, 36, 0.4)',
+                    background: 'rgba(251, 191, 36, 0.08)',
+                    color: 'var(--accent-amber)',
+                    fontSize: '0.78rem',
+                    fontWeight: 600,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    cursor: 'pointer',
+                    marginTop: '4px',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <Plus size={14} />
+                  <span>{isEs ? '+ Agregar Otra Nota / Meta del Día' : '+ Add Another Daily Goal Note'}</span>
+                </button>
+              )}
             </div>
           );
         })}

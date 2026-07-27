@@ -37,10 +37,13 @@ export const ClockWidget: React.FC<ClockWidgetProps> = ({ settings, widgetSettin
 
   const fontSize = size === 'sm' ? '1.8rem' : size === 'lg' ? '3.2rem' : '2.5rem';
 
-  // Analog Clock angles
+  // Analog Clock angles in degrees
   const secAngle = time.getSeconds() * 6;
   const minAngle = time.getMinutes() * 6 + time.getSeconds() * 0.1;
   const hourAngle = (time.getHours() % 12) * 30 + time.getMinutes() * 0.5;
+
+  const dialSize = size === 'sm' ? 110 : size === 'lg' ? 160 : 130;
+  const radius = dialSize / 2;
 
   return (
     <div
@@ -67,47 +70,57 @@ export const ClockWidget: React.FC<ClockWidgetProps> = ({ settings, widgetSettin
       </div>
 
       {styleMode === 'analog' ? (
-        /* Analog Clock Face */
+        /* Geometrically Perfect Glassmorphic Analog Clock Face */
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', margin: '4px 0' }}>
           <div
             style={{
-              width: size === 'sm' ? '110px' : size === 'lg' ? '160px' : '130px',
-              height: size === 'sm' ? '110px' : size === 'lg' ? '160px' : '130px',
+              width: `${dialSize}px`,
+              height: `${dialSize}px`,
               borderRadius: '50%',
               border: '2px solid rgba(56, 189, 248, 0.35)',
-              background: 'radial-gradient(circle, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%)',
+              background: 'radial-gradient(circle, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%)',
               boxShadow: '0 0 20px rgba(56, 189, 248, 0.15)',
               position: 'relative',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
+              overflow: 'hidden'
             }}
           >
-            {/* Hour Markers */}
-            {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((deg) => (
-              <div
-                key={deg}
-                style={{
-                  position: 'absolute',
-                  width: deg % 90 === 0 ? '3px' : '1.5px',
-                  height: deg % 90 === 0 ? '8px' : '5px',
-                  background: deg % 90 === 0 ? 'var(--accent-cyan)' : 'rgba(255, 255, 255, 0.3)',
-                  transform: `rotate(${deg}deg) translateY(-${size === 'sm' ? '46px' : size === 'lg' ? '68px' : '56px'})`
-                }}
-              />
-            ))}
+            {/* Hour & Quarter Tick Markers */}
+            {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((deg) => {
+              const isQuarter = deg % 90 === 0;
+              const tickH = isQuarter ? 8 : 5;
+              const tickW = isQuarter ? 3 : 1.5;
+              const color = isQuarter ? '#c084fc' : 'rgba(255, 255, 255, 0.3)';
+              return (
+                <div
+                  key={deg}
+                  style={{
+                    position: 'absolute',
+                    left: '50%',
+                    top: '4px',
+                    width: `${tickW}px`,
+                    height: `${tickH}px`,
+                    background: color,
+                    transformOrigin: `50% ${radius - 4}px`,
+                    transform: `translateX(-50%) rotate(${deg}deg)`,
+                    borderRadius: '1px'
+                  }}
+                />
+              );
+            })}
 
             {/* Hour Hand */}
             <div
               style={{
                 position: 'absolute',
+                left: '50%',
+                top: '50%',
                 width: '4px',
-                height: size === 'sm' ? '30px' : size === 'lg' ? '42px' : '35px',
+                height: `${radius * 0.48}px`,
                 background: '#ffffff',
                 borderRadius: '2px',
-                transformOrigin: 'bottom center',
-                transform: `rotate(${hourAngle}deg) translateY(-50%)`,
-                boxShadow: '0 0 6px rgba(255, 255, 255, 0.5)'
+                transformOrigin: '50% 100%',
+                transform: `translate(-50%, -100%) rotate(${hourAngle}deg)`,
+                boxShadow: '0 0 6px rgba(255, 255, 255, 0.6)'
               }}
             />
 
@@ -115,12 +128,14 @@ export const ClockWidget: React.FC<ClockWidgetProps> = ({ settings, widgetSettin
             <div
               style={{
                 position: 'absolute',
+                left: '50%',
+                top: '50%',
                 width: '2.5px',
-                height: size === 'sm' ? '42px' : size === 'lg' ? '60px' : '48px',
+                height: `${radius * 0.72}px`,
                 background: 'var(--accent-cyan)',
                 borderRadius: '2px',
-                transformOrigin: 'bottom center',
-                transform: `rotate(${minAngle}deg) translateY(-50%)`,
+                transformOrigin: '50% 100%',
+                transform: `translate(-50%, -100%) rotate(${minAngle}deg)`,
                 boxShadow: '0 0 8px var(--accent-cyan)'
               }}
             />
@@ -130,12 +145,15 @@ export const ClockWidget: React.FC<ClockWidgetProps> = ({ settings, widgetSettin
               <div
                 style={{
                   position: 'absolute',
+                  left: '50%',
+                  top: '50%',
                   width: '1.5px',
-                  height: size === 'sm' ? '48px' : size === 'lg' ? '68px' : '55px',
+                  height: `${radius * 0.82}px`,
                   background: '#fb7185',
                   borderRadius: '1px',
-                  transformOrigin: 'bottom center',
-                  transform: `rotate(${secAngle}deg) translateY(-50%)`
+                  transformOrigin: '50% 100%',
+                  transform: `translate(-50%, -100%) rotate(${secAngle}deg)`,
+                  boxShadow: '0 0 4px #fb7185'
                 }}
               />
             )}
@@ -143,11 +161,15 @@ export const ClockWidget: React.FC<ClockWidgetProps> = ({ settings, widgetSettin
             {/* Center Pivot Pin */}
             <div
               style={{
+                position: 'absolute',
+                left: '50%',
+                top: '50%',
                 width: '8px',
                 height: '8px',
                 borderRadius: '50%',
                 background: 'var(--accent-cyan)',
                 boxShadow: '0 0 8px var(--accent-cyan)',
+                transform: 'translate(-50%, -50%)',
                 zIndex: 10
               }}
             />
