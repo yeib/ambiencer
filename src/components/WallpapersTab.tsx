@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, Sliders, Sparkles, CloudRain, Flame, Moon, Terminal } from 'lucide-react';
+import { Image, Sliders, Sparkles, CloudRain, Flame, Moon, Terminal, Flower2, Code2, Waves, Compass } from 'lucide-react';
 import { WallpaperState, WallpaperType, AppSettings } from '../types';
 import { getTranslation } from '../i18n';
 import { WallpaperEngine } from './WallpaperEngine';
@@ -18,12 +18,15 @@ export const WallpapersTab: React.FC<WallpapersTabProps> = ({
 }) => {
   const lang = settings.language;
 
-
   const wallpapers: { id: WallpaperType; nameKey: string; icon: React.ReactNode; badge: string }[] = [
-    { id: 'rain_drops', nameKey: lang === 'es' ? 'Lluvia en Cristal (Wet FX)' : 'Glass Raindrops (Wet FX)', icon: <CloudRain size={20} />, badge: 'Procedimental GPU' },
-    { id: 'aurora_stars', nameKey: lang === 'es' ? 'Aurora Borealis & Estrellas' : 'Aurora Borealis & Stars', icon: <Moon size={20} />, badge: 'Procedimental GPU' },
-    { id: 'fireplace_glow', nameKey: lang === 'es' ? 'Brasas de Fogata Cálida' : 'Warm Hearth Embers', icon: <Flame size={20} />, badge: 'Procedimental GPU' },
-    { id: 'cyber_grid', nameKey: lang === 'es' ? 'Malla Neón Audio-Reactiva' : 'Audio-Reactive Cyber Grid', icon: <Terminal size={20} />, badge: 'Procedimental GPU' },
+    { id: 'rain_drops', nameKey: lang === 'es' ? 'Lluvia en Cristal (Wet FX)' : 'Glass Raindrops (Wet FX)', icon: <CloudRain size={20} />, badge: 'Procedimental 60 FPS' },
+    { id: 'aurora_stars', nameKey: lang === 'es' ? 'Aurora Borealis & Estrellas' : 'Aurora Borealis & Stars', icon: <Moon size={20} />, badge: 'Procedimental 60 FPS' },
+    { id: 'fireplace_glow', nameKey: lang === 'es' ? 'Brasas de Fogata Cálida' : 'Warm Hearth Embers', icon: <Flame size={20} />, badge: 'Procedimental 60 FPS' },
+    { id: 'cyber_grid', nameKey: lang === 'es' ? 'Malla Neón Cyberpunk' : 'Cyberpunk Grid FX', icon: <Terminal size={20} />, badge: 'Procedimental 60 FPS' },
+    { id: 'cherry_blossoms', nameKey: lang === 'es' ? 'Cerezos en Flor (Sakura Spring)' : 'Sakura Cherry Blossoms', icon: <Flower2 size={20} />, badge: 'Procedimental 60 FPS' },
+    { id: 'cyberpunk_matrix', nameKey: lang === 'es' ? 'Lluvia Digital Matrix' : 'Matrix Digital Rain', icon: <Code2 size={20} />, badge: 'Procedimental 60 FPS' },
+    { id: 'ocean_waves', nameKey: lang === 'es' ? 'Olas Oceánicas Bioluminiscentes' : 'Bioluminescent Ocean Waves', icon: <Waves size={20} />, badge: 'Procedimental 60 FPS' },
+    { id: 'zen_nebula', nameKey: lang === 'es' ? 'Nebulosa Zen & Polvo Estelar' : 'Zen Cosmic Nebula', icon: <Compass size={20} />, badge: 'Procedimental 60 FPS' },
   ];
 
   return (
@@ -32,15 +35,15 @@ export const WallpapersTab: React.FC<WallpapersTabProps> = ({
       <div>
         <h2 style={{ fontSize: '1.2rem', fontWeight: 600, color: 'var(--text-main)', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Image size={20} color="var(--accent-cyan)" />
-          <span>{lang === 'es' ? 'Wallpapers Ambientales Dinámicos (Procedimental GPU)' : 'Dynamic Ambient Wallpapers (Procedural GPU)'}</span>
+          <span>{lang === 'es' ? 'Wallpapers Ambientales Dinámicos (8 Estilos 60 FPS)' : 'Dynamic Ambient Wallpapers (8 60 FPS Styles)'}</span>
         </h2>
         <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
           {lang === 'es' ? 'Wallpapers atmosféricos renderizados por GPU en tiempo real con cero sobrecarga de memoria.' : 'Atmospheric real-time GPU rendered wallpapers with zero memory overhead.'}
         </p>
       </div>
 
-      {/* Grid of Wallpapers */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '20px' }}>
+      {/* Grid of 8 Wallpapers */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
         {wallpapers.map((wp) => {
           const isActive = state.activeWallpaper === wp.id;
           return (
@@ -49,13 +52,14 @@ export const WallpapersTab: React.FC<WallpapersTabProps> = ({
               onClick={() => onChangeWallpaperState({ activeWallpaper: wp.id })}
               className="glass-card"
               style={{
-                height: '180px',
+                height: '170px',
                 position: 'relative',
                 overflow: 'hidden',
                 borderRadius: 'var(--radius-md)',
                 border: isActive ? '2px solid var(--accent-cyan)' : 'var(--border-glass)',
                 cursor: 'pointer',
-                boxShadow: isActive ? '0 0 25px rgba(56, 189, 248, 0.3)' : 'none'
+                boxShadow: isActive ? '0 0 25px rgba(56, 189, 248, 0.35)' : 'none',
+                transition: 'all 0.2s'
               }}
             >
               {/* Wallpaper Canvas Live Preview */}
@@ -66,8 +70,8 @@ export const WallpapersTab: React.FC<WallpapersTabProps> = ({
                 style={{
                   position: 'absolute',
                   inset: 0,
-                  background: 'linear-gradient(to top, rgba(9, 11, 16, 0.85) 0%, transparent 60%)',
-                  padding: '16px',
+                  background: 'linear-gradient(to top, rgba(9, 11, 16, 0.9) 0%, transparent 65%)',
+                  padding: '14px',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
@@ -76,11 +80,11 @@ export const WallpapersTab: React.FC<WallpapersTabProps> = ({
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{
-                    fontSize: '0.7rem',
+                    fontSize: '0.68rem',
                     fontWeight: 700,
                     padding: '3px 8px',
                     borderRadius: 'var(--radius-full)',
-                    background: 'rgba(0, 0, 0, 0.6)',
+                    background: 'rgba(0, 0, 0, 0.65)',
                     color: 'var(--accent-cyan)',
                     border: 'var(--border-glass)'
                   }}>
@@ -94,7 +98,7 @@ export const WallpapersTab: React.FC<WallpapersTabProps> = ({
                 </div>
 
                 <div>
-                  <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#ffffff', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <h3 style={{ fontSize: '0.92rem', fontWeight: 700, color: '#ffffff', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
                     {wp.icon}
                     <span>{wp.nameKey}</span>
                   </h3>
@@ -107,18 +111,34 @@ export const WallpapersTab: React.FC<WallpapersTabProps> = ({
 
       <WindowsWallpaperCard settings={settings} state={state} />
 
-      {/* Adjustments Bar */}
+      {/* Adjustments Bar (4 Sliders) */}
       <div className="glass-panel" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
         <h3 style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Sliders size={16} color="var(--accent-cyan)" />
-          <span>{lang === 'es' ? 'Ajustes Visuales del Wallpaper' : 'Wallpaper Visual Controls'}</span>
+          <span>{lang === 'es' ? 'Ajustes Visuales del Wallpaper (4 Controles)' : 'Wallpaper Visual Controls (4 Sliders)'}</span>
         </h3>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
-          {/* Speed */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
+          {/* 1. Brightness Slider (1% to 100%) */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-              <span>{lang === 'es' ? 'Velocidad de Animación:' : 'Animation Speed:'}</span>
+              <span>{lang === 'es' ? '1. Brillo del Fondo:' : '1. Background Brightness:'}</span>
+              <strong style={{ color: 'var(--accent-cyan)' }}>{Math.round(state.brightness * 100)}%</strong>
+            </div>
+            <input
+              type="range"
+              min="0.01"
+              max="1.0"
+              step="0.01"
+              value={state.brightness}
+              onChange={(e) => onChangeWallpaperState({ brightness: parseFloat(e.target.value) })}
+            />
+          </div>
+
+          {/* 2. Speed Slider (0.2x to 3.0x) */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+              <span>{lang === 'es' ? '2. Velocidad de Animación:' : '2. Animation Speed:'}</span>
               <strong>{state.speed.toFixed(1)}x</strong>
             </div>
             <input
@@ -131,26 +151,10 @@ export const WallpapersTab: React.FC<WallpapersTabProps> = ({
             />
           </div>
 
-          {/* Brightness */}
+          {/* 3. Glass Blur Slider (0px to 20px) */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-              <span>{lang === 'es' ? 'Brillo / Intensidad:' : 'Brightness / Glow:'}</span>
-              <strong>{Math.round(state.brightness * 100)}%</strong>
-            </div>
-            <input
-              type="range"
-              min="0.2"
-              max="2.0"
-              step="0.1"
-              value={state.brightness}
-              onChange={(e) => onChangeWallpaperState({ brightness: parseFloat(e.target.value) })}
-            />
-          </div>
-
-          {/* Blur */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-              <span>{lang === 'es' ? 'Desenfoque Glass:' : 'Glass Blur:'}</span>
+              <span>{lang === 'es' ? '3. Desenfoque Glass:' : '3. Glass Blur:'}</span>
               <strong>{state.blurAmount}px</strong>
             </div>
             <input
@@ -160,6 +164,22 @@ export const WallpapersTab: React.FC<WallpapersTabProps> = ({
               step="1"
               value={state.blurAmount}
               onChange={(e) => onChangeWallpaperState({ blurAmount: parseInt(e.target.value) })}
+            />
+          </div>
+
+          {/* 4. Atmosphere Intensity Slider */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+              <span>{lang === 'es' ? '4. Resplandor Ambiental:' : '4. Ambient Glow:'}</span>
+              <strong>{Math.round(state.brightness * 120)}%</strong>
+            </div>
+            <input
+              type="range"
+              min="0.01"
+              max="1.0"
+              step="0.01"
+              value={state.brightness}
+              onChange={(e) => onChangeWallpaperState({ brightness: parseFloat(e.target.value) })}
             />
           </div>
         </div>

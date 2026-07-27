@@ -34,7 +34,7 @@ export const WallpaperEngine: React.FC<WallpaperEngineProps> = ({
     };
     window.addEventListener('resize', handleResize);
 
-    // Particle / Drop Data Init
+    // Particle Data Initialization per Wallpaper Type
     let particles: any[] = [];
 
     if (type === 'rain_drops') {
@@ -44,8 +44,7 @@ export const WallpaperEngine: React.FC<WallpaperEngineProps> = ({
           y: Math.random() * height,
           length: Math.random() * 20 + 10,
           speed: Math.random() * 6 + 4,
-          opacity: Math.random() * 0.4 + 0.1,
-          size: Math.random() * 2 + 1
+          opacity: Math.random() * 0.4 + 0.1
         });
       }
     } else if (type === 'aurora_stars') {
@@ -69,6 +68,51 @@ export const WallpaperEngine: React.FC<WallpaperEngineProps> = ({
           alpha: Math.random() * 0.8 + 0.2
         });
       }
+    } else if (type === 'cherry_blossoms') {
+      for (let i = 0; i < 50; i++) {
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          size: Math.random() * 6 + 4,
+          speedY: Math.random() * 1.2 + 0.6,
+          speedX: Math.random() * 1.5 + 0.5,
+          rotation: Math.random() * Math.PI * 2,
+          rotSpeed: (Math.random() - 0.5) * 0.04,
+          opacity: Math.random() * 0.6 + 0.3
+        });
+      }
+    } else if (type === 'cyberpunk_matrix') {
+      const columns = Math.floor(width / 20);
+      for (let i = 0; i < columns; i++) {
+        particles.push({
+          x: i * 20,
+          y: Math.random() * height,
+          speed: Math.random() * 4 + 3,
+          length: Math.floor(Math.random() * 12 + 6)
+        });
+      }
+    } else if (type === 'ocean_waves') {
+      for (let i = 0; i < 70; i++) {
+        particles.push({
+          x: Math.random() * width,
+          y: height * 0.5 + Math.random() * (height * 0.5),
+          radius: Math.random() * 2 + 1,
+          alpha: Math.random() * 0.7 + 0.3,
+          speedX: (Math.random() - 0.5) * 0.6
+        });
+      }
+    } else if (type === 'zen_nebula') {
+      for (let i = 0; i < 90; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const dist = Math.random() * (width * 0.4);
+        particles.push({
+          angle,
+          dist,
+          radius: Math.random() * 3 + 1,
+          speed: Math.random() * 0.002 + 0.001,
+          color: Math.random() > 0.4 ? 'rgba(168, 85, 247,' : 'rgba(251, 191, 36,'
+        });
+      }
     }
 
     let time = 0;
@@ -78,18 +122,16 @@ export const WallpaperEngine: React.FC<WallpaperEngineProps> = ({
       ctx.clearRect(0, 0, width, height);
 
       if (type === 'rain_drops') {
-        // Dark rainy glass background gradient
         const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
         bgGrad.addColorStop(0, '#0c1220');
         bgGrad.addColorStop(1, '#05070c');
         ctx.fillStyle = bgGrad;
         ctx.fillRect(0, 0, width, height);
 
-        // Rain streak render
         ctx.lineWidth = 1.5;
         ctx.lineCap = 'round';
         particles.forEach((drop) => {
-          ctx.strokeStyle = `rgba(180, 220, 255, ${drop.opacity * brightness})`;
+          ctx.strokeStyle = `rgba(180, 220, 255, ${drop.opacity})`;
           ctx.beginPath();
           ctx.moveTo(drop.x, drop.y);
           ctx.lineTo(drop.x, drop.y + drop.length);
@@ -102,7 +144,6 @@ export const WallpaperEngine: React.FC<WallpaperEngineProps> = ({
           }
         });
       } else if (type === 'aurora_stars') {
-        // Deep space background
         const bgGrad = ctx.createRadialGradient(width / 2, height / 2, 0, width / 2, height / 2, width * 0.8);
         bgGrad.addColorStop(0, '#0f172a');
         bgGrad.addColorStop(0.6, '#090d16');
@@ -110,11 +151,10 @@ export const WallpaperEngine: React.FC<WallpaperEngineProps> = ({
         ctx.fillStyle = bgGrad;
         ctx.fillRect(0, 0, width, height);
 
-        // Ribbon 1: Cyan & Emerald Wave Curtain
         const wave1Y = height * 0.38 + Math.sin(time * 0.8) * 35;
         const grad1 = ctx.createLinearGradient(0, wave1Y - 110, 0, wave1Y + 110);
         grad1.addColorStop(0, 'rgba(56, 189, 248, 0)');
-        grad1.addColorStop(0.5, `rgba(52, 211, 153, ${0.28 * brightness})`);
+        grad1.addColorStop(0.5, 'rgba(52, 211, 153, 0.28)');
         grad1.addColorStop(1, 'rgba(168, 85, 247, 0)');
 
         ctx.fillStyle = grad1;
@@ -128,25 +168,6 @@ export const WallpaperEngine: React.FC<WallpaperEngineProps> = ({
         ctx.lineTo(0, height);
         ctx.fill();
 
-        // Ribbon 2: Violet & Purple Deep Glow Curtain
-        const wave2Y = height * 0.28 + Math.cos(time * 0.6) * 40;
-        const grad2 = ctx.createLinearGradient(0, wave2Y - 130, 0, wave2Y + 130);
-        grad2.addColorStop(0, 'rgba(168, 85, 247, 0)');
-        grad2.addColorStop(0.5, `rgba(192, 132, 252, ${0.22 * brightness})`);
-        grad2.addColorStop(1, 'rgba(56, 189, 248, 0)');
-
-        ctx.fillStyle = grad2;
-        ctx.beginPath();
-        ctx.moveTo(0, wave2Y);
-        for (let x = 0; x <= width; x += 15) {
-          const y = wave2Y + Math.cos(x * 0.005 + time) * 50 + Math.sin(x * 0.003 + time * 0.8) * 30;
-          ctx.lineTo(x, y);
-        }
-        ctx.lineTo(width, height);
-        ctx.lineTo(0, height);
-        ctx.fill();
-
-        // Stars render & drifting twinkling
         particles.forEach((star) => {
           star.alpha += star.speed * speed;
           star.y -= star.speed * 0.3 * speed;
@@ -156,20 +177,18 @@ export const WallpaperEngine: React.FC<WallpaperEngineProps> = ({
             star.x = Math.random() * width;
           }
           const a = (Math.sin(star.alpha) + 1) / 2;
-          ctx.fillStyle = `rgba(255, 255, 255, ${a * 0.85 * brightness})`;
+          ctx.fillStyle = `rgba(255, 255, 255, ${a * 0.85})`;
           ctx.beginPath();
           ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
           ctx.fill();
         });
       } else if (type === 'fireplace_glow') {
-        // Warm hearth background
         const bgGrad = ctx.createRadialGradient(width / 2, height, 0, width / 2, height, height);
         bgGrad.addColorStop(0, '#2d140e');
         bgGrad.addColorStop(1, '#090b10');
         ctx.fillStyle = bgGrad;
         ctx.fillRect(0, 0, width, height);
 
-        // Embers render
         particles.forEach((p) => {
           p.y -= p.speedY * speed;
           p.x += p.speedX;
@@ -177,7 +196,7 @@ export const WallpaperEngine: React.FC<WallpaperEngineProps> = ({
             p.y = height + 20;
             p.x = Math.random() * width;
           }
-          ctx.fillStyle = `rgba(251, 191, 36, ${p.alpha * brightness})`;
+          ctx.fillStyle = `rgba(251, 191, 36, ${p.alpha})`;
           ctx.beginPath();
           ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
           ctx.fill();
@@ -186,8 +205,7 @@ export const WallpaperEngine: React.FC<WallpaperEngineProps> = ({
         ctx.fillStyle = '#080a11';
         ctx.fillRect(0, 0, width, height);
 
-        // Cyber Grid Lines
-        ctx.strokeStyle = `rgba(56, 189, 248, ${0.15 * brightness})`;
+        ctx.strokeStyle = 'rgba(56, 189, 248, 0.18)';
         ctx.lineWidth = 1;
         const gridStep = 40;
         const offset = (time * 20) % gridStep;
@@ -204,6 +222,101 @@ export const WallpaperEngine: React.FC<WallpaperEngineProps> = ({
           ctx.lineTo(width, y);
           ctx.stroke();
         }
+      } else if (type === 'cherry_blossoms') {
+        const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
+        bgGrad.addColorStop(0, '#1a0b1e');
+        bgGrad.addColorStop(1, '#09050d');
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, width, height);
+
+        particles.forEach((p) => {
+          p.y += p.speedY * speed;
+          p.x += Math.sin(time + p.rotation) * p.speedX;
+          p.rotation += p.rotSpeed * speed;
+
+          if (p.y > height + 20 || p.x > width + 20) {
+            p.y = -20;
+            p.x = Math.random() * width;
+          }
+
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.rotation);
+          ctx.fillStyle = `rgba(244, 114, 182, ${p.opacity})`;
+          ctx.beginPath();
+          ctx.ellipse(0, 0, p.size, p.size * 0.5, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        });
+      } else if (type === 'cyberpunk_matrix') {
+        ctx.fillStyle = 'rgba(5, 10, 8, 0.3)';
+        ctx.fillRect(0, 0, width, height);
+
+        ctx.fillStyle = '#4ade80';
+        ctx.font = '14px monospace';
+
+        particles.forEach((col) => {
+          col.y += col.speed * speed;
+          if (col.y > height) {
+            col.y = -col.length * 20;
+          }
+
+          for (let i = 0; i < col.length; i++) {
+            const charY = col.y - i * 18;
+            if (charY > 0 && charY < height) {
+              const alpha = (1 - i / col.length);
+              ctx.fillStyle = i === 0 ? '#ffffff' : `rgba(74, 222, 128, ${alpha})`;
+              ctx.fillText(String.fromCharCode(0x30a0 + (i % 96)), col.x, charY);
+            }
+          }
+        });
+      } else if (type === 'ocean_waves') {
+        const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
+        bgGrad.addColorStop(0, '#061325');
+        bgGrad.addColorStop(1, '#020710');
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, width, height);
+
+        // Bioluminescent Wave Layers
+        for (let wave = 0; wave < 3; wave++) {
+          const waveY = height * (0.55 + wave * 0.12) + Math.sin(time + wave) * 20;
+          ctx.fillStyle = wave === 0 ? 'rgba(14, 165, 233, 0.15)' : wave === 1 ? 'rgba(20, 184, 166, 0.2)' : 'rgba(56, 189, 248, 0.25)';
+          ctx.beginPath();
+          ctx.moveTo(0, waveY);
+          for (let x = 0; x <= width; x += 20) {
+            const y = waveY + Math.sin(x * 0.006 + time * (1 + wave * 0.3)) * (25 + wave * 10);
+            ctx.lineTo(x, y);
+          }
+          ctx.lineTo(width, height);
+          ctx.lineTo(0, height);
+          ctx.fill();
+        }
+
+        particles.forEach((p) => {
+          p.x += p.speedX;
+          p.y += Math.sin(time + p.x * 0.01) * 0.5;
+          if (p.x < 0 || p.x > width) p.x = Math.random() * width;
+          ctx.fillStyle = `rgba(45, 212, 191, ${p.alpha})`;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx.fill();
+        });
+      } else if (type === 'zen_nebula') {
+        const bgGrad = ctx.createRadialGradient(width / 2, height / 2, 0, width / 2, height / 2, width * 0.7);
+        bgGrad.addColorStop(0, '#1e102d');
+        bgGrad.addColorStop(1, '#050308');
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, width, height);
+
+        particles.forEach((p) => {
+          p.angle += p.speed * speed;
+          const x = width / 2 + Math.cos(p.angle) * p.dist;
+          const y = height / 2 + Math.sin(p.angle) * (p.dist * 0.6);
+          ctx.fillStyle = `${p.color} 0.6)`;
+          ctx.beginPath();
+          ctx.arc(x, y, p.radius, 0, Math.PI * 2);
+          ctx.fill();
+        });
       }
 
       animFrame = requestAnimationFrame(render);
@@ -217,6 +330,12 @@ export const WallpaperEngine: React.FC<WallpaperEngineProps> = ({
     };
   }, [type, blurAmount, speed, brightness]);
 
+  const calcFilter = () => {
+    const blur = blurAmount > 0 ? `blur(${blurAmount}px)` : '';
+    const bright = `brightness(${Math.max(0.01, brightness) * 100}%)`;
+    return `${blur} ${bright}`.trim();
+  };
+
   return (
     <canvas
       ref={canvasRef}
@@ -227,7 +346,7 @@ export const WallpaperEngine: React.FC<WallpaperEngineProps> = ({
         height: '100%',
         zIndex: 0,
         pointerEvents: 'none',
-        filter: blurAmount > 0 ? `blur(${blurAmount}px)` : 'none'
+        filter: calcFilter()
       }}
     />
   );
@@ -337,8 +456,76 @@ export function generateWallpaperSnapshot(
       ctx.lineTo(width, y);
       ctx.stroke();
     }
+  } else if (type === 'cherry_blossoms') {
+    const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
+    bgGrad.addColorStop(0, '#1a0b1e');
+    bgGrad.addColorStop(1, '#09050d');
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, width, height);
+
+    for (let i = 0; i < 80; i++) {
+      const x = Math.random() * width;
+      const y = Math.random() * height;
+      const size = Math.random() * 7 + 4;
+      ctx.fillStyle = `rgba(244, 114, 182, ${(Math.random() * 0.6 + 0.3) * brightness})`;
+      ctx.beginPath();
+      ctx.ellipse(x, y, size, size * 0.5, Math.random() * Math.PI, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  } else if (type === 'cyberpunk_matrix') {
+    ctx.fillStyle = '#050a08';
+    ctx.fillRect(0, 0, width, height);
+    ctx.fillStyle = '#4ade80';
+    ctx.font = '16px monospace';
+
+    for (let x = 0; x < width; x += 22) {
+      const length = Math.floor(Math.random() * 15 + 5);
+      const startY = Math.random() * height;
+      for (let i = 0; i < length; i++) {
+        const y = startY + i * 20;
+        if (y < height) {
+          ctx.fillStyle = i === 0 ? '#ffffff' : `rgba(74, 222, 128, ${(1 - i / length) * brightness})`;
+          ctx.fillText(String.fromCharCode(0x30a0 + (i % 96)), x, y);
+        }
+      }
+    }
+  } else if (type === 'ocean_waves') {
+    const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
+    bgGrad.addColorStop(0, '#061325');
+    bgGrad.addColorStop(1, '#020710');
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, width, height);
+
+    for (let wave = 0; wave < 3; wave++) {
+      const waveY = height * (0.55 + wave * 0.12);
+      ctx.fillStyle = wave === 0 ? 'rgba(14, 165, 233, 0.2)' : 'rgba(20, 184, 166, 0.25)';
+      ctx.beginPath();
+      ctx.moveTo(0, waveY);
+      for (let x = 0; x <= width; x += 20) {
+        ctx.lineTo(x, waveY + Math.sin(x * 0.006 + wave) * 30);
+      }
+      ctx.lineTo(width, height);
+      ctx.lineTo(0, height);
+      ctx.fill();
+    }
+  } else if (type === 'zen_nebula') {
+    const bgGrad = ctx.createRadialGradient(width / 2, height / 2, 0, width / 2, height / 2, width * 0.7);
+    bgGrad.addColorStop(0, '#1e102d');
+    bgGrad.addColorStop(1, '#050308');
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, width, height);
+
+    for (let i = 0; i < 150; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const dist = Math.random() * (width * 0.4);
+      const x = width / 2 + Math.cos(angle) * dist;
+      const y = height / 2 + Math.sin(angle) * (dist * 0.6);
+      ctx.fillStyle = `rgba(168, 85, 247, ${(Math.random() * 0.7 + 0.2) * brightness})`;
+      ctx.beginPath();
+      ctx.arc(x, y, Math.random() * 3 + 1, 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
 
   return canvas.toDataURL(format, 0.95);
 }
-

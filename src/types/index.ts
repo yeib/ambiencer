@@ -31,7 +31,15 @@ export interface FrequencyGeneratorState {
   smoothFilter: number;
 }
 
-export type WallpaperType = 'rain_drops' | 'aurora_stars' | 'fireplace_glow' | 'cyber_grid';
+export type WallpaperType =
+  | 'rain_drops'
+  | 'aurora_stars'
+  | 'fireplace_glow'
+  | 'cyber_grid'
+  | 'cherry_blossoms'
+  | 'cyberpunk_matrix'
+  | 'ocean_waves'
+  | 'zen_nebula';
 
 export interface WallpaperState {
   activeWallpaper: WallpaperType;
