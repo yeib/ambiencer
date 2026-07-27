@@ -58,7 +58,20 @@ export const WindowsWallpaperCard: React.FC<WindowsWallpaperCardProps> = ({
     }
   };
 
-
+  const handleStopLiveDesktop = async () => {
+    setIsApplying(true);
+    setStatusMsg(null);
+    try {
+      const { invoke } = await import('@tauri-apps/api/core');
+      const msg = await invoke<string>('detach_live_wallpaper_from_desktop');
+      setStatusMsg(msg || (lang === 'es' ? '¡Live Wallpaper detenido y escritorio normal restaurado! 🖥️' : 'Live Wallpaper stopped! 🖥️'));
+    } catch (err: any) {
+      console.log('Stop mode notice:', err);
+    } finally {
+      setIsApplying(false);
+      setTimeout(() => setStatusMsg(null), 5000);
+    }
+  };
 
   const handleDownloadWallpaperHD = async () => {
     const dataUrl = generateWallpaperSnapshot(state.activeWallpaper, state.brightness, 3840, 2160, 'image/png');
@@ -155,6 +168,28 @@ export const WindowsWallpaperCard: React.FC<WindowsWallpaperCardProps> = ({
         >
           <Play size={16} fill="currentColor" />
           <span>{lang === 'es' ? 'Fijar en Escritorio (Live 60 FPS)' : 'Attach to Desktop (Live 60 FPS)'}</span>
+        </button>
+
+        <button
+          onClick={handleStopLiveDesktop}
+          disabled={isApplying}
+          style={{
+            padding: '12px 18px',
+            borderRadius: 'var(--radius-md)',
+            border: '1px solid rgba(239, 68, 68, 0.4)',
+            background: 'rgba(239, 68, 68, 0.12)',
+            color: '#fca5a5',
+            fontWeight: 700,
+            fontSize: '0.86rem',
+            cursor: isApplying ? 'wait' : 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            transition: 'all 0.2s'
+          }}
+        >
+          <Monitor size={16} />
+          <span>{lang === 'es' ? 'Detener Live Wallpaper' : 'Stop Live Wallpaper'}</span>
         </button>
 
         <button

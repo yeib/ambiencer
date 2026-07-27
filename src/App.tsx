@@ -158,12 +158,42 @@ export const App: React.FC = () => {
   });
 
   // Wallpaper State
-  const [wallpaperState, setWallpaperState] = useState<WallpaperState>({
-    activeWallpaper: 'rain_drops',
-    blurAmount: 0,
-    speed: 1.0,
-    brightness: 1.0
+  const [wallpaperState, setWallpaperState] = useState<WallpaperState>(() => {
+    try {
+      const saved = localStorage.getItem('ambiencer_wallpaper_state');
+      return saved ? JSON.parse(saved) : {
+        activeWallpaper: 'rain_drops',
+        blurAmount: 0,
+        speed: 1.0,
+        brightness: 1.0
+      };
+    } catch (e) {
+      return {
+        activeWallpaper: 'rain_drops',
+        blurAmount: 0,
+        speed: 1.0,
+        brightness: 1.0
+      };
+    }
   });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('ambiencer_wallpaper_state', JSON.stringify(wallpaperState));
+    } catch (e) {}
+  }, [wallpaperState]);
+
+  useEffect(() => {
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'ambiencer_wallpaper_state' && e.newValue) {
+        try {
+          setWallpaperState(JSON.parse(e.newValue));
+        } catch (err) {}
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
 
   const [widgets, setWidgets] = useState<WidgetState[]>([
     { id: 'clock', type: 'clock', enabled: false, position: { x: 0, y: 0 } },
@@ -311,6 +341,19 @@ export const App: React.FC = () => {
   };
 
   const allPresets = [...customPresets, ...SYSTEM_PRESETS];
+
+  if (window.location.search.includes('mode=wallpaper')) {
+    return (
+      <div style={{ position: 'fixed', inset: 0, overflow: 'hidden', background: '#000', zIndex: 0 }}>
+        <WallpaperEngine
+          type={wallpaperState.activeWallpaper}
+          blurAmount={wallpaperState.blurAmount}
+          speed={wallpaperState.speed}
+          brightness={wallpaperState.brightness}
+        />
+      </div>
+    );
+  }
 
   return (
     <div style={{ position: 'relative', minHeight: '100vh', overflow: 'hidden' }}>

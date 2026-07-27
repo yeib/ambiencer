@@ -137,11 +137,31 @@ pub fn set_desktop_wallpaper(image_data_base64: String) -> Result<String, String
 }
 
 #[tauri::command]
-pub fn attach_live_wallpaper_to_desktop(window: tauri::WebviewWindow) -> Result<String, String> {
+pub fn attach_live_wallpaper_to_desktop(app: tauri::AppHandle) -> Result<String, String> {
   #[cfg(target_os = "windows")]
   {
+    use tauri::Manager;
     unsafe {
-      let hwnd = match window.hwnd() {
+      let live_win = match app.get_webview_window("live_wallpaper") {
+        Some(w) => w,
+        None => {
+          let builder = tauri::WebviewWindowBuilder::new(
+            &app,
+            "live_wallpaper",
+            tauri::WebviewUrl::App("index.html?mode=wallpaper".into()),
+          )
+          .title("Ambiencer Live Wallpaper")
+          .decorations(false)
+          .skip_taskbar(true)
+          .visible(false);
+          match builder.build() {
+            Ok(w) => w,
+            Err(e) => return Err(format!("Error creando ventana del fondo: {}", e)),
+          }
+        }
+      };
+
+      let hwnd = match live_win.hwnd() {
         Ok(h) => h.0 as isize,
         Err(e) => return Err(format!("No se obtuvo HWND: {}", e)),
       };
@@ -175,6 +195,8 @@ pub fn attach_live_wallpaper_to_desktop(window: tauri::WebviewWindow) -> Result<
       let height = win32::GetSystemMetrics(1);
       win32::SetWindowPos(hwnd, 0, 0, 0, width, height, 0x0040);
 
+      let _ = live_win.show();
+
       Ok("¡Live Wallpaper fijado detrás de los iconos del escritorio con éxito! 🎬✨".into())
     }
   }
@@ -186,41 +208,10 @@ pub fn attach_live_wallpaper_to_desktop(window: tauri::WebviewWindow) -> Result<
 }
 
 #[tauri::command]
-pub fn detach_live_wallpaper_from_desktop(window: tauri::WebviewWindow) -> Result<String, String> {
-  #[cfg(target_os = "windows")]
-  {
-    unsafe {
-      let hwnd = match window.hwnd() {
-        Ok(h) => h.0 as isize,
-        Err(e) => return Err(format!("No se obtuvo HWND: {}", e)),
-      };
-
-      win32::SetParent(hwnd, 0);
-
-      let mut style = win32::GetWindowLongPtrW(hwnd, -16);
-      style &= !0x40000000isize;            // WS_CHILD
-      style |= 0x80000000u32 as isize;      // WS_POPUP
-      style |= 0x00C00000isize;             // WS_CAPTION
-      style |= 0x00040000isize;             // WS_THICKFRAME
-      style |= 0x00020000isize;             // WS_MINIMIZEBOX
-      style |= 0x00010000isize;             // WS_MAXIMIZEBOX
-      style |= 0x10000000isize;             // WS_VISIBLE
-      win32::SetWindowLongPtrW(hwnd, -16, style);
-
-      let width = 1150;
-      let height = 780;
-      let screen_w = win32::GetSystemMetrics(0);
-      let screen_h = win32::GetSystemMetrics(1);
-      let x = (screen_w - width) / 2;
-      let y = (screen_h - height) / 2;
-      win32::SetWindowPos(hwnd, 0, x, y, width, height, 0x0040);
-
-      Ok("¡Ventana normal de Ambiencer restaurada al escritorio! 🖥️".into())
-    }
+pub fn detach_live_wallpaper_from_desktop(app: tauri::AppHandle) -> Result<String, String> {
+  use tauri::Manager;
+  if let Some(window) = app.get_webview_window("live_wallpaper") {
+    let _ = window.close();
   }
-
-  #[cfg(not(target_os = "windows"))]
-  {
-    Ok("Restaurado en SO no-Windows".into())
-  }
+  Ok("¡Live Wallpaper detenido y escritorio normal restaurado! 🖥️".into())
 }
