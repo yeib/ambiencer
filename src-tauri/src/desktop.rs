@@ -144,21 +144,7 @@ pub fn attach_live_wallpaper_to_desktop(app: tauri::AppHandle) -> Result<String,
     unsafe {
       let live_win = match app.get_webview_window("live_wallpaper") {
         Some(w) => w,
-        None => {
-          let builder = tauri::WebviewWindowBuilder::new(
-            &app,
-            "live_wallpaper",
-            tauri::WebviewUrl::App("index.html?mode=wallpaper".into()),
-          )
-          .title("Ambiencer Live Wallpaper")
-          .decorations(false)
-          .skip_taskbar(true)
-          .visible(false);
-          match builder.build() {
-            Ok(w) => w,
-            Err(e) => return Err(format!("Error creando ventana del fondo: {}", e)),
-          }
-        }
+        None => return Err("Ventana live_wallpaper no encontrada en tauri.conf.json".into()),
       };
 
       let hwnd = match live_win.hwnd() {
@@ -209,9 +195,17 @@ pub fn attach_live_wallpaper_to_desktop(app: tauri::AppHandle) -> Result<String,
 
 #[tauri::command]
 pub fn detach_live_wallpaper_from_desktop(app: tauri::AppHandle) -> Result<String, String> {
-  use tauri::Manager;
-  if let Some(window) = app.get_webview_window("live_wallpaper") {
-    let _ = window.close();
+  #[cfg(target_os = "windows")]
+  {
+    use tauri::Manager;
+    unsafe {
+      if let Some(window) = app.get_webview_window("live_wallpaper") {
+        if let Ok(hwnd) = window.hwnd() {
+          win32::SetParent(hwnd.0 as isize, 0);
+        }
+        let _ = window.hide();
+      }
+    }
   }
   Ok("¡Live Wallpaper detenido y escritorio normal restaurado! 🖥️".into())
 }

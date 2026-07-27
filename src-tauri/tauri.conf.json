@@ -12,6 +12,7 @@
   "app": {
     "windows": [
       {
+        "label": "main",
         "title": "Ambiencer — Soundscapes & Desktop Widgets",
         "width": 1150,
         "height": 780,
@@ -19,6 +20,17 @@
         "fullscreen": false,
         "transparent": true,
         "decorations": true
+      },
+      {
+        "label": "live_wallpaper",
+        "url": "index.html?mode=wallpaper",
+        "title": "Ambiencer Live Wallpaper",
+        "width": 1920,
+        "height": 1080,
+        "decorations": false,
+        "transparent": true,
+        "visible": false,
+        "skipTaskbar": true
       }
     ],
     "security": {
