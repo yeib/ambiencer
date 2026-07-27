@@ -233,7 +233,7 @@ export const App: React.FC = () => {
       }
     };
     const handleMouseAux = (e: MouseEvent) => {
-      const tabs: ActiveTab[] = ['mixer', 'generator', 'wallpapers', 'presets', 'widgets', 'settings'];
+      const tabs: ActiveTab[] = ['mixer', 'generator', 'presets', 'wallpapers', 'widgets', 'settings'];
       const idx = tabs.indexOf(activeTab);
       if (e.button === 3 && idx > 0) setActiveTab(tabs[idx - 1]);
       else if (e.button === 4 && idx < tabs.length - 1) setActiveTab(tabs[idx + 1]);
