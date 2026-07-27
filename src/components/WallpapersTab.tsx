@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Image, Sliders, Sparkles, CloudRain, Flame, Moon, Terminal, Download, Monitor, CheckCircle } from 'lucide-react';
+import { Image, Sliders, Sparkles, CloudRain, Flame, Moon, Terminal, Download, Monitor, CheckCircle, Play } from 'lucide-react';
 import { WallpaperState, WallpaperType, AppSettings } from '../types';
 import { getTranslation } from '../i18n';
 import { WallpaperEngine, generateWallpaperSnapshot } from './WallpaperEngine';
@@ -25,10 +25,9 @@ export const WallpapersTab: React.FC<WallpapersTabProps> = ({
     try {
       const dataUrl = generateWallpaperSnapshot(state.activeWallpaper, state.brightness, 1920, 1080);
       
-      // Dynamic import of Tauri invoke API
       const { invoke } = await import('@tauri-apps/api/core');
       const msg = await invoke<string>('set_desktop_wallpaper', { imageDataBase64: dataUrl });
-      setStatusMsg(msg || (lang === 'es' ? '¡Fondo de escritorio de Windows establecido con éxito! 🖥️✨' : 'Windows desktop wallpaper applied successfully! 🖥️✨'));
+      setStatusMsg(msg || (lang === 'es' ? '¡Fondo estático de Windows establecido con éxito! 🖥️✨' : 'Windows desktop wallpaper applied successfully! 🖥️✨'));
     } catch (err: any) {
       console.log('Web preview mode notice:', err);
       setStatusMsg(
@@ -42,11 +41,30 @@ export const WallpapersTab: React.FC<WallpapersTabProps> = ({
     }
   };
 
+  const handleAttachLiveDesktop = async () => {
+    setIsApplying(true);
+    setStatusMsg(null);
+    try {
+      const { invoke } = await import('@tauri-apps/api/core');
+      const msg = await invoke<string>('attach_live_wallpaper_to_desktop');
+      setStatusMsg(msg || (lang === 'es' ? '¡Live Wallpaper fijado en tiempo real a tu escritorio detras de tus iconos! 🎬✨' : 'Live Animated Wallpaper attached to Windows desktop! 🎬✨'));
+    } catch (err: any) {
+      console.log('Live desktop attach notice:', err);
+      setStatusMsg(
+        lang === 'es'
+          ? 'ℹ️ El acople Live Wallpaper a 60 FPS requiere la app nativa (npm run tauri dev)'
+          : 'ℹ️ Live 60 FPS desktop attach requires running native app (npm run tauri dev)'
+      );
+    } finally {
+      setIsApplying(false);
+      setTimeout(() => setStatusMsg(null), 6000);
+    }
+  };
+
   const handleDownloadWallpaperHD = async () => {
     const dataUrl = generateWallpaperSnapshot(state.activeWallpaper, state.brightness, 3840, 2160);
     const fileName = `ambiencer_wallpaper_${state.activeWallpaper}_4k.png`;
 
-    // Native Windows File Save Picker if supported
     if ('showSaveFilePicker' in window) {
       try {
         const handle = await (window as any).showSaveFilePicker({
@@ -65,11 +83,10 @@ export const WallpapersTab: React.FC<WallpapersTabProps> = ({
         setTimeout(() => setStatusMsg(null), 5000);
         return;
       } catch (err: any) {
-        if (err?.name === 'AbortError') return; // User cancelled save dialog
+        if (err?.name === 'AbortError') return;
       }
     }
 
-    // Fallback: Automatic download link
     const link = document.createElement('a');
     link.download = fileName;
     link.href = dataUrl;
@@ -164,7 +181,7 @@ export const WallpapersTab: React.FC<WallpapersTabProps> = ({
         })}
       </div>
 
-      {/* Windows Wallpaper Action & HD Export Card */}
+      {/* Windows Live Wallpaper Action & HD Export Card */}
       <div
         className="glass-panel"
         style={{
@@ -180,51 +197,74 @@ export const WallpapersTab: React.FC<WallpapersTabProps> = ({
           <div>
             <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#ffffff', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Monitor size={18} color="var(--accent-cyan)" />
-              <span>{lang === 'es' ? 'Establecer en Windows & Exportar HD' : 'Set as Windows Wallpaper & Export HD'}</span>
+              <span>{lang === 'es' ? 'Fondo de Pantalla de Windows (Live & Estático)' : 'Windows Wallpaper Controls (Live & Static)'}</span>
             </h3>
             <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
               {lang === 'es'
-                ? 'Aplica tu wallpaper personalizado directamente como fondo de pantalla en Windows o descárgalo en resolución 4K.'
-                : 'Apply your customized wallpaper directly as your Windows desktop background or export in 4K resolution.'}
+                ? 'Fija el wallpaper animado en vivo (60 FPS) detrás de tus iconos o establécelo como imagen estática.'
+                : 'Attach live 60 FPS animated wallpaper behind desktop icons or set as static image.'}
             </p>
           </div>
 
-          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-            {/* Set as Windows Wallpaper Button */}
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            {/* Live Desktop 60 FPS Wallpaper Button */}
             <button
-              onClick={handleSetWindowsWallpaper}
+              onClick={handleAttachLiveDesktop}
               disabled={isApplying}
               style={{
-                padding: '12px 20px',
+                padding: '12px 18px',
                 borderRadius: 'var(--radius-md)',
                 border: 'none',
-                background: 'linear-gradient(135deg, #38bdf8 0%, #0284c7 100%)',
-                color: '#090b10',
+                background: 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)',
+                color: '#ffffff',
                 fontWeight: 700,
-                fontSize: '0.88rem',
+                fontSize: '0.86rem',
                 cursor: isApplying ? 'wait' : 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                boxShadow: '0 0 20px rgba(56, 189, 248, 0.35)',
+                boxShadow: '0 0 20px rgba(168, 85, 247, 0.4)',
                 transition: 'all 0.2s'
               }}
             >
-              <Monitor size={17} />
-              <span>{isApplying ? (lang === 'es' ? 'Aplicando...' : 'Applying...') : (lang === 'es' ? 'Establecer como Fondo de Pantalla' : 'Set as Windows Wallpaper')}</span>
+              <Play size={16} fill="currentColor" />
+              <span>{lang === 'es' ? 'Fijar Live Wallpaper Animado (60 FPS)' : 'Attach Live Animated Wallpaper'}</span>
             </button>
 
-            {/* Download 4K PNG */}
+            {/* Set as Static Windows Wallpaper Button */}
+            <button
+              onClick={handleSetWindowsWallpaper}
+              disabled={isApplying}
+              style={{
+                padding: '12px 18px',
+                borderRadius: 'var(--radius-md)',
+                border: '1px solid rgba(56, 189, 248, 0.4)',
+                background: 'rgba(56, 189, 248, 0.12)',
+                color: 'var(--accent-cyan)',
+                fontWeight: 700,
+                fontSize: '0.86rem',
+                cursor: isApplying ? 'wait' : 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                transition: 'all 0.2s'
+              }}
+            >
+              <Monitor size={16} />
+              <span>{lang === 'es' ? 'Fondo Estático' : 'Static Background'}</span>
+            </button>
+
+            {/* Save 4K PNG */}
             <button
               onClick={handleDownloadWallpaperHD}
               style={{
-                padding: '12px 20px',
+                padding: '12px 18px',
                 borderRadius: 'var(--radius-md)',
                 border: '1px solid rgba(255, 255, 255, 0.15)',
                 background: 'rgba(255, 255, 255, 0.08)',
                 color: '#ffffff',
                 fontWeight: 600,
-                fontSize: '0.88rem',
+                fontSize: '0.86rem',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -232,8 +272,8 @@ export const WallpapersTab: React.FC<WallpapersTabProps> = ({
                 transition: 'all 0.2s'
               }}
             >
-              <Download size={17} />
-              <span>{lang === 'es' ? 'Guardar Imagen 4K PNG...' : 'Save 4K PNG Image...'}</span>
+              <Download size={16} />
+              <span>{lang === 'es' ? 'Guardar 4K PNG...' : 'Save 4K PNG...'}</span>
             </button>
           </div>
         </div>

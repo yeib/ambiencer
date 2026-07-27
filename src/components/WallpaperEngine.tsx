@@ -146,9 +146,15 @@ export const WallpaperEngine: React.FC<WallpaperEngineProps> = ({
         ctx.lineTo(0, height);
         ctx.fill();
 
-        // Stars render & twinkling
+        // Stars render & drifting twinkling
         particles.forEach((star) => {
           star.alpha += star.speed * speed;
+          star.y -= star.speed * 0.3 * speed;
+          star.x += Math.sin(star.alpha) * 0.4;
+          if (star.y < 0) {
+            star.y = height;
+            star.x = Math.random() * width;
+          }
           const a = (Math.sin(star.alpha) + 1) / 2;
           ctx.fillStyle = `rgba(255, 255, 255, ${a * 0.85 * brightness})`;
           ctx.beginPath();
