@@ -58,20 +58,7 @@ export const WindowsWallpaperCard: React.FC<WindowsWallpaperCardProps> = ({
     }
   };
 
-  const handleDetachLiveDesktop = async () => {
-    setIsApplying(true);
-    setStatusMsg(null);
-    try {
-      const { invoke } = await import('@tauri-apps/api/core');
-      const msg = await invoke<string>('detach_live_wallpaper_from_desktop');
-      setStatusMsg(msg || (lang === 'es' ? '¡Ambiencer restaurado al escritorio normal! 🖥️' : 'Ambiencer restored to desktop! 🖥️'));
-    } catch (err: any) {
-      console.log('Detach mode notice:', err);
-    } finally {
-      setIsApplying(false);
-      setTimeout(() => setStatusMsg(null), 5000);
-    }
-  };
+
 
   const handleDownloadWallpaperHD = async () => {
     const dataUrl = generateWallpaperSnapshot(state.activeWallpaper, state.brightness, 3840, 2160, 'image/png');
@@ -168,28 +155,6 @@ export const WindowsWallpaperCard: React.FC<WindowsWallpaperCardProps> = ({
         >
           <Play size={16} fill="currentColor" />
           <span>{lang === 'es' ? 'Fijar en Escritorio (Live 60 FPS)' : 'Attach to Desktop (Live 60 FPS)'}</span>
-        </button>
-
-        <button
-          onClick={handleDetachLiveDesktop}
-          disabled={isApplying}
-          style={{
-            padding: '12px 18px',
-            borderRadius: 'var(--radius-md)',
-            border: '1px solid rgba(168, 85, 247, 0.4)',
-            background: 'rgba(168, 85, 247, 0.12)',
-            color: '#d8b4fe',
-            fontWeight: 700,
-            fontSize: '0.86rem',
-            cursor: isApplying ? 'wait' : 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            transition: 'all 0.2s'
-          }}
-        >
-          <Monitor size={16} />
-          <span>{lang === 'es' ? 'Restaurar Ventana' : 'Restore Window'}</span>
         </button>
 
         <button

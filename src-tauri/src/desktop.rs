@@ -1,5 +1,6 @@
 #[cfg(target_os = "windows")]
 pub mod win32 {
+  #![allow(non_snake_case)]
   use std::ffi::OsStr;
   use std::os::windows::ffi::OsStrExt;
 
@@ -23,8 +24,8 @@ pub mod win32 {
       lpdwResult: *mut usize,
     ) -> isize;
     pub fn EnumWindows(
-      lpEnumFunc: extern "system" fn(hwnd: isize, lParam: isize) -> i32,
-      lParam: isize,
+      lpEnumFunc: extern "system" fn(hwnd: isize, l_param: isize) -> i32,
+      l_param: isize,
     ) -> i32;
     pub fn FindWindowExW(
       hwndParent: isize,
