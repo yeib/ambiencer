@@ -203,17 +203,65 @@ export const App: React.FC = () => {
     { id: 'breathwork', type: 'breathwork', enabled: false, position: { x: 0, y: 0 } },
   ]);
 
-  const [settings, setSettings] = useState<AppSettings>({
-    language: 'es',
-    themeAccent: '#38bdf8',
-    masterVolume: 0.8,
-    isMuted: false,
-    autoStartDesktop: false,
-    minimizeToTray: true,
-    closeToTray: true,
-    visualizerMode: 'bars',
-    highQualityAudio: true
+  const [settings, setSettings] = useState<AppSettings>(() => {
+    try {
+      const saved = localStorage.getItem('ambiencer_settings');
+      return saved ? {
+        language: 'es',
+        themeAccent: '#38bdf8',
+        masterVolume: 0.8,
+        isMuted: false,
+        autoStartDesktop: false,
+        minimizeToTray: true,
+        closeToTray: true,
+        visualizerMode: 'bars',
+        highQualityAudio: true,
+        startWithWindows: false,
+        autoLaunchLiveWallpaper: false,
+        ...JSON.parse(saved)
+      } : {
+        language: 'es',
+        themeAccent: '#38bdf8',
+        masterVolume: 0.8,
+        isMuted: false,
+        autoStartDesktop: false,
+        minimizeToTray: true,
+        closeToTray: true,
+        visualizerMode: 'bars',
+        highQualityAudio: true,
+        startWithWindows: false,
+        autoLaunchLiveWallpaper: false
+      };
+    } catch (e) {
+      return {
+        language: 'es',
+        themeAccent: '#38bdf8',
+        masterVolume: 0.8,
+        isMuted: false,
+        autoStartDesktop: false,
+        minimizeToTray: true,
+        closeToTray: true,
+        visualizerMode: 'bars',
+        highQualityAudio: true,
+        startWithWindows: false,
+        autoLaunchLiveWallpaper: false
+      };
+    }
   });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('ambiencer_settings', JSON.stringify(settings));
+    } catch (e) {}
+  }, [settings]);
+
+  useEffect(() => {
+    if (!window.location.search.includes('mode=wallpaper') && settings.autoLaunchLiveWallpaper) {
+      import('@tauri-apps/api/core').then(({ invoke }) => {
+        invoke('attach_live_wallpaper_to_desktop').catch(() => {});
+      });
+    }
+  }, []);
 
   const [isOmnibarOpen, setIsOmnibarOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);

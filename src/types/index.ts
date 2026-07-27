@@ -58,6 +58,8 @@ export interface AppSettings {
   closeToTray: boolean;
   visualizerMode: 'wave' | 'bars' | 'circle';
   highQualityAudio: boolean;
+  startWithWindows?: boolean;
+  autoLaunchLiveWallpaper?: boolean;
 }
 
 export type ActiveTab = 'mixer' | 'generator' | 'wallpapers' | 'presets' | 'widgets' | 'settings';

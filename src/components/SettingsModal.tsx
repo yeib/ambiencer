@@ -10,6 +10,46 @@ interface SettingsModalProps {
   onUpdateSettings: (newSettings: Partial<AppSettings>) => void;
 }
 
+const ToggleRow: React.FC<{
+  label: string;
+  desc: string;
+  checked: boolean;
+  onToggle: () => void;
+}> = ({ label, desc, checked, onToggle }) => (
+  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+    <div>
+      <div style={{ fontSize: '0.88rem', fontWeight: 600, color: '#ffffff' }}>{label}</div>
+      <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{desc}</div>
+    </div>
+    <button
+      onClick={onToggle}
+      style={{
+        width: '48px',
+        height: '26px',
+        borderRadius: '13px',
+        border: 'none',
+        background: checked ? 'var(--accent-cyan)' : 'rgba(255, 255, 255, 0.1)',
+        cursor: 'pointer',
+        position: 'relative',
+        transition: 'background 0.2s',
+      }}
+    >
+      <div
+        style={{
+          width: '20px',
+          height: '20px',
+          borderRadius: '50%',
+          background: '#ffffff',
+          position: 'absolute',
+          top: '3px',
+          left: checked ? '25px' : '3px',
+          transition: 'left 0.2s',
+        }}
+      />
+    </button>
+  </div>
+);
+
 export const SettingsModal: React.FC<SettingsModalProps> = ({
   isOpen,
   settings,
@@ -19,6 +59,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   if (!isOpen) return null;
 
   const lang = settings.language;
+
+  const handleToggleStartWithWindows = () => {
+    const nextVal = !settings.startWithWindows;
+    onUpdateSettings({ startWithWindows: nextVal });
+    import('@tauri-apps/api/core').then(({ invoke }) => {
+      invoke('set_start_with_windows', { enabled: nextVal }).catch(console.error);
+    });
+  };
 
   const accentColors = [
     { hex: '#38bdf8', key: 'colorCyan' },
@@ -43,169 +91,104 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               style={{
                 flex: 1,
                 padding: '12px',
-                borderRadius: 'var(--radius-sm)',
-                border: settings.language === 'es' ? 'var(--border-accent)' : 'var(--border-glass)',
-                background: settings.language === 'es' ? 'var(--accent-cyan-glow)' : 'rgba(255, 255, 255, 0.03)',
-                color: settings.language === 'es' ? 'var(--accent-cyan)' : 'var(--text-muted)',
-                fontSize: '0.88rem',
+                borderRadius: 'var(--radius-md)',
+                border: lang === 'es' ? '1px solid var(--accent-cyan)' : '1px solid var(--border-glass)',
+                background: lang === 'es' ? 'rgba(56, 189, 248, 0.15)' : 'rgba(255, 255, 255, 0.03)',
+                color: '#ffffff',
                 fontWeight: 600,
                 cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px'
               }}
             >
-              <span>🇪🇸 Español</span>
-              {settings.language === 'es' && <Check size={16} />}
+              Español
             </button>
-
             <button
               onClick={() => onUpdateSettings({ language: 'en' })}
               style={{
                 flex: 1,
                 padding: '12px',
-                borderRadius: 'var(--radius-sm)',
-                border: settings.language === 'en' ? 'var(--border-accent)' : 'var(--border-glass)',
-                background: settings.language === 'en' ? 'var(--accent-cyan-glow)' : 'rgba(255, 255, 255, 0.03)',
-                color: settings.language === 'en' ? 'var(--accent-cyan)' : 'var(--text-muted)',
-                fontSize: '0.88rem',
+                borderRadius: 'var(--radius-md)',
+                border: lang === 'en' ? '1px solid var(--accent-cyan)' : '1px solid var(--border-glass)',
+                background: lang === 'en' ? 'rgba(56, 189, 248, 0.15)' : 'rgba(255, 255, 255, 0.03)',
+                color: '#ffffff',
                 fontWeight: 600,
                 cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px'
               }}
             >
-              <span>🇺🇸 English</span>
-              {settings.language === 'en' && <Check size={16} />}
+              English
             </button>
           </div>
         </div>
 
-        {/* UI Theme Accent Color */}
+        {/* Theme Accent Selection */}
         <div className="glass-card" style={{ padding: '20px' }}>
           <h3 style={{ fontSize: '0.95rem', fontWeight: 600, color: '#ffffff', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Palette size={18} color="var(--accent-purple)" />
             <span>{getTranslation(lang, 'settingsAccent')}</span>
           </h3>
-          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-            {accentColors.map((col) => {
-              const isSelected = settings.themeAccent === col.hex;
-              const colorLabel = getTranslation(lang, col.key as any);
+          <div style={{ display: 'flex', gap: '12px' }}>
+            {accentColors.map((color) => {
+              const isSelected = settings.themeAccent === color.hex;
               return (
                 <button
-                  key={col.hex}
-                  onClick={() => onUpdateSettings({ themeAccent: col.hex })}
+                  key={color.hex}
+                  onClick={() => onUpdateSettings({ themeAccent: color.hex })}
                   style={{
+                    width: '42px',
+                    height: '42px',
+                    borderRadius: '50%',
+                    background: color.hex,
+                    border: 'none',
+                    cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '8px',
-                    padding: '8px 14px',
-                    borderRadius: 'var(--radius-full)',
-                    border: isSelected ? `2px solid ${col.hex}` : 'var(--border-glass)',
-                    background: isSelected ? `${col.hex}22` : 'rgba(255, 255, 255, 0.03)',
-                    color: isSelected ? '#ffffff' : 'var(--text-muted)',
-                    fontSize: '0.82rem',
-                    fontWeight: isSelected ? 600 : 400,
-                    cursor: 'pointer',
-                    transition: 'all 0.2s'
+                    justifyContent: 'center',
+                    boxShadow: isSelected ? `0 0 16px ${color.hex}` : 'none',
+                    transition: 'transform 0.2s, box-shadow 0.2s',
+                    transform: isSelected ? 'scale(1.1)' : 'scale(1)',
                   }}
                 >
-                  <span style={{ width: '12px', height: '12px', borderRadius: '50%', background: col.hex, display: 'inline-block' }} />
-                  <span>{colorLabel}</span>
+                  {isSelected && <Check size={20} color="#000000" strokeWidth={3} />}
                 </button>
               );
             })}
           </div>
         </div>
 
-        {/* System Tray Settings (Minimize to Tray & Close to Tray) */}
+        {/* System Tray Settings & Auto Start */}
         <div className="glass-card" style={{ padding: '20px' }}>
           <h3 style={{ fontSize: '0.95rem', fontWeight: 600, color: '#ffffff', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Monitor size={18} color="var(--accent-cyan)" />
             <span>{getTranslation(lang, 'settingsTrayHeader')}</span>
           </h3>
-          
+
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            {/* Minimize to Tray */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div>
-                <div style={{ fontSize: '0.88rem', fontWeight: 600, color: '#ffffff' }}>
-                  {getTranslation(lang, 'settingsMinimizeToTray')}
-                </div>
-                <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                  {lang === 'es' ? 'Al minimizar la ventana, se oculta en la bandeja al lado del reloj' : 'When minimizing, hide window into the tray next to clock'}
-                </div>
-              </div>
+            <ToggleRow
+              label={lang === 'es' ? 'Iniciar junto con Windows (Silencioso al System Tray)' : 'Start with Windows (Silently to System Tray)'}
+              desc={lang === 'es' ? 'La aplicación se ejecuta al iniciar sesión sin abrir la ventana principal' : 'Launch automatically on Windows login in background'}
+              checked={!!settings.startWithWindows}
+              onToggle={handleToggleStartWithWindows}
+            />
 
-              <button
-                onClick={() => onUpdateSettings({ minimizeToTray: !settings.minimizeToTray })}
-                style={{
-                  width: '48px',
-                  height: '26px',
-                  borderRadius: '13px',
-                  border: 'none',
-                  background: settings.minimizeToTray ? 'var(--accent-cyan)' : 'rgba(255, 255, 255, 0.1)',
-                  cursor: 'pointer',
-                  position: 'relative',
-                  transition: 'background 0.2s'
-                }}
-              >
-                <div
-                  style={{
-                    width: '20px',
-                    height: '20px',
-                    borderRadius: '50%',
-                    background: '#ffffff',
-                    position: 'absolute',
-                    top: '3px',
-                    left: settings.minimizeToTray ? '25px' : '3px',
-                    transition: 'left 0.2s'
-                  }}
-                />
-              </button>
-            </div>
+            <ToggleRow
+              label={lang === 'es' ? 'Restaurar Live Wallpaper automáticamente al iniciar' : 'Auto-attach Live Wallpaper on startup'}
+              desc={lang === 'es' ? 'Monta automáticamente el fondo animado a 60 FPS en el escritorio al abrir' : 'Automatically attach 60 FPS animated background when app starts'}
+              checked={!!settings.autoLaunchLiveWallpaper}
+              onToggle={() => onUpdateSettings({ autoLaunchLiveWallpaper: !settings.autoLaunchLiveWallpaper })}
+            />
 
-            {/* Close to Tray */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div>
-                <div style={{ fontSize: '0.88rem', fontWeight: 600, color: '#ffffff' }}>
-                  {getTranslation(lang, 'settingsCloseToTray')}
-                </div>
-                <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                  {lang === 'es' ? 'Al hacer clic en X, la app sigue sonando en segundo plano en la bandeja' : 'Clicking X keeps app running and playing in the tray'}
-                </div>
-              </div>
+            <ToggleRow
+              label={getTranslation(lang, 'settingsMinimizeToTray')}
+              desc={lang === 'es' ? 'Al minimizar la ventana, se oculta en la bandeja al lado del reloj' : 'When minimizing, hide window into the tray next to clock'}
+              checked={!!settings.minimizeToTray}
+              onToggle={() => onUpdateSettings({ minimizeToTray: !settings.minimizeToTray })}
+            />
 
-              <button
-                onClick={() => onUpdateSettings({ closeToTray: !settings.closeToTray })}
-                style={{
-                  width: '48px',
-                  height: '26px',
-                  borderRadius: '13px',
-                  border: 'none',
-                  background: settings.closeToTray ? 'var(--accent-cyan)' : 'rgba(255, 255, 255, 0.1)',
-                  cursor: 'pointer',
-                  position: 'relative',
-                  transition: 'background 0.2s'
-                }}
-              >
-                <div
-                  style={{
-                    width: '20px',
-                    height: '20px',
-                    borderRadius: '50%',
-                    background: '#ffffff',
-                    position: 'absolute',
-                    top: '3px',
-                    left: settings.closeToTray ? '25px' : '3px',
-                    transition: 'left 0.2s'
-                  }}
-                />
-              </button>
-            </div>
+            <ToggleRow
+              label={getTranslation(lang, 'settingsCloseToTray')}
+              desc={lang === 'es' ? 'Al hacer clic en X, la app sigue sonando en segundo plano en la bandeja' : 'Clicking X keeps app running and playing in the tray'}
+              checked={!!settings.closeToTray}
+              onToggle={() => onUpdateSettings({ closeToTray: !settings.closeToTray })}
+            />
           </div>
         </div>
 

@@ -209,3 +209,42 @@ pub fn detach_live_wallpaper_from_desktop(app: tauri::AppHandle) -> Result<Strin
   }
   Ok("¡Live Wallpaper detenido y escritorio normal restaurado! 🖥️".into())
 }
+
+#[tauri::command]
+pub fn set_start_with_windows(enabled: bool) -> Result<String, String> {
+  #[cfg(target_os = "windows")]
+  {
+    use std::process::Command;
+    let exe_path = match std::env::current_exe() {
+      Ok(p) => p.to_string_lossy().to_string(),
+      Err(e) => return Err(format!("Error obteniendo ruta: {}", e)),
+    };
+
+    if enabled {
+      let _ = Command::new("reg")
+        .args([
+          "add",
+          "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
+          "/v",
+          "Ambiencer",
+          "/t",
+          "REG_SZ",
+          "/d",
+          &format!("\"{}\" --autostart", exe_path),
+          "/f",
+        ])
+        .output();
+    } else {
+      let _ = Command::new("reg")
+        .args([
+          "delete",
+          "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
+          "/v",
+          "Ambiencer",
+          "/f",
+        ])
+        .output();
+    }
+  }
+  Ok("Inicio con Windows actualizado con éxito".into())
+}

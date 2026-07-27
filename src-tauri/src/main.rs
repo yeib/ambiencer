@@ -47,9 +47,17 @@ fn main() {
       toggle_main_window,
       desktop::set_desktop_wallpaper,
       desktop::attach_live_wallpaper_to_desktop,
-      desktop::detach_live_wallpaper_from_desktop
+      desktop::detach_live_wallpaper_from_desktop,
+      desktop::set_start_with_windows
     ])
     .setup(|app| {
+      let args: Vec<String> = std::env::args().collect();
+      if args.iter().any(|arg| arg == "--autostart") {
+        if let Some(main_win) = app.get_webview_window("main") {
+          let _ = main_win.hide();
+        }
+      }
+
       let quit_i = MenuItem::with_id(app, "quit", "Salir de Ambiencer", true, None::<&str>)?;
       let show_i = MenuItem::with_id(app, "show", "Mostrar / Ocultar Ambiencer", true, None::<&str>)?;
       let menu = Menu::with_items(app, &[&show_i, &quit_i])?;
