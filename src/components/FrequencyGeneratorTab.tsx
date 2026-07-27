@@ -39,12 +39,10 @@ export const FrequencyGeneratorTab: React.FC<FrequencyGeneratorTabProps> = ({
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
         <div>
           <h2 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#ffffff', marginBottom: '4px' }}>
-            🔮 Sintetizador de Frecuencias Solfeggio & Pulsos Binaurales
+            {getTranslation(lang, 'synthTitle')}
           </h2>
           <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-            {lang === 'es'
-              ? 'Generador de precisión en tiempo real de ondas binaurales, formas de onda y frecuencias sagradas.'
-              : 'Real-time precision generator of binaural beats, custom waveforms, and Solfeggio frequencies.'}
+            {getTranslation(lang, 'synthDesc')}
           </p>
         </div>
 
@@ -68,7 +66,7 @@ export const FrequencyGeneratorTab: React.FC<FrequencyGeneratorTabProps> = ({
           }}
         >
           <Sparkles size={16} />
-          <span>{state.enabled ? (lang === 'es' ? 'Sintetizador Activo' : 'Synth Active') : (lang === 'es' ? 'Activar Frecuencias' : 'Enable Frequencies')}</span>
+          <span>{state.enabled ? getTranslation(lang, 'synthActive') : getTranslation(lang, 'synthEnable')}</span>
         </button>
       </div>
 
@@ -76,7 +74,7 @@ export const FrequencyGeneratorTab: React.FC<FrequencyGeneratorTabProps> = ({
       <div className="glass-card" style={{ padding: '16px' }}>
         <h3 style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--accent-purple)', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
           <Sparkles size={16} />
-          <span>1. Frecuencias Sagradas Solfeggio (Portadora Base)</span>
+          <span>{getTranslation(lang, 'carrierTitle')}</span>
         </h3>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(170px, 1fr))', gap: '10px' }}>
           {solfeggioFrequencies.map((f) => {
@@ -114,7 +112,7 @@ export const FrequencyGeneratorTab: React.FC<FrequencyGeneratorTabProps> = ({
         <div className="glass-card" style={{ padding: '18px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <h3 style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '6px' }}>
             <Activity size={16} />
-            <span>2. Modo de Generación</span>
+            <span>{getTranslation(lang, 'modeTitle')}</span>
           </h3>
           <div style={{ display: 'flex', gap: '8px' }}>
             <button
@@ -131,7 +129,7 @@ export const FrequencyGeneratorTab: React.FC<FrequencyGeneratorTabProps> = ({
                 cursor: 'pointer'
               }}
             >
-              Frecuencia Pura
+              {getTranslation(lang, 'modePure')}
             </button>
             <button
               onClick={() => onChangeState({ mode: 'binaural' })}
@@ -147,7 +145,7 @@ export const FrequencyGeneratorTab: React.FC<FrequencyGeneratorTabProps> = ({
                 cursor: 'pointer'
               }}
             >
-              Pulsos Binaurales
+              {getTranslation(lang, 'modeBinaural')}
             </button>
           </div>
         </div>
@@ -155,7 +153,7 @@ export const FrequencyGeneratorTab: React.FC<FrequencyGeneratorTabProps> = ({
         {/* Waveform Selector */}
         <div className="glass-card" style={{ padding: '18px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <h3 style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-main)' }}>
-            3. Forma de Onda (Waveform)
+            {getTranslation(lang, 'waveformTitle')}
           </h3>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px' }}>
             {(['sine', 'triangle', 'sawtooth', 'square'] as const).map((wave) => (
@@ -174,20 +172,26 @@ export const FrequencyGeneratorTab: React.FC<FrequencyGeneratorTabProps> = ({
                   textTransform: 'capitalize'
                 }}
               >
-                {wave === 'sine' ? 'Seno' : wave === 'triangle' ? 'Triángulo' : wave === 'sawtooth' ? 'Sierra' : 'Cuadrada'}
+                {wave === 'sine'
+                  ? (lang === 'es' ? 'Seno' : 'Sine')
+                  : wave === 'triangle'
+                  ? (lang === 'es' ? 'Triángulo' : 'Triangle')
+                  : wave === 'sawtooth'
+                  ? (lang === 'es' ? 'Sierra' : 'Saw')
+                  : (lang === 'es' ? 'Cuadrada' : 'Square')}
               </button>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Binaural Beat Control Panel (Only active when mode === 'binaural') */}
+      {/* Binaural Beat Control Panel */}
       {state.mode === 'binaural' && (
         <div className="glass-card" style={{ padding: '18px', display: 'flex', flexDirection: 'column', gap: '16px', border: '1px solid var(--accent-purple)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--accent-purple)', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <Zap size={18} />
-              <span>4. Frecuencia de Desfase Binaural (Ondas Cerebrales)</span>
+              <span>{getTranslation(lang, 'binauralTitle')}</span>
             </h3>
             <span style={{ fontSize: '1rem', fontWeight: 800, color: '#ffffff' }}>{state.beatFreq.toFixed(1)} Hz</span>
           </div>
@@ -233,12 +237,12 @@ export const FrequencyGeneratorTab: React.FC<FrequencyGeneratorTabProps> = ({
         </div>
       )}
 
-      {/* Sliders Grid (Carrier Frequency & Volume & Lowpass Filter) */}
+      {/* Sliders Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
         {/* Carrier Frequency Slider */}
         <div className="glass-card" style={{ padding: '18px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-main)' }}>Frecuencia Portadora Manual</h3>
+            <h3 style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-main)' }}>{getTranslation(lang, 'manualCarrier')}</h3>
             <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--accent-cyan)' }}>{state.carrierFreq} Hz</span>
           </div>
           <input
@@ -254,7 +258,7 @@ export const FrequencyGeneratorTab: React.FC<FrequencyGeneratorTabProps> = ({
         {/* Volume */}
         <div className="glass-card" style={{ padding: '18px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-main)' }}>Volumen de Frecuencia</h3>
+            <h3 style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-main)' }}>{getTranslation(lang, 'freqVolume')}</h3>
             <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--accent-purple)' }}>{Math.round(state.volume * 100)}%</span>
           </div>
           <input
@@ -270,7 +274,7 @@ export const FrequencyGeneratorTab: React.FC<FrequencyGeneratorTabProps> = ({
         {/* Lowpass Filter Smooth Cutoff */}
         <div className="glass-card" style={{ padding: '18px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-main)' }}>Filtro Paso Bajo (Suavizado)</h3>
+            <h3 style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-main)' }}>{getTranslation(lang, 'lowpassFilter')}</h3>
             <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--accent-amber)' }}>{state.smoothFilter} Hz</span>
           </div>
           <input

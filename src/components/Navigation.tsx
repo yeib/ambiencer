@@ -14,12 +14,12 @@ export const Navigation: React.FC<NavigationProps> = ({ activeTab, settings, onT
 
   const audioTabs: { id: ActiveTab; label: string; icon: React.ReactNode }[] = [
     { id: 'mixer', label: getTranslation(lang, 'tabMixer'), icon: <Sliders size={17} /> },
-    { id: 'generator', label: lang === 'es' ? 'Frecuencias & Solfeggio' : 'Frequencies & Solfeggio', icon: <Activity size={17} /> },
+    { id: 'generator', label: getTranslation(lang, 'tabGenerator'), icon: <Activity size={17} /> },
     { id: 'presets', label: getTranslation(lang, 'tabPresets'), icon: <Sparkles size={17} /> },
   ];
 
   const visualTabs: { id: ActiveTab; label: string; icon: React.ReactNode }[] = [
-    { id: 'wallpapers', label: lang === 'es' ? 'Wallpapers Ambientales' : 'Ambient Wallpapers', icon: <Image size={17} /> },
+    { id: 'wallpapers', label: getTranslation(lang, 'tabWallpapers'), icon: <Image size={17} /> },
     { id: 'widgets', label: getTranslation(lang, 'tabWidgets'), icon: <Layout size={17} /> },
   ];
 
