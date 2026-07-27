@@ -237,7 +237,8 @@ export function generateWallpaperSnapshot(
   type: WallpaperType,
   brightness: number = 1.0,
   width: number = 1920,
-  height: number = 1080
+  height: number = 1080,
+  format: 'image/png' | 'image/jpeg' = 'image/jpeg'
 ): string {
   const canvas = document.createElement('canvas');
   canvas.width = width;
@@ -338,6 +339,6 @@ export function generateWallpaperSnapshot(
     }
   }
 
-  return canvas.toDataURL('image/png');
+  return canvas.toDataURL(format, 0.95);
 }
 

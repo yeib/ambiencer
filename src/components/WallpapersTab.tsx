@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Image, Sliders, Sparkles, CloudRain, Flame, Moon, Terminal, Download, Monitor, CheckCircle, Play } from 'lucide-react';
+import { Image, Sliders, Sparkles, CloudRain, Flame, Moon, Terminal, Download, Monitor, CheckCircle, Maximize } from 'lucide-react';
 import { WallpaperState, WallpaperType, AppSettings } from '../types';
 import { getTranslation } from '../i18n';
 import { WallpaperEngine, generateWallpaperSnapshot } from './WallpaperEngine';
@@ -23,7 +23,7 @@ export const WallpapersTab: React.FC<WallpapersTabProps> = ({
     setIsApplying(true);
     setStatusMsg(null);
     try {
-      const dataUrl = generateWallpaperSnapshot(state.activeWallpaper, state.brightness, 1920, 1080);
+      const dataUrl = generateWallpaperSnapshot(state.activeWallpaper, state.brightness, 1920, 1080, 'image/jpeg');
       
       const { invoke } = await import('@tauri-apps/api/core');
       const msg = await invoke<string>('set_desktop_wallpaper', { imageDataBase64: dataUrl });
@@ -41,19 +41,19 @@ export const WallpapersTab: React.FC<WallpapersTabProps> = ({
     }
   };
 
-  const handleAttachLiveDesktop = async () => {
+  const handleToggleAmbientMode = async () => {
     setIsApplying(true);
     setStatusMsg(null);
     try {
       const { invoke } = await import('@tauri-apps/api/core');
-      const msg = await invoke<string>('attach_live_wallpaper_to_desktop');
-      setStatusMsg(msg || (lang === 'es' ? '¡Live Wallpaper fijado en tiempo real a tu escritorio detras de tus iconos! 🎬✨' : 'Live Animated Wallpaper attached to Windows desktop! 🎬✨'));
+      const msg = await invoke<string>('toggle_ambient_fullscreen_mode');
+      setStatusMsg(msg || (lang === 'es' ? '¡Modo Live Ambient 60 FPS activado! (Presiona Esc para restaurar)' : 'Live 60 FPS Ambient Mode active! (Press Esc to restore)'));
     } catch (err: any) {
-      console.log('Live desktop attach notice:', err);
+      console.log('Ambient mode toggle notice:', err);
       setStatusMsg(
         lang === 'es'
-          ? 'ℹ️ El acople Live Wallpaper a 60 FPS requiere la app nativa (npm run tauri dev)'
-          : 'ℹ️ Live 60 FPS desktop attach requires running native app (npm run tauri dev)'
+          ? 'ℹ️ El modo Live Ambient 60 FPS requiere ejecutar en app nativa (npm run tauri dev)'
+          : 'ℹ️ Live 60 FPS Ambient Mode requires running native app (npm run tauri dev)'
       );
     } finally {
       setIsApplying(false);
@@ -62,7 +62,7 @@ export const WallpapersTab: React.FC<WallpapersTabProps> = ({
   };
 
   const handleDownloadWallpaperHD = async () => {
-    const dataUrl = generateWallpaperSnapshot(state.activeWallpaper, state.brightness, 3840, 2160);
+    const dataUrl = generateWallpaperSnapshot(state.activeWallpaper, state.brightness, 3840, 2160, 'image/png');
     const fileName = `ambiencer_wallpaper_${state.activeWallpaper}_4k.png`;
 
     if ('showSaveFilePicker' in window) {
@@ -201,15 +201,15 @@ export const WallpapersTab: React.FC<WallpapersTabProps> = ({
             </h3>
             <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
               {lang === 'es'
-                ? 'Fija el wallpaper animado en vivo (60 FPS) detrás de tus iconos o establécelo como imagen estática.'
-                : 'Attach live 60 FPS animated wallpaper behind desktop icons or set as static image.'}
+                ? 'Activa el modo Live Ambient (60 FPS) a pantalla completa o establece la imagen como fondo de Windows.'
+                : 'Toggle live 60 FPS Ambient mode full screen or set image as Windows background.'}
             </p>
           </div>
 
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-            {/* Live Desktop 60 FPS Wallpaper Button */}
+            {/* Live Desktop 60 FPS Mode Button */}
             <button
-              onClick={handleAttachLiveDesktop}
+              onClick={handleToggleAmbientMode}
               disabled={isApplying}
               style={{
                 padding: '12px 18px',
@@ -227,8 +227,8 @@ export const WallpapersTab: React.FC<WallpapersTabProps> = ({
                 transition: 'all 0.2s'
               }}
             >
-              <Play size={16} fill="currentColor" />
-              <span>{lang === 'es' ? 'Fijar Live Wallpaper Animado (60 FPS)' : 'Attach Live Animated Wallpaper'}</span>
+              <Maximize size={16} />
+              <span>{lang === 'es' ? 'Modo Live Ambient 60 FPS' : 'Live Ambient 60 FPS Mode'}</span>
             </button>
 
             {/* Set as Static Windows Wallpaper Button */}
@@ -251,7 +251,7 @@ export const WallpapersTab: React.FC<WallpapersTabProps> = ({
               }}
             >
               <Monitor size={16} />
-              <span>{lang === 'es' ? 'Fondo Estático' : 'Static Background'}</span>
+              <span>{lang === 'es' ? 'Fondo Estático Windows' : 'Set Windows Wallpaper'}</span>
             </button>
 
             {/* Save 4K PNG */}
