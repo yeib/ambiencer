@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-import { Clock, Disc, Cpu, StickyNote, Quote, Sparkles, Monitor, MapPin, SlidersHorizontal, ChevronDown, ChevronUp } from 'lucide-react';
+import { Clock, Cpu, StickyNote, Sparkles, Monitor, MapPin, SlidersHorizontal, ChevronDown, ChevronUp, Plus, Trash2 } from 'lucide-react';
 import { ClockWidget } from './widgets/ClockWidget';
-import { NowPlayingWidget } from './widgets/NowPlayingWidget';
 import { SysMonitorWidget } from './widgets/SysMonitorWidget';
 import { PostItWidget } from './widgets/PostItWidget';
-import { QuotesWidget } from './widgets/QuotesWidget';
 import { AppSettings, WidgetState, WidgetSettings } from '../types';
 import { getTranslation } from '../i18n';
 
@@ -15,6 +13,8 @@ interface WidgetsTabProps {
   onToggleDesktopWidget: (id: string) => void;
   onUpdateWidgetPosition: (id: string, pos: { x: number; y: number }) => void;
   onUpdateWidgetSettings: (id: string, settings: Partial<WidgetSettings>) => void;
+  onAddPostItWidget: () => void;
+  onDeleteWidget: (id: string) => void;
 }
 
 export const WidgetsTab: React.FC<WidgetsTabProps> = ({
@@ -24,31 +24,27 @@ export const WidgetsTab: React.FC<WidgetsTabProps> = ({
   onToggleDesktopWidget,
   onUpdateWidgetPosition,
   onUpdateWidgetSettings,
+  onAddPostItWidget,
+  onDeleteWidget,
 }) => {
   const lang = settings.language;
   const isEs = lang === 'es';
-
-  // Expand state for editing panel per widget
   const [expandedEditId, setExpandedEditId] = useState<string | null>(null);
 
-  const getWidgetTitle = (type: string) => {
-    switch (type) {
+  const getWidgetTitle = (w: WidgetState) => {
+    switch (w.type) {
       case 'clock': return getTranslation(lang, 'widgetClock');
-      case 'nowplaying': return isEs ? 'Reproductor Ambiental' : 'Ambient Player Status';
-      case 'sysmonitor': return getTranslation(lang, 'widgetSysMonitor');
-      case 'postit': return isEs ? 'Notas & Objetivos Rápidos' : 'Quick Notes & Goals';
-      case 'quotes': return isEs ? 'Frase & Enfoque Diario' : 'Daily Focus Quote';
-      default: return type;
+      case 'sysmonitor': return isEs ? 'Monitor de Hardware Real (RAM / CPU / Temp / Discos)' : 'Real Hardware Monitor (RAM / CPU / Temp / Disks)';
+      case 'postit': return isEs ? `Meta & Recordatorio del Día (${w.id.replace('postit_', 'N°')})` : `Daily Goal & Focus Target (${w.id})`;
+      default: return w.type;
     }
   };
 
   const getWidgetIcon = (type: string) => {
     switch (type) {
       case 'clock': return <Clock size={20} />;
-      case 'nowplaying': return <Disc size={20} />;
       case 'sysmonitor': return <Cpu size={20} />;
       case 'postit': return <StickyNote size={20} />;
-      case 'quotes': return <Quote size={20} />;
       default: return <Clock size={20} />;
     }
   };
@@ -56,10 +52,8 @@ export const WidgetsTab: React.FC<WidgetsTabProps> = ({
   const renderWidgetPreview = (w: WidgetState) => {
     switch (w.type) {
       case 'clock': return <ClockWidget settings={settings} widgetSettings={w.settings} />;
-      case 'nowplaying': return <NowPlayingWidget settings={settings} widgetSettings={w.settings} />;
       case 'sysmonitor': return <SysMonitorWidget settings={settings} widgetSettings={w.settings} />;
       case 'postit': return <PostItWidget settings={settings} widgetSettings={w.settings} />;
-      case 'quotes': return <QuotesWidget settings={settings} widgetSettings={w.settings} />;
       default: return null;
     }
   };
@@ -91,15 +85,36 @@ export const WidgetsTab: React.FC<WidgetsTabProps> = ({
 
   return (
     <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      <div>
-        <h2 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#ffffff', marginBottom: '4px' }}>
-          ✨ {getTranslation(lang, 'tabWidgets')}
-        </h2>
-        <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-          {isEs
-            ? 'Widgets flotantes personalizables para probar en tiempo real o fijar limpiamente en tu escritorio de Windows.'
-            : 'Customizable floating widgets to test in-app or pin cleanly to your Windows desktop.'}
-        </p>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div>
+          <h2 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#ffffff', marginBottom: '4px' }}>
+            ✨ {getTranslation(lang, 'tabWidgets')}
+          </h2>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+            {isEs
+              ? 'Widgets flotantes personalizables para probar en tiempo real o fijar limpiamente en tu escritorio de Windows.'
+              : 'Customizable floating widgets to test in-app or pin cleanly to your Windows desktop.'}
+          </p>
+        </div>
+
+        {/* Add Extra Post-It Button */}
+        <button
+          onClick={onAddPostItWidget}
+          className="btn-primary-glow"
+          style={{
+            padding: '8px 14px',
+            borderRadius: 'var(--radius-md)',
+            fontSize: '0.8rem',
+            fontWeight: 600,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            cursor: 'pointer'
+          }}
+        >
+          <Plus size={16} />
+          <span>{isEs ? 'Agregar Nota / Meta' : 'Add Note / Goal'}</span>
+        </button>
       </div>
 
       {/* Instructional Banner */}
@@ -107,14 +122,14 @@ export const WidgetsTab: React.FC<WidgetsTabProps> = ({
         <Sparkles size={24} color="var(--accent-cyan)" style={{ flexShrink: 0 }} />
         <div style={{ fontSize: '0.84rem', color: 'var(--text-muted)', lineHeight: '1.5' }}>
           <strong style={{ color: '#ffffff' }}>
-            {isEs ? '💡 Dos Modos de Uso + Personalización Completa:' : '💡 Two Modes + Full Customization:'}
+            {isEs ? '💡 Suite de Widgets Esenciales para tu Escritorio:' : '💡 Essential Desktop Widget Suite:'}
           </strong>
           <br />
-          • <strong style={{ color: '#c084fc' }}>{isEs ? '🧪 Probar en App:' : '🧪 Test in App:'}</strong> {isEs ? 'Abre el widget flotante dentro de esta ventana para probarlo y moverlo.' : 'Opens floating widget inside this window to drag and test.'}
+          • <strong style={{ color: '#c084fc' }}>{isEs ? '🧪 Probar en App:' : '🧪 Test in App:'}</strong> {isEs ? 'Abre el widget flotante con marco dentro de esta ventana para probarlo y moverlo.' : 'Opens floating widget inside this window to drag and test.'}
           <br />
-          • <strong style={{ color: 'var(--accent-cyan)' }}>{isEs ? '🖥️ Fijar en Escritorio:' : '🖥️ Pin to Desktop:'}</strong> {isEs ? 'Fija el widget 100% limpio y sin marcos sobre tu fondo de Windows.' : 'Pins clean widget onto your desktop background.'}
+          • <strong style={{ color: 'var(--accent-cyan)' }}>{isEs ? '🖥️ Fijar en Escritorio:' : '🖥️ Pin to Desktop:'}</strong> {isEs ? 'Fija el widget 100% transparente sin marcos molestos sobre tu fondo de Windows.' : 'Pins clean widget onto your desktop background.'}
           <br />
-          • <strong style={{ color: 'var(--accent-amber)' }}>{isEs ? '⚙️ Personalizar:' : '⚙️ Customize:'}</strong> {isEs ? 'Haz clic en "Personalizar" en cualquier widget para editar sus textos, tamaños, colores o métricas.' : 'Click "Customize" on any widget to edit texts, sizes, colors or metrics.'}
+          • <strong style={{ color: 'var(--accent-amber)' }}>{isEs ? '⚙️ Personalizar:' : '⚙️ Customize:'}</strong> {isEs ? 'Cambia el estilo de reloj (Digital o Analógico), detecta tus discos (C:, D:) o agrega múltiples notas de colores.' : 'Switch clock style (Digital vs Analog), detect all drives (C:, D:) or add multiple colored notes.'}
         </div>
       </div>
 
@@ -124,6 +139,7 @@ export const WidgetsTab: React.FC<WidgetsTabProps> = ({
           const isDesktopActive = !!(w.desktopActive || w.enabled);
           const isTestActive = !!w.testActive;
           const isExpanded = expandedEditId === w.id;
+          const isExtraPostIt = w.type === 'postit' && w.id !== 'postit';
 
           return (
             <div
@@ -157,30 +173,53 @@ export const WidgetsTab: React.FC<WidgetsTabProps> = ({
                     {getWidgetIcon(w.type)}
                   </div>
                   <h3 style={{ fontSize: '0.95rem', fontWeight: 600, color: (isDesktopActive || isTestActive) ? '#ffffff' : 'var(--text-main)' }}>
-                    {getWidgetTitle(w.type)}
+                    {getWidgetTitle(w)}
                   </h3>
                 </div>
 
-                {/* Expand Edit Options Button */}
-                <button
-                  onClick={() => setExpandedEditId(isExpanded ? null : w.id)}
-                  style={{
-                    background: isExpanded ? 'rgba(255, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.05)',
-                    border: 'var(--border-glass)',
-                    borderRadius: 'var(--radius-sm)',
-                    color: isExpanded ? '#ffffff' : 'var(--text-muted)',
-                    fontSize: '0.75rem',
-                    padding: '4px 8px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <SlidersHorizontal size={13} />
-                  <span>{isEs ? 'Personalizar' : 'Customize'}</span>
-                  {isExpanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
-                </button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  {/* Expand Edit Options Button */}
+                  <button
+                    onClick={() => setExpandedEditId(isExpanded ? null : w.id)}
+                    style={{
+                      background: isExpanded ? 'rgba(255, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.05)',
+                      border: 'var(--border-glass)',
+                      borderRadius: 'var(--radius-sm)',
+                      color: isExpanded ? '#ffffff' : 'var(--text-muted)',
+                      fontSize: '0.75rem',
+                      padding: '4px 8px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <SlidersHorizontal size={13} />
+                    <span>{isEs ? 'Personalizar' : 'Customize'}</span>
+                    {isExpanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+                  </button>
+
+                  {/* Delete Extra Post-It Button */}
+                  {isExtraPostIt && (
+                    <button
+                      onClick={() => onDeleteWidget(w.id)}
+                      title={isEs ? 'Eliminar este Post-It' : 'Delete this note'}
+                      style={{
+                        background: 'rgba(244, 63, 94, 0.15)',
+                        border: '1px solid rgba(244, 63, 94, 0.3)',
+                        borderRadius: 'var(--radius-sm)',
+                        color: '#fb7185',
+                        padding: '4px 6px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  )}
+                </div>
               </div>
 
               {/* Expandable Custom Settings Panel */}
@@ -199,21 +238,37 @@ export const WidgetsTab: React.FC<WidgetsTabProps> = ({
                   {w.type === 'clock' && (
                     <>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span>{isEs ? 'Formato de hora:' : 'Time format:'}</span>
+                        <span>{isEs ? 'Estilo de reloj:' : 'Clock style:'}</span>
                         <div style={{ display: 'flex', gap: '6px' }}>
                           <button
-                            onClick={() => onUpdateWidgetSettings(w.id, { clockFormat: '24h' })}
-                            style={{ padding: '3px 8px', borderRadius: '4px', background: (w.settings?.clockFormat || '24h') === '24h' ? 'var(--accent-cyan)' : 'rgba(255,255,255,0.06)', color: (w.settings?.clockFormat || '24h') === '24h' ? '#000' : '#fff', border: 'none', cursor: 'pointer', fontWeight: 600 }}
-                          >24H</button>
+                            onClick={() => onUpdateWidgetSettings(w.id, { clockStyle: 'digital' })}
+                            style={{ padding: '3px 8px', borderRadius: '4px', background: (w.settings?.clockStyle || 'digital') === 'digital' ? 'var(--accent-cyan)' : 'rgba(255,255,255,0.06)', color: (w.settings?.clockStyle || 'digital') === 'digital' ? '#000' : '#fff', border: 'none', cursor: 'pointer', fontWeight: 600 }}
+                          >Digital</button>
                           <button
-                            onClick={() => onUpdateWidgetSettings(w.id, { clockFormat: '12h' })}
-                            style={{ padding: '3px 8px', borderRadius: '4px', background: w.settings?.clockFormat === '12h' ? 'var(--accent-cyan)' : 'rgba(255,255,255,0.06)', color: w.settings?.clockFormat === '12h' ? '#000' : '#fff', border: 'none', cursor: 'pointer', fontWeight: 600 }}
-                          >12H</button>
+                            onClick={() => onUpdateWidgetSettings(w.id, { clockStyle: 'analog' })}
+                            style={{ padding: '3px 8px', borderRadius: '4px', background: w.settings?.clockStyle === 'analog' ? 'var(--accent-cyan)' : 'rgba(255,255,255,0.06)', color: w.settings?.clockStyle === 'analog' ? '#000' : '#fff', border: 'none', cursor: 'pointer', fontWeight: 600 }}
+                          >Analógico</button>
                         </div>
                       </div>
 
+                      {w.settings?.clockStyle !== 'analog' && (
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span>{isEs ? 'Formato de hora:' : 'Time format:'}</span>
+                          <div style={{ display: 'flex', gap: '6px' }}>
+                            <button
+                              onClick={() => onUpdateWidgetSettings(w.id, { clockFormat: '24h' })}
+                              style={{ padding: '3px 8px', borderRadius: '4px', background: (w.settings?.clockFormat || '24h') === '24h' ? 'var(--accent-cyan)' : 'rgba(255,255,255,0.06)', color: (w.settings?.clockFormat || '24h') === '24h' ? '#000' : '#fff', border: 'none', cursor: 'pointer', fontWeight: 600 }}
+                            >24H</button>
+                            <button
+                              onClick={() => onUpdateWidgetSettings(w.id, { clockFormat: '12h' })}
+                              style={{ padding: '3px 8px', borderRadius: '4px', background: w.settings?.clockFormat === '12h' ? 'var(--accent-cyan)' : 'rgba(255,255,255,0.06)', color: w.settings?.clockFormat === '12h' ? '#000' : '#fff', border: 'none', cursor: 'pointer', fontWeight: 600 }}
+                            >12H</button>
+                          </div>
+                        </div>
+                      )}
+
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span>{isEs ? 'Tamaño del texto:' : 'Clock size:'}</span>
+                        <span>{isEs ? 'Tamaño del reloj:' : 'Clock size:'}</span>
                         <div style={{ display: 'flex', gap: '6px' }}>
                           {(['sm', 'md', 'lg'] as const).map((sz) => (
                             <button
@@ -249,7 +304,7 @@ export const WidgetsTab: React.FC<WidgetsTabProps> = ({
                   {w.type === 'sysmonitor' && (
                     <>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span>{isEs ? 'Mostrar uso de CPU:' : 'Show CPU metric:'}</span>
+                        <span>{isEs ? 'Mostrar uso de CPU & Temp:' : 'Show CPU & Temp:'}</span>
                         <input
                           type="checkbox"
                           checked={w.settings?.showCpu !== false}
@@ -265,7 +320,7 @@ export const WidgetsTab: React.FC<WidgetsTabProps> = ({
                         />
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span>{isEs ? 'Mostrar espacio de Disco:' : 'Show Disk metric:'}</span>
+                        <span>{isEs ? 'Mostrar unidades de Disco (C:, D...):' : 'Show Disks (C:, D...):'}</span>
                         <input
                           type="checkbox"
                           checked={w.settings?.showDisk !== false}
@@ -279,12 +334,12 @@ export const WidgetsTab: React.FC<WidgetsTabProps> = ({
                   {w.type === 'postit' && (
                     <>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                        <span>{isEs ? 'Texto de la Nota / Lista:' : 'Note Text / Goal:'}</span>
+                        <span>{isEs ? 'Texto de la Meta u Objetivo del Día:' : 'Daily Focus Goal Text:'}</span>
                         <textarea
                           rows={3}
-                          value={w.settings?.postItText ?? (isEs ? '🎯 Mi Objetivo de Hoy:\n• Mantener la calma y concentrarme\n• Terminar la interfaz UI' : '🎯 Today\'s Focus:\n• Stay calm and focus\n• Finish UI design')}
+                          value={w.settings?.postItText ?? (isEs ? '🎯 Mi Objetivo de Hoy:\n• Mantener la calma y concentrarme\n• Terminar la versión de Ambiencer' : '🎯 Today\'s Focus:\n• Stay calm and focus\n• Finish Ambiencer release')}
                           onChange={(e) => onUpdateWidgetSettings(w.id, { postItText: e.target.value })}
-                          placeholder={isEs ? 'Escribe aquí tu nota...' : 'Type your note here...'}
+                          placeholder={isEs ? 'Escribe aquí tu meta u objetivo...' : 'Type your focus goal here...'}
                           style={{
                             background: 'rgba(0, 0, 0, 0.4)',
                             border: '1px solid rgba(255, 255, 255, 0.1)',
@@ -299,7 +354,7 @@ export const WidgetsTab: React.FC<WidgetsTabProps> = ({
                       </div>
 
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span>{isEs ? 'Color de resaltado:' : 'Highlight color:'}</span>
+                        <span>{isEs ? 'Color de nota / marco glass:' : 'Note color / glass accent:'}</span>
                         <div style={{ display: 'flex', gap: '6px' }}>
                           {(['amber', 'cyan', 'purple', 'emerald', 'rose'] as const).map((clr) => (
                             <button
@@ -318,60 +373,6 @@ export const WidgetsTab: React.FC<WidgetsTabProps> = ({
                         </div>
                       </div>
                     </>
-                  )}
-
-                  {/* 4. Quotes Customization */}
-                  {w.type === 'quotes' && (
-                    <>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                        <span>{isEs ? 'Frase o Mantram personal:' : 'Custom quote text:'}</span>
-                        <input
-                          type="text"
-                          value={w.settings?.quoteText ?? ''}
-                          onChange={(e) => onUpdateWidgetSettings(w.id, { quoteText: e.target.value })}
-                          placeholder={isEs ? 'Ej: «La tranquilidad consiste en el buen orden de la mente»' : 'Type quote here...'}
-                          style={{
-                            background: 'rgba(0, 0, 0, 0.4)',
-                            border: '1px solid rgba(255, 255, 255, 0.1)',
-                            borderRadius: '4px',
-                            color: '#ffffff',
-                            padding: '6px 8px',
-                            fontSize: '0.78rem',
-                            outline: 'none'
-                          }}
-                        />
-                      </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                        <span>{isEs ? 'Autor:' : 'Author:'}</span>
-                        <input
-                          type="text"
-                          value={w.settings?.quoteAuthor ?? ''}
-                          onChange={(e) => onUpdateWidgetSettings(w.id, { quoteAuthor: e.target.value })}
-                          placeholder={isEs ? 'Ej: Marco Aurelio' : 'Author name...'}
-                          style={{
-                            background: 'rgba(0, 0, 0, 0.4)',
-                            border: '1px solid rgba(255, 255, 255, 0.1)',
-                            borderRadius: '4px',
-                            color: '#ffffff',
-                            padding: '6px 8px',
-                            fontSize: '0.78rem',
-                            outline: 'none'
-                          }}
-                        />
-                      </div>
-                    </>
-                  )}
-
-                  {/* 5. Now Playing Customization */}
-                  {w.type === 'nowplaying' && (
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span>{isEs ? 'Mostrar espectro de audio:' : 'Show audio spectrum:'}</span>
-                      <input
-                        type="checkbox"
-                        checked={w.settings?.showVisualizer !== false}
-                        onChange={(e) => onUpdateWidgetSettings(w.id, { showVisualizer: e.target.checked })}
-                      />
-                    </div>
                   )}
                 </div>
               )}

@@ -203,10 +203,8 @@ export const App: React.FC = () => {
     } catch (e) {}
     return [
       { id: 'clock', type: 'clock', enabled: false, desktopActive: false, testActive: false, position: { x: 40, y: 40 }, settings: { clockFormat: '24h', clockSize: 'md', showSeconds: true, showDate: true } },
-      { id: 'nowplaying', type: 'nowplaying', enabled: false, desktopActive: false, testActive: false, position: { x: 40, y: 220 }, settings: { showVisualizer: true } },
       { id: 'sysmonitor', type: 'sysmonitor', enabled: false, desktopActive: false, testActive: false, position: { x: 380, y: 40 }, settings: { showCpu: true, showRam: true, showDisk: true } },
       { id: 'postit', type: 'postit', enabled: false, desktopActive: false, testActive: false, position: { x: 380, y: 220 }, settings: { postItColor: 'amber' } },
-      { id: 'quotes', type: 'quotes', enabled: false, desktopActive: false, testActive: false, position: { x: 720, y: 40 } },
     ];
   });
 
@@ -255,6 +253,33 @@ export const App: React.FC = () => {
     setWidgets((prev) =>
       prev.map((w) => (w.id === id ? { ...w, settings: { ...w.settings, ...settingsUpdate } } : w))
     );
+  };
+
+  const handleAddPostItWidget = () => {
+    const count = widgets.filter((w) => w.type === 'postit').length + 1;
+    const newId = `postit_${Date.now()}`;
+    const colors: ('amber' | 'cyan' | 'purple' | 'emerald' | 'rose')[] = ['amber', 'cyan', 'purple', 'emerald', 'rose'];
+    const assignedColor = colors[(count - 1) % colors.length];
+
+    setWidgets((prev) => [
+      ...prev,
+      {
+        id: newId,
+        type: 'postit',
+        enabled: false,
+        desktopActive: false,
+        testActive: false,
+        position: { x: 40 + count * 20, y: 180 + count * 20 },
+        settings: {
+          postItText: `🎯 Meta N°${count}:\n• Escribe aquí tu nuevo objetivo del día...`,
+          postItColor: assignedColor,
+        },
+      },
+    ]);
+  };
+
+  const handleDeleteWidget = (id: string) => {
+    setWidgets((prev) => prev.filter((w) => w.id !== id));
   };
 
   const [settings, setSettings] = useState<AppSettings>(() => {
@@ -552,6 +577,8 @@ export const App: React.FC = () => {
                 setWidgets((prev) => prev.map((w) => (w.id === id ? { ...w, position: pos } : w)));
               }}
               onUpdateWidgetSettings={handleUpdateWidgetSettings}
+              onAddPostItWidget={handleAddPostItWidget}
+              onDeleteWidget={handleDeleteWidget}
             />
           )}
           {activeTab === 'settings' && (

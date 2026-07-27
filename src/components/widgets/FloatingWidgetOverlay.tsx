@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { X, Move, Sparkles } from 'lucide-react';
 import { ClockWidget } from './ClockWidget';
-import { NowPlayingWidget } from './NowPlayingWidget';
 import { SysMonitorWidget } from './SysMonitorWidget';
 import { PostItWidget } from './PostItWidget';
-import { QuotesWidget } from './QuotesWidget';
 import { AppSettings, WidgetState } from '../../types';
 
 interface FloatingWidgetOverlayProps {
@@ -36,7 +34,7 @@ export const FloatingWidgetOverlay: React.FC<FloatingWidgetOverlayProps> = ({
   }, [widget.position?.x, widget.position?.y]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    if (!isTestMode) return; // Only drag inside App Test Mode
+    if (!isTestMode) return;
     e.stopPropagation();
     setIsDragging(true);
     setDragOffset({
@@ -75,10 +73,8 @@ export const FloatingWidgetOverlay: React.FC<FloatingWidgetOverlayProps> = ({
   const renderWidgetContent = () => {
     switch (widget.type) {
       case 'clock': return <ClockWidget settings={settings} widgetSettings={widget.settings} />;
-      case 'nowplaying': return <NowPlayingWidget settings={settings} widgetSettings={widget.settings} />;
       case 'sysmonitor': return <SysMonitorWidget settings={settings} widgetSettings={widget.settings} />;
       case 'postit': return <PostItWidget settings={settings} widgetSettings={widget.settings} />;
-      case 'quotes': return <QuotesWidget settings={settings} widgetSettings={widget.settings} />;
       default: return null;
     }
   };
@@ -86,10 +82,8 @@ export const FloatingWidgetOverlay: React.FC<FloatingWidgetOverlayProps> = ({
   const getWidgetTitle = () => {
     switch (widget.type) {
       case 'clock': return settings.language === 'es' ? 'Reloj & Calendario' : 'Clock & Date';
-      case 'nowplaying': return settings.language === 'es' ? 'Reproductor Ambiental' : 'Ambient Player';
-      case 'sysmonitor': return settings.language === 'es' ? 'Monitor de Sistema' : 'System Monitor';
-      case 'postit': return settings.language === 'es' ? 'Notas & Objetivos' : 'Quick Notes';
-      case 'quotes': return settings.language === 'es' ? 'Frase & Enfoque Diario' : 'Daily Focus Quote';
+      case 'sysmonitor': return settings.language === 'es' ? 'Monitor de Hardware Real' : 'Real Hardware Monitor';
+      case 'postit': return settings.language === 'es' ? 'Meta & Recordatorio del Día' : 'Daily Goal & Target';
       default: return 'Widget';
     }
   };

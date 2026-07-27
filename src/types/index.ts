@@ -55,6 +55,7 @@ export interface WallpaperState {
 export interface WidgetSettings {
   clockSize?: 'sm' | 'md' | 'lg';
   clockFormat?: '12h' | '24h';
+  clockStyle?: 'digital' | 'analog';
   showSeconds?: boolean;
   showDate?: boolean;
   showCpu?: boolean;
@@ -69,7 +70,7 @@ export interface WidgetSettings {
 
 export interface WidgetState {
   id: string;
-  type: 'clock' | 'nowplaying' | 'sysmonitor' | 'postit' | 'quotes' | 'pomodoro' | 'breathwork';
+  type: 'clock' | 'sysmonitor' | 'postit';
   enabled: boolean; // Backward compatibility desktop toggle
   desktopActive?: boolean; // Active on Windows Desktop
   testActive?: boolean; // Active as In-App Preview / Test Overlay
