@@ -194,13 +194,68 @@ export const App: React.FC = () => {
     return () => window.removeEventListener('storage', handleStorage);
   }, []);
 
-  const [widgets, setWidgets] = useState<WidgetState[]>([
-    { id: 'clock', type: 'clock', enabled: false, position: { x: 0, y: 0 } },
-    { id: 'pomodoro', type: 'pomodoro', enabled: false, position: { x: 0, y: 0 } },
-    { id: 'sysmonitor', type: 'sysmonitor', enabled: false, position: { x: 0, y: 0 } },
-    { id: 'postit', type: 'postit', enabled: false, position: { x: 0, y: 0 } },
-    { id: 'breathwork', type: 'breathwork', enabled: false, position: { x: 0, y: 0 } },
-  ]);
+  const [widgets, setWidgets] = useState<WidgetState[]>(() => {
+    try {
+      const saved = localStorage.getItem('ambiencer_widgets_state');
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch (e) {}
+    return [
+      { id: 'clock', type: 'clock', enabled: false, desktopActive: false, testActive: false, position: { x: 40, y: 40 }, settings: { clockFormat: '24h', clockSize: 'md', showSeconds: true, showDate: true } },
+      { id: 'nowplaying', type: 'nowplaying', enabled: false, desktopActive: false, testActive: false, position: { x: 40, y: 220 }, settings: { showVisualizer: true } },
+      { id: 'sysmonitor', type: 'sysmonitor', enabled: false, desktopActive: false, testActive: false, position: { x: 380, y: 40 }, settings: { showCpu: true, showRam: true, showDisk: true } },
+      { id: 'postit', type: 'postit', enabled: false, desktopActive: false, testActive: false, position: { x: 380, y: 220 }, settings: { postItColor: 'amber' } },
+      { id: 'quotes', type: 'quotes', enabled: false, desktopActive: false, testActive: false, position: { x: 720, y: 40 } },
+    ];
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('ambiencer_widgets_state', JSON.stringify(widgets));
+    } catch (e) {}
+  }, [widgets]);
+
+  useEffect(() => {
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'ambiencer_widgets_state' && e.newValue) {
+        try {
+          setWidgets(JSON.parse(e.newValue));
+        } catch (err) {}
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
+
+  const handleToggleTestWidget = (id: string) => {
+    setWidgets((prev) =>
+      prev.map((w) => (w.id === id ? { ...w, testActive: !w.testActive } : w))
+    );
+  };
+
+  const handleToggleDesktopWidget = (id: string) => {
+    setWidgets((prev) =>
+      prev.map((w) => {
+        if (w.id === id) {
+          const nextState = !(w.desktopActive || w.enabled);
+          if (nextState) {
+            import('@tauri-apps/api/core').then(({ invoke }) => {
+              invoke('attach_live_wallpaper_to_desktop').catch(() => {});
+            });
+          }
+          return { ...w, desktopActive: nextState, enabled: nextState };
+        }
+        return w;
+      })
+    );
+  };
+
+  const handleUpdateWidgetSettings = (id: string, settingsUpdate: Partial<WidgetSettings>) => {
+    setWidgets((prev) =>
+      prev.map((w) => (w.id === id ? { ...w, settings: { ...w.settings, ...settingsUpdate } } : w))
+    );
+  };
 
   const [settings, setSettings] = useState<AppSettings>(() => {
     try {
@@ -380,6 +435,7 @@ export const App: React.FC = () => {
   const allPresets = [...customPresets, ...SYSTEM_PRESETS];
 
   if (window.location.search.includes('mode=wallpaper')) {
+    const desktopWidgets = widgets.filter((w) => w.desktopActive || w.enabled);
     return (
       <div style={{ position: 'fixed', inset: 0, overflow: 'hidden', background: '#000', zIndex: 0 }}>
         <WallpaperEngine
@@ -388,6 +444,21 @@ export const App: React.FC = () => {
           speed={wallpaperState.speed}
           brightness={wallpaperState.brightness}
         />
+        {/* Floating Active Desktop Widgets System */}
+        {desktopWidgets.map((w) => (
+          <FloatingWidgetOverlay
+            key={`desktop-${w.id}`}
+            widget={w}
+            settings={settings}
+            isTestMode={false}
+            onClose={() => handleToggleDesktopWidget(w.id)}
+            onUpdatePosition={(newPos) => {
+              setWidgets((prev) =>
+                prev.map((item) => (item.id === w.id ? { ...item, position: newPos } : item))
+              );
+            }}
+          />
+        ))}
       </div>
     );
   }
@@ -402,13 +473,19 @@ export const App: React.FC = () => {
         brightness={wallpaperState.brightness}
       />
 
-      {/* Floating Active Widgets Overlay System */}
-      {widgets.filter(w => w.enabled).map((w) => (
+      {/* Floating In-App Test/Preview Widgets Overlay System */}
+      {widgets.filter((w) => w.testActive).map((w) => (
         <FloatingWidgetOverlay
-          key={w.id}
+          key={`test-${w.id}`}
           widget={w}
           settings={settings}
-          onClose={() => setWidgets(prev => prev.map(item => item.id === w.id ? { ...item, enabled: false } : item))}
+          isTestMode={true}
+          onClose={() => handleToggleTestWidget(w.id)}
+          onUpdatePosition={(newPos) => {
+            setWidgets((prev) =>
+              prev.map((item) => (item.id === w.id ? { ...item, position: newPos } : item))
+            );
+          }}
         />
       ))}
 
@@ -425,15 +502,11 @@ export const App: React.FC = () => {
           onSetSleepTimer={setSleepTimer}
         />
 
-        {/* Navigation Tabs */}
-        <Navigation
-          activeTab={activeTab}
-          settings={settings}
-          onTabChange={setActiveTab}
-        />
+        {/* Navigation Tabs Bar */}
+        <Navigation activeTab={activeTab} onTabChange={setActiveTab} settings={settings} />
 
-        {/* Active Tab View */}
-        <main>
+        {/* Dynamic Tab Body Content */}
+        <main style={{ marginTop: '20px' }}>
           {activeTab === 'mixer' && (
             <SoundMixer
               channels={channels}
@@ -454,13 +527,6 @@ export const App: React.FC = () => {
               }}
             />
           )}
-          {activeTab === 'wallpapers' && (
-            <WallpapersTab
-              settings={settings}
-              state={wallpaperState}
-              onChangeWallpaperState={(newS) => setWallpaperState((prev) => ({ ...prev, ...newS }))}
-            />
-          )}
           {activeTab === 'presets' && (
             <FocusPresets
               presets={allPresets}
@@ -469,11 +535,23 @@ export const App: React.FC = () => {
               onDeleteCustomPreset={handleDeleteCustomPreset}
             />
           )}
+          {activeTab === 'wallpapers' && (
+            <WallpapersTab
+              settings={settings}
+              state={wallpaperState}
+              onChangeWallpaperState={(newS) => setWallpaperState((prev) => ({ ...prev, ...newS }))}
+            />
+          )}
           {activeTab === 'widgets' && (
             <WidgetsTab
               settings={settings}
               widgets={widgets}
-              onToggleWidget={(id) => setWidgets((prev) => prev.map((w) => w.id === id ? { ...w, enabled: !w.enabled } : w))}
+              onToggleTestWidget={handleToggleTestWidget}
+              onToggleDesktopWidget={handleToggleDesktopWidget}
+              onUpdateWidgetPosition={(id, pos) => {
+                setWidgets((prev) => prev.map((w) => (w.id === id ? { ...w, position: pos } : w)));
+              }}
+              onUpdateWidgetSettings={handleUpdateWidgetSettings}
             />
           )}
           {activeTab === 'settings' && (

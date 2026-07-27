@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, Sliders, Sparkles, CloudRain, Flame, Moon, Terminal, Flower2, Code2, Waves, Compass } from 'lucide-react';
+import { Image, Sliders, Sparkles, CloudRain, Flame, Moon, Terminal, Flower2, Code2, Waves, Compass, Trees, Sun, Leaf, Zap } from 'lucide-react';
 import { WallpaperState, WallpaperType, AppSettings } from '../types';
 import { getTranslation } from '../i18n';
 import { WallpaperEngine } from './WallpaperEngine';
@@ -27,6 +27,10 @@ export const WallpapersTab: React.FC<WallpapersTabProps> = ({
     { id: 'cyberpunk_matrix', nameKey: lang === 'es' ? 'Lluvia Digital Matrix' : 'Matrix Digital Rain', icon: <Code2 size={20} />, badge: 'Procedimental 60 FPS' },
     { id: 'ocean_waves', nameKey: lang === 'es' ? 'Olas Oceánicas Bioluminiscentes' : 'Bioluminescent Ocean Waves', icon: <Waves size={20} />, badge: 'Procedimental 60 FPS' },
     { id: 'zen_nebula', nameKey: lang === 'es' ? 'Nebulosa Zen & Polvo Estelar' : 'Zen Cosmic Nebula', icon: <Compass size={20} />, badge: 'Procedimental 60 FPS' },
+    { id: 'fireflies_garden', nameKey: lang === 'es' ? 'Jardín de Luciérnagas Místicas' : 'Mystic Fireflies Garden', icon: <Trees size={20} />, badge: 'Procedimental 60 FPS' },
+    { id: 'sunset_synthwave', nameKey: lang === 'es' ? 'Horizonte Crepuscular Brumoso' : 'Misty Twilight Horizon', icon: <Sun size={20} />, badge: 'Procedimental 60 FPS' },
+    { id: 'autumn_leaves', nameKey: lang === 'es' ? 'Hojas de Otoño Flotantes' : 'Drifting Autumn Leaves', icon: <Leaf size={20} />, badge: 'Procedimental 60 FPS' },
+    { id: 'hyperdrive_warp', nameKey: lang === 'es' ? 'Vértice Espacial Hyperdrive' : 'Hyperdrive Space Warp', icon: <Zap size={20} />, badge: 'Procedimental 60 FPS' },
   ];
 
   return (
@@ -35,7 +39,7 @@ export const WallpapersTab: React.FC<WallpapersTabProps> = ({
       <div>
         <h2 style={{ fontSize: '1.2rem', fontWeight: 600, color: 'var(--text-main)', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Image size={20} color="var(--accent-cyan)" />
-          <span>{lang === 'es' ? 'Wallpapers Ambientales Dinámicos (8 Estilos 60 FPS)' : 'Dynamic Ambient Wallpapers (8 60 FPS Styles)'}</span>
+          <span>{lang === 'es' ? 'Wallpapers Ambientales Dinámicos (12 Estilos 60 FPS)' : 'Dynamic Ambient Wallpapers (12 60 FPS Styles)'}</span>
         </h2>
         <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
           {lang === 'es' ? 'Wallpapers atmosféricos renderizados por GPU en tiempo real con cero sobrecarga de memoria.' : 'Atmospheric real-time GPU rendered wallpapers with zero memory overhead.'}

@@ -1,17 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { Cpu, HardDrive, Server } from 'lucide-react';
-import { AppSettings } from '../../types';
+import { AppSettings, WidgetSettings } from '../../types';
 import { getTranslation } from '../../i18n';
 
 interface SysMonitorWidgetProps {
   settings: AppSettings;
+  widgetSettings?: WidgetSettings;
 }
 
-export const SysMonitorWidget: React.FC<SysMonitorWidgetProps> = ({ settings }) => {
+export const SysMonitorWidget: React.FC<SysMonitorWidgetProps> = ({ settings, widgetSettings }) => {
   const [cpu, setCpu] = useState<number>(24);
   const [ram, setRam] = useState<number>(48);
   const [disk, setDisk] = useState<number>(62);
   const lang = settings.language;
+
+  const showCpu = widgetSettings?.showCpu !== false;
+  const showRam = widgetSettings?.showRam !== false;
+  const showDisk = widgetSettings?.showDisk !== false;
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -25,12 +30,12 @@ export const SysMonitorWidget: React.FC<SysMonitorWidgetProps> = ({ settings }) 
     <div
       className="glass-panel"
       style={{
-        padding: '20px',
+        padding: '16px',
         borderRadius: 'var(--radius-md)',
-        background: 'rgba(15, 21, 35, 0.6)',
+        background: 'rgba(15, 21, 35, 0.65)',
         display: 'flex',
         flexDirection: 'column',
-        gap: '14px'
+        gap: '12px'
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--accent-purple)', fontSize: '0.8rem', fontWeight: 600 }}>
@@ -39,37 +44,43 @@ export const SysMonitorWidget: React.FC<SysMonitorWidgetProps> = ({ settings }) 
       </div>
 
       {/* CPU Meter */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-          <span>{getTranslation(lang, 'sysCpu')}</span>
-          <strong style={{ color: 'var(--text-main)' }}>{cpu}%</strong>
+      {showCpu && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+            <span>{getTranslation(lang, 'sysCpu')}</span>
+            <strong style={{ color: 'var(--text-main)' }}>{cpu}%</strong>
+          </div>
+          <div style={{ width: '100%', height: '6px', background: 'rgba(255, 255, 255, 0.08)', borderRadius: '3px', overflow: 'hidden' }}>
+            <div style={{ width: `${cpu}%`, height: '100%', background: 'var(--accent-cyan)', transition: 'width 0.5s ease' }} />
+          </div>
         </div>
-        <div style={{ width: '100%', height: '6px', background: 'rgba(255, 255, 255, 0.08)', borderRadius: '3px', overflow: 'hidden' }}>
-          <div style={{ width: `${cpu}%`, height: '100%', background: 'var(--accent-cyan)', transition: 'width 0.5s ease' }} />
-        </div>
-      </div>
+      )}
 
       {/* RAM Meter */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-          <span>{getTranslation(lang, 'sysRam')}</span>
-          <strong style={{ color: 'var(--text-main)' }}>{ram}% (7.6 GB)</strong>
+      {showRam && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+            <span>{getTranslation(lang, 'sysRam')}</span>
+            <strong style={{ color: 'var(--text-main)' }}>{ram}% (7.6 GB)</strong>
+          </div>
+          <div style={{ width: '100%', height: '6px', background: 'rgba(255, 255, 255, 0.08)', borderRadius: '3px', overflow: 'hidden' }}>
+            <div style={{ width: `${ram}%`, height: '100%', background: 'var(--accent-purple)', transition: 'width 0.5s ease' }} />
+          </div>
         </div>
-        <div style={{ width: '100%', height: '6px', background: 'rgba(255, 255, 255, 0.08)', borderRadius: '3px', overflow: 'hidden' }}>
-          <div style={{ width: `${ram}%`, height: '100%', background: 'var(--accent-purple)', transition: 'width 0.5s ease' }} />
-        </div>
-      </div>
+      )}
 
       {/* Disk Meter */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-          <span>{getTranslation(lang, 'sysDisk')}</span>
-          <strong style={{ color: 'var(--text-main)' }}>{disk}% (312 GB)</strong>
+      {showDisk && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+            <span>{getTranslation(lang, 'sysDisk')}</span>
+            <strong style={{ color: 'var(--text-main)' }}>{disk}% (312 GB)</strong>
+          </div>
+          <div style={{ width: '100%', height: '6px', background: 'rgba(255, 255, 255, 0.08)', borderRadius: '3px', overflow: 'hidden' }}>
+            <div style={{ width: `${disk}%`, height: '100%', background: 'var(--accent-emerald)', transition: 'width 0.5s ease' }} />
+          </div>
         </div>
-        <div style={{ width: '100%', height: '6px', background: 'rgba(255, 255, 255, 0.08)', borderRadius: '3px', overflow: 'hidden' }}>
-          <div style={{ width: `${disk}%`, height: '100%', background: 'var(--accent-emerald)', transition: 'width 0.5s ease' }} />
-        </div>
-      </div>
+      )}
     </div>
   );
 };

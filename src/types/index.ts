@@ -39,7 +39,11 @@ export type WallpaperType =
   | 'cherry_blossoms'
   | 'cyberpunk_matrix'
   | 'ocean_waves'
-  | 'zen_nebula';
+  | 'zen_nebula'
+  | 'fireflies_garden'
+  | 'sunset_synthwave'
+  | 'autumn_leaves'
+  | 'hyperdrive_warp';
 
 export interface WallpaperState {
   activeWallpaper: WallpaperType;
@@ -48,12 +52,29 @@ export interface WallpaperState {
   brightness: number;
 }
 
+export interface WidgetSettings {
+  clockSize?: 'sm' | 'md' | 'lg';
+  clockFormat?: '12h' | '24h';
+  showSeconds?: boolean;
+  showDate?: boolean;
+  showCpu?: boolean;
+  showRam?: boolean;
+  showDisk?: boolean;
+  postItText?: string;
+  postItColor?: 'amber' | 'cyan' | 'purple' | 'emerald' | 'rose';
+  quoteText?: string;
+  quoteAuthor?: string;
+  showVisualizer?: boolean;
+}
+
 export interface WidgetState {
   id: string;
-  type: 'clock' | 'pomodoro' | 'sysmonitor' | 'postit' | 'breathwork';
-  enabled: boolean;
+  type: 'clock' | 'nowplaying' | 'sysmonitor' | 'postit' | 'quotes' | 'pomodoro' | 'breathwork';
+  enabled: boolean; // Backward compatibility desktop toggle
+  desktopActive?: boolean; // Active on Windows Desktop
+  testActive?: boolean; // Active as In-App Preview / Test Overlay
   position: { x: number; y: number };
-  settings?: Record<string, any>;
+  settings?: WidgetSettings;
 }
 
 export interface AppSettings {
