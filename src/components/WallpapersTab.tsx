@@ -41,23 +41,38 @@ export const WallpapersTab: React.FC<WallpapersTabProps> = ({
     }
   };
 
-  const handleToggleAmbientMode = async () => {
+  const handleAttachLiveDesktop = async () => {
     setIsApplying(true);
     setStatusMsg(null);
     try {
       const { invoke } = await import('@tauri-apps/api/core');
-      const msg = await invoke<string>('toggle_ambient_fullscreen_mode');
-      setStatusMsg(msg || (lang === 'es' ? '¡Modo Live Ambient 60 FPS activado! (Presiona Esc para restaurar)' : 'Live 60 FPS Ambient Mode active! (Press Esc to restore)'));
+      const msg = await invoke<string>('attach_live_wallpaper_to_desktop');
+      setStatusMsg(msg || (lang === 'es' ? '¡Live Wallpaper acoplado al fondo de escritorio detrás de tus iconos! 🎬✨' : 'Live 60 FPS Wallpaper attached to desktop! 🎬✨'));
     } catch (err: any) {
-      console.log('Ambient mode toggle notice:', err);
+      console.log('Live mode notice:', err);
       setStatusMsg(
         lang === 'es'
-          ? 'ℹ️ El modo Live Ambient 60 FPS requiere ejecutar en app nativa (npm run tauri dev)'
-          : 'ℹ️ Live 60 FPS Ambient Mode requires running native app (npm run tauri dev)'
+          ? 'ℹ️ El modo Live Wallpaper requiere ejecutar en app nativa (npm run tauri dev)'
+          : 'ℹ️ Live 60 FPS Wallpaper requires running native app (npm run tauri dev)'
       );
     } finally {
       setIsApplying(false);
       setTimeout(() => setStatusMsg(null), 6000);
+    }
+  };
+
+  const handleDetachLiveDesktop = async () => {
+    setIsApplying(true);
+    setStatusMsg(null);
+    try {
+      const { invoke } = await import('@tauri-apps/api/core');
+      const msg = await invoke<string>('detach_live_wallpaper_from_desktop');
+      setStatusMsg(msg || (lang === 'es' ? '¡Ambiencer restaurado al escritorio normal! 🖥️' : 'Ambiencer restored to desktop! 🖥️'));
+    } catch (err: any) {
+      console.log('Detach mode notice:', err);
+    } finally {
+      setIsApplying(false);
+      setTimeout(() => setStatusMsg(null), 5000);
     }
   };
 
@@ -207,9 +222,9 @@ export const WallpapersTab: React.FC<WallpapersTabProps> = ({
           </div>
 
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-            {/* Live Desktop 60 FPS Mode Button */}
+            {/* Live Desktop 60 FPS Wallpaper Button */}
             <button
-              onClick={handleToggleAmbientMode}
+              onClick={handleAttachLiveDesktop}
               disabled={isApplying}
               style={{
                 padding: '12px 18px',
@@ -227,8 +242,31 @@ export const WallpapersTab: React.FC<WallpapersTabProps> = ({
                 transition: 'all 0.2s'
               }}
             >
-              <Maximize size={16} />
-              <span>{lang === 'es' ? 'Modo Live Ambient 60 FPS' : 'Live Ambient 60 FPS Mode'}</span>
+              <Play size={16} fill="currentColor" />
+              <span>{lang === 'es' ? 'Fijar en Escritorio (Live 60 FPS)' : 'Attach to Desktop (Live 60 FPS)'}</span>
+            </button>
+
+            {/* Detach / Restore App Window Button */}
+            <button
+              onClick={handleDetachLiveDesktop}
+              disabled={isApplying}
+              style={{
+                padding: '12px 18px',
+                borderRadius: 'var(--radius-md)',
+                border: '1px solid rgba(168, 85, 247, 0.4)',
+                background: 'rgba(168, 85, 247, 0.12)',
+                color: '#d8b4fe',
+                fontWeight: 700,
+                fontSize: '0.86rem',
+                cursor: isApplying ? 'wait' : 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                transition: 'all 0.2s'
+              }}
+            >
+              <Monitor size={16} />
+              <span>{lang === 'es' ? 'Restaurar Ventana' : 'Restore Window'}</span>
             </button>
 
             {/* Set as Static Windows Wallpaper Button */}
