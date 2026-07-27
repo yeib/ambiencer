@@ -115,10 +115,10 @@ export const WallpapersTab: React.FC<WallpapersTabProps> = ({
       <div className="glass-panel" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
         <h3 style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Sliders size={16} color="var(--accent-cyan)" />
-          <span>{lang === 'es' ? 'Ajustes Visuales del Wallpaper (4 Controles)' : 'Wallpaper Visual Controls (4 Sliders)'}</span>
+          <span>{lang === 'es' ? 'Ajustes Visuales del Wallpaper' : 'Wallpaper Visual Controls'}</span>
         </h3>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
           {/* 1. Brightness Slider (1% to 100%) */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
@@ -164,22 +164,6 @@ export const WallpapersTab: React.FC<WallpapersTabProps> = ({
               step="1"
               value={state.blurAmount}
               onChange={(e) => onChangeWallpaperState({ blurAmount: parseInt(e.target.value) })}
-            />
-          </div>
-
-          {/* 4. Atmosphere Intensity Slider */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-              <span>{lang === 'es' ? '4. Resplandor Ambiental:' : '4. Ambient Glow:'}</span>
-              <strong>{Math.round(state.brightness * 120)}%</strong>
-            </div>
-            <input
-              type="range"
-              min="0.01"
-              max="1.0"
-              step="0.01"
-              value={state.brightness}
-              onChange={(e) => onChangeWallpaperState({ brightness: parseFloat(e.target.value) })}
             />
           </div>
         </div>
