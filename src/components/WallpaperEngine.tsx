@@ -104,32 +104,53 @@ export const WallpaperEngine: React.FC<WallpaperEngineProps> = ({
       } else if (type === 'aurora_stars') {
         // Deep space background
         const bgGrad = ctx.createRadialGradient(width / 2, height / 2, 0, width / 2, height / 2, width * 0.8);
-        bgGrad.addColorStop(0, '#131b2e');
-        bgGrad.addColorStop(1, '#07090e');
+        bgGrad.addColorStop(0, '#0f172a');
+        bgGrad.addColorStop(0.6, '#090d16');
+        bgGrad.addColorStop(1, '#030508');
         ctx.fillStyle = bgGrad;
         ctx.fillRect(0, 0, width, height);
 
-        // Aurora Wave Gradient
-        const waveY = Math.sin(time) * 40 + height * 0.35;
-        const auroraGrad = ctx.createLinearGradient(0, waveY - 80, width, waveY + 80);
-        auroraGrad.addColorStop(0, 'rgba(56, 189, 248, 0)');
-        auroraGrad.addColorStop(0.5, `rgba(52, 211, 153, ${0.15 * brightness})`);
-        auroraGrad.addColorStop(1, `rgba(168, 85, 247, 0)`);
-        ctx.fillStyle = auroraGrad;
+        // Ribbon 1: Cyan & Emerald Wave Curtain
+        const wave1Y = height * 0.38 + Math.sin(time * 0.8) * 35;
+        const grad1 = ctx.createLinearGradient(0, wave1Y - 110, 0, wave1Y + 110);
+        grad1.addColorStop(0, 'rgba(56, 189, 248, 0)');
+        grad1.addColorStop(0.5, `rgba(52, 211, 153, ${0.28 * brightness})`);
+        grad1.addColorStop(1, 'rgba(168, 85, 247, 0)');
+
+        ctx.fillStyle = grad1;
         ctx.beginPath();
-        ctx.moveTo(0, waveY);
-        for (let x = 0; x < width; x += 30) {
-          ctx.lineTo(x, waveY + Math.sin(x * 0.005 + time) * 30);
+        ctx.moveTo(0, wave1Y);
+        for (let x = 0; x <= width; x += 15) {
+          const y = wave1Y + Math.sin(x * 0.004 + time * 1.2) * 45 + Math.cos(x * 0.008 - time * 0.6) * 25;
+          ctx.lineTo(x, y);
         }
         ctx.lineTo(width, height);
         ctx.lineTo(0, height);
         ctx.fill();
 
-        // Stars render
+        // Ribbon 2: Violet & Purple Deep Glow Curtain
+        const wave2Y = height * 0.28 + Math.cos(time * 0.6) * 40;
+        const grad2 = ctx.createLinearGradient(0, wave2Y - 130, 0, wave2Y + 130);
+        grad2.addColorStop(0, 'rgba(168, 85, 247, 0)');
+        grad2.addColorStop(0.5, `rgba(192, 132, 252, ${0.22 * brightness})`);
+        grad2.addColorStop(1, 'rgba(56, 189, 248, 0)');
+
+        ctx.fillStyle = grad2;
+        ctx.beginPath();
+        ctx.moveTo(0, wave2Y);
+        for (let x = 0; x <= width; x += 15) {
+          const y = wave2Y + Math.cos(x * 0.005 + time) * 50 + Math.sin(x * 0.003 + time * 0.8) * 30;
+          ctx.lineTo(x, y);
+        }
+        ctx.lineTo(width, height);
+        ctx.lineTo(0, height);
+        ctx.fill();
+
+        // Stars render & twinkling
         particles.forEach((star) => {
-          star.alpha += star.speed;
+          star.alpha += star.speed * speed;
           const a = (Math.sin(star.alpha) + 1) / 2;
-          ctx.fillStyle = `rgba(255, 255, 255, ${a * 0.8 * brightness})`;
+          ctx.fillStyle = `rgba(255, 255, 255, ${a * 0.85 * brightness})`;
           ctx.beginPath();
           ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
           ctx.fill();

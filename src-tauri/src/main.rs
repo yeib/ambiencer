@@ -52,19 +52,25 @@ fn set_desktop_wallpaper(image_data_base64: String) -> Result<String, String> {
     Err(e) => return Err(format!("Error al decodificar imagen: {}", e)),
   };
 
-  let temp_dir = std::env::temp_dir();
-  let wallpaper_path = temp_dir.join("ambiencer_desktop_wallpaper.png");
+  // Dedicated AppData folder for wallpaper persistence
+  let local_dir = std::env::temp_dir().join("ambiencer_wallpapers");
+  let _ = fs::create_dir_all(&local_dir);
+
+  let wallpaper_path = local_dir.join("current_wallpaper.png");
 
   if let Err(e) = fs::write(&wallpaper_path, image_bytes) {
-    return Err(format!("Error al guardar imagen temporal: {}", e));
+    return Err(format!("Error al guardar imagen: {}", e));
   }
 
   let path_str = wallpaper_path.to_str().unwrap_or("");
 
+  // Windows 10/11 Registry & SystemParametersInfo PowerShell update
   let ps_script = format!(
     r#"
     $path = "{}"
     Set-ItemProperty -Path 'HKCU:\Control Panel\Desktop' -Name Wallpaper -Value $path
+    Set-ItemProperty -Path 'HKCU:\Control Panel\Desktop' -Name WallpaperStyle -Value '2'
+    Set-ItemProperty -Path 'HKCU:\Control Panel\Desktop' -Name TileWallpaper -Value '0'
     $code = @'
     using System.Runtime.InteropServices;
     public class Wallpaper {{
@@ -74,24 +80,25 @@ fn set_desktop_wallpaper(image_data_base64: String) -> Result<String, String> {
 '@
     Add-Type -TypeDefinition $code
     [Wallpaper]::SystemParametersInfo(20, 0, $path, 3)
+    RUNDLL32.EXE user32.dll,UpdatePerUserSystemParameters
     "#,
     path_str.replace('\\', "\\\\")
   );
 
   let output = Command::new("powershell")
-    .args(["-NoProfile", "-Command", &ps_script])
+    .args(["-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", &ps_script])
     .output();
 
   match output {
     Ok(out) => {
       if out.status.success() {
-        Ok("¡Fondo de escritorio de Windows actualizado con éxito!".into())
+        Ok("¡Fondo de pantalla de Windows actualizado con éxito! 🖥️✨".into())
       } else {
         let err_str = String::from_utf8_lossy(&out.stderr);
-        Err(format!("Error de PowerShell: {}", err_str))
+        Err(format!("Error en PowerShell: {}", err_str))
       }
     }
-    Err(e) => Err(format!("Error al ejecutar comando de sistema: {}", e)),
+    Err(e) => Err(format!("Error al ejecutar script de fondo: {}", e)),
   }
 }
 
