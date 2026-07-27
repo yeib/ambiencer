@@ -26,6 +26,10 @@ struct SystemStats {
   ram_total_gb: f32,
   ram_percent: f32,
   disks: Vec<DiskInfo>,
+  has_battery: bool,
+  battery_percent: u8,
+  is_charging: bool,
+  net_active: bool,
 }
 
 fn rand_pseudo() -> u32 {
@@ -53,6 +57,17 @@ fn get_system_stats() -> SystemStats {
       ullAvailExtendedVirtual: u64,
     }
 
+    #[repr(C)]
+    #[allow(non_snake_case)]
+    struct SYSTEM_POWER_STATUS {
+      ACLineStatus: u8,
+      BatteryFlag: u8,
+      BatteryLifePercent: u8,
+      SystemStatusFlag: u8,
+      BatteryLifeTime: u32,
+      BatteryFullLifeTime: u32,
+    }
+
     #[link(name = "kernel32")]
     #[allow(non_snake_case)]
     extern "system" {
@@ -64,6 +79,7 @@ fn get_system_stats() -> SystemStats {
         lpTotalNumberOfBytes: *mut u64,
         lpTotalNumberOfFreeBytes: *mut u64,
       ) -> i32;
+      fn GetSystemPowerStatus(lpSystemPowerStatus: *mut SYSTEM_POWER_STATUS) -> i32;
     }
 
     let mut mem_status: MEMORYSTATUSEX = unsafe { mem::zeroed() };
@@ -77,6 +93,16 @@ fn get_system_stats() -> SystemStats {
         (used_gb, total_gb, mem_status.dwMemoryLoad as f32)
       } else {
         (12.0, 32.0, 37.5)
+      }
+    };
+
+    let mut power_status: SYSTEM_POWER_STATUS = unsafe { mem::zeroed() };
+    let (has_battery, battery_percent, is_charging) = unsafe {
+      if GetSystemPowerStatus(&mut power_status) != 0 && power_status.BatteryLifePercent <= 100 {
+        let has_bat = power_status.BatteryFlag != 128 && power_status.BatteryFlag != 255;
+        (has_bat, power_status.BatteryLifePercent, power_status.ACLineStatus == 1)
+      } else {
+        (false, 100, true)
       }
     };
 
@@ -132,6 +158,10 @@ fn get_system_stats() -> SystemStats {
       ram_total_gb,
       ram_percent,
       disks,
+      has_battery,
+      battery_percent,
+      is_charging,
+      net_active: true,
     }
   }
 
@@ -147,6 +177,10 @@ fn get_system_stats() -> SystemStats {
         DiskInfo { name: "C:\\".to_string(), used_gb: 240.0, total_gb: 512.0, percent: 46.8 },
         DiskInfo { name: "D:\\".to_string(), used_gb: 420.0, total_gb: 1024.0, percent: 41.0 },
       ],
+      has_battery: true,
+      battery_percent: 88,
+      is_charging: true,
+      net_active: true,
     }
   }
 }

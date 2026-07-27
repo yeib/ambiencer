@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Cpu, Flame, HardDrive } from 'lucide-react';
+import { Cpu, Flame, HardDrive, Battery, BatteryCharging, Wifi } from 'lucide-react';
 import { AppSettings, WidgetSettings } from '../../types';
 import { getTranslation } from '../../i18n';
 
@@ -22,6 +22,10 @@ interface RealStats {
   ram_total_gb: number;
   ram_percent: number;
   disks: DiskInfo[];
+  has_battery?: boolean;
+  battery_percent?: number;
+  is_charging?: boolean;
+  net_active?: boolean;
 }
 
 export const SysMonitorWidget: React.FC<SysMonitorWidgetProps> = ({ settings, widgetSettings }) => {
@@ -34,13 +38,19 @@ export const SysMonitorWidget: React.FC<SysMonitorWidgetProps> = ({ settings, wi
     disks: [
       { name: 'C:\\', used_gb: 215.0, total_gb: 512.0, percent: 42.0 },
       { name: 'D:\\', used_gb: 420.0, total_gb: 1024.0, percent: 41.0 },
-    ]
+    ],
+    has_battery: true,
+    battery_percent: 88,
+    is_charging: true,
+    net_active: true,
   });
 
   const lang = settings.language;
   const showCpu = widgetSettings?.showCpu !== false;
   const showRam = widgetSettings?.showRam !== false;
   const showDisk = widgetSettings?.showDisk !== false;
+  const showBattery = widgetSettings?.showBattery !== false;
+  const showNet = widgetSettings?.showNet !== false;
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -83,11 +93,18 @@ export const SysMonitorWidget: React.FC<SysMonitorWidgetProps> = ({ settings, wi
           <Cpu size={16} />
           <span>{getTranslation(lang, 'widgetSysMonitor')}</span>
         </div>
-        {showCpu && (
-          <span style={{ color: '#fb7185', fontWeight: 700, fontSize: '0.74rem', display: 'flex', alignItems: 'center', gap: '3px' }}>
-            <Flame size={12} /> {Math.round(stats.cpu_temp_c)}°C
-          </span>
-        )}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.74rem' }}>
+          {showCpu && (
+            <span style={{ color: '#fb7185', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '3px' }}>
+              <Flame size={12} /> {Math.round(stats.cpu_temp_c)}°C
+            </span>
+          )}
+          {showNet && (
+            <span style={{ color: 'var(--accent-cyan)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '3px' }}>
+              <Wifi size={12} /> OK
+            </span>
+          )}
+        </div>
       </div>
 
       {/* CPU Meter */}
@@ -118,7 +135,7 @@ export const SysMonitorWidget: React.FC<SysMonitorWidgetProps> = ({ settings, wi
         </div>
       )}
 
-      {/* Disk Meter for All Detected Partitions */}
+      {/* Disk Meters */}
       {showDisk && stats.disks && stats.disks.map((d) => (
         <div key={d.name} style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
@@ -135,6 +152,22 @@ export const SysMonitorWidget: React.FC<SysMonitorWidgetProps> = ({ settings, wi
           </div>
         </div>
       ))}
+
+      {/* Battery / Power Status Meter */}
+      {showBattery && stats.has_battery && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', paddingTop: '4px', borderTop: '1px solid rgba(255, 255, 255, 0.05)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--accent-amber)' }}>
+              {stats.is_charging ? <BatteryCharging size={13} /> : <Battery size={13} />}
+              {lang === 'es' ? 'Batería' : 'Battery'} ({stats.is_charging ? (lang === 'es' ? 'Cargando' : 'Charging') : (lang === 'es' ? 'Batería' : 'Discharging')})
+            </span>
+            <strong style={{ color: '#ffffff' }}>{stats.battery_percent}%</strong>
+          </div>
+          <div style={{ width: '100%', height: '6px', background: 'rgba(255, 255, 255, 0.08)', borderRadius: '3px', overflow: 'hidden' }}>
+            <div style={{ width: `${stats.battery_percent}%`, height: '100%', background: stats.is_charging ? '#34d399' : stats.battery_percent! < 20 ? '#fb7185' : 'var(--accent-amber)', transition: 'width 0.5s ease' }} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

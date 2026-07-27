@@ -318,6 +318,22 @@ export const WidgetsTab: React.FC<WidgetsTabProps> = ({
                           onChange={(e) => onUpdateWidgetSettings(w.id, { showDisk: e.target.checked })}
                         />
                       </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span>{isEs ? 'Mostrar estado de Batería & Carga:' : 'Show Battery & Charging:'}</span>
+                        <input
+                          type="checkbox"
+                          checked={w.settings?.showBattery !== false}
+                          onChange={(e) => onUpdateWidgetSettings(w.id, { showBattery: e.target.checked })}
+                        />
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span>{isEs ? 'Mostrar estado de Conexión Red:' : 'Show Network status:'}</span>
+                        <input
+                          type="checkbox"
+                          checked={w.settings?.showNet !== false}
+                          onChange={(e) => onUpdateWidgetSettings(w.id, { showNet: e.target.checked })}
+                        />
+                      </div>
                     </>
                   )}
 

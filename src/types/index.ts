@@ -61,6 +61,8 @@ export interface WidgetSettings {
   showCpu?: boolean;
   showRam?: boolean;
   showDisk?: boolean;
+  showBattery?: boolean;
+  showNet?: boolean;
   postItText?: string;
   postItColor?: 'amber' | 'cyan' | 'purple' | 'emerald' | 'rose';
   quoteText?: string;
