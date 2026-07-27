@@ -56,6 +56,8 @@ export interface WidgetSettings {
   clockSize?: 'sm' | 'md' | 'lg';
   clockFormat?: '12h' | '24h';
   clockStyle?: 'digital' | 'analog';
+  timezoneOffset?: number; // Offset in hours relative to UTC (e.g. -5, 0, 1, 9)
+  cityLabel?: string; // Custom city label (e.g. '📍 Tokio', '📍 Nueva York')
   showSeconds?: boolean;
   showDate?: boolean;
   showCpu?: boolean;

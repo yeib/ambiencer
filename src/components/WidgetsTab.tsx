@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Clock, Cpu, StickyNote, Sparkles, Monitor, MapPin, SlidersHorizontal, ChevronDown, ChevronUp, Plus, Trash2 } from 'lucide-react';
+import { Clock, Cpu, StickyNote, Sparkles, Monitor, MapPin, SlidersHorizontal, ChevronDown, ChevronUp, Plus, Trash2, Globe } from 'lucide-react';
 import { ClockWidget } from './widgets/ClockWidget';
 import { SysMonitorWidget } from './widgets/SysMonitorWidget';
 import { PostItWidget } from './widgets/PostItWidget';
@@ -14,6 +14,7 @@ interface WidgetsTabProps {
   onUpdateWidgetPosition: (id: string, pos: { x: number; y: number }) => void;
   onUpdateWidgetSettings: (id: string, settings: Partial<WidgetSettings>) => void;
   onAddPostItWidget: () => void;
+  onAddClockWidget: () => void;
   onDeleteWidget: (id: string) => void;
 }
 
@@ -25,6 +26,7 @@ export const WidgetsTab: React.FC<WidgetsTabProps> = ({
   onUpdateWidgetPosition,
   onUpdateWidgetSettings,
   onAddPostItWidget,
+  onAddClockWidget,
   onDeleteWidget,
 }) => {
   const lang = settings.language;
@@ -33,10 +35,17 @@ export const WidgetsTab: React.FC<WidgetsTabProps> = ({
 
   const getWidgetTitle = (w: WidgetState) => {
     switch (w.type) {
-      case 'clock': return getTranslation(lang, 'widgetClock');
-      case 'sysmonitor': return isEs ? 'Monitor de Hardware Real (RAM / CPU / Temp / Discos)' : 'Real Hardware Monitor (RAM / CPU / Temp / Disks)';
-      case 'postit': return isEs ? `Meta & Recordatorio del Día (${w.id === 'postit' ? 'Principal' : w.id.replace('postit_', 'N°')})` : `Daily Goal & Focus Target (${w.id})`;
-      default: return w.type;
+      case 'clock':
+        if (w.settings?.cityLabel) return w.settings.cityLabel;
+        return w.id === 'clock'
+          ? getTranslation(lang, 'widgetClock')
+          : isEs ? `Reloj Mundial (${w.id.replace('clock_', 'N°')})` : `World Clock (${w.id})`;
+      case 'sysmonitor':
+        return isEs ? 'Monitor de Hardware Real (RAM / CPU / Temp / Discos)' : 'Real Hardware Monitor (RAM / CPU / Temp / Disks)';
+      case 'postit':
+        return isEs ? `Meta & Recordatorio del Día (${w.id === 'postit' ? 'Principal' : w.id.replace('postit_', 'N°')})` : `Daily Goal & Focus Target (${w.id})`;
+      default:
+        return w.type;
     }
   };
 
@@ -60,10 +69,8 @@ export const WidgetsTab: React.FC<WidgetsTabProps> = ({
 
   const setPresetPosition = (id: string, key: 'top-left' | 'top-right' | 'center' | 'bottom-left' | 'bottom-right') => {
     const screenW = window.screen.width || window.innerWidth || 1920;
-    // Account for Windows Taskbar height (screen.availHeight excludes taskbar)
     const availH = window.screen.availHeight || (window.innerHeight - 60);
 
-    // Count existing active desktop widgets in the same corner to stack them neatly
     const sameCornerCount = widgets.filter(
       (w) => w.id !== id && (w.desktopActive || w.enabled) && w.settings?.cornerPreset === key
     ).length;
@@ -113,14 +120,14 @@ export const WidgetsTab: React.FC<WidgetsTabProps> = ({
         <Sparkles size={24} color="var(--accent-cyan)" style={{ flexShrink: 0 }} />
         <div style={{ fontSize: '0.84rem', color: 'var(--text-muted)', lineHeight: '1.5' }}>
           <strong style={{ color: '#ffffff' }}>
-            {isEs ? '💡 Suite de Widgets Esenciales para tu Escritorio:' : '💡 Essential Desktop Widget Suite:'}
+            {isEs ? '💡 Suite de Widgets Esenciales & Multi-Relojes Mundiales:' : '💡 Essential Widgets & World Clocks:'}
           </strong>
           <br />
           • <strong style={{ color: '#c084fc' }}>{isEs ? '🧪 Probar en App:' : '🧪 Test in App:'}</strong> {isEs ? 'Abre el widget flotante con marco dentro de esta ventana para probarlo y moverlo.' : 'Opens floating widget inside this window to drag and test.'}
           <br />
           • <strong style={{ color: 'var(--accent-cyan)' }}>{isEs ? '🖥️ Fijar en Escritorio:' : '🖥️ Pin to Desktop:'}</strong> {isEs ? 'Fija el widget 100% transparente sin marcos molestos sobre tu fondo de Windows.' : 'Pins clean widget onto your desktop background.'}
           <br />
-          • <strong style={{ color: 'var(--accent-amber)' }}>{isEs ? '⚙️ Personalizar:' : '⚙️ Customize:'}</strong> {isEs ? 'Cambia el estilo de reloj (Digital o Analógico), detecta tus discos (C:, D:) o agrega múltiples notas de colores.' : 'Switch clock style (Digital vs Analog), detect all drives (C:, D:) or add multiple colored notes.'}
+          • <strong style={{ color: 'var(--accent-amber)' }}>{isEs ? '⚙️ Personalizar & Multi-Relojes:' : '⚙️ Customize & Multi-Clocks:'}</strong> {isEs ? 'Agrega múltiples relojes con distintas zonas horarias (Tokio, Nueva York, Londres) o notas de metas del día.' : 'Add multiple clocks with different timezones (Tokyo, NY, London) or daily goal notes.'}
         </div>
       </div>
 
@@ -130,7 +137,7 @@ export const WidgetsTab: React.FC<WidgetsTabProps> = ({
           const isDesktopActive = !!(w.desktopActive || w.enabled);
           const isTestActive = !!w.testActive;
           const isExpanded = expandedEditId === w.id;
-          const isExtraPostIt = w.type === 'postit' && w.id !== 'postit';
+          const isExtraWidget = w.id !== 'clock' && w.id !== 'sysmonitor' && w.id !== 'postit';
 
           return (
             <div
@@ -190,11 +197,11 @@ export const WidgetsTab: React.FC<WidgetsTabProps> = ({
                     {isExpanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
                   </button>
 
-                  {/* Delete Extra Post-It Button */}
-                  {isExtraPostIt && (
+                  {/* Delete Extra Widget Button */}
+                  {isExtraWidget && (
                     <button
                       onClick={() => onDeleteWidget(w.id)}
-                      title={isEs ? 'Eliminar esta nota' : 'Delete this note'}
+                      title={isEs ? 'Eliminar este widget' : 'Delete this widget'}
                       style={{
                         background: 'rgba(244, 63, 94, 0.15)',
                         border: '1px solid rgba(244, 63, 94, 0.3)',
@@ -228,6 +235,55 @@ export const WidgetsTab: React.FC<WidgetsTabProps> = ({
                   {/* 1. Clock Customization */}
                   {w.type === 'clock' && (
                     <>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <span>{isEs ? 'Nombre / Etiqueta de Ciudad:' : 'City Name / Label:'}</span>
+                        <input
+                          type="text"
+                          value={w.settings?.cityLabel ?? ''}
+                          onChange={(e) => onUpdateWidgetSettings(w.id, { cityLabel: e.target.value })}
+                          placeholder={isEs ? 'Ej: 📍 Tokio, 📍 Nueva York, 📍 Madrid' : 'e.g. 📍 Tokyo, 📍 New York'}
+                          style={{
+                            background: 'rgba(0, 0, 0, 0.4)',
+                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                            borderRadius: '4px',
+                            color: '#ffffff',
+                            padding: '6px 8px',
+                            fontSize: '0.78rem',
+                            outline: 'none'
+                          }}
+                        />
+                      </div>
+
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span>{isEs ? 'Zona Horaria:' : 'Timezone:'}</span>
+                        <select
+                          value={w.settings?.timezoneOffset ?? 'local'}
+                          onChange={(e) => {
+                            const val = e.target.value === 'local' ? undefined : parseFloat(e.target.value);
+                            onUpdateWidgetSettings(w.id, { timezoneOffset: val });
+                          }}
+                          style={{
+                            background: 'rgba(15, 23, 42, 0.9)',
+                            color: '#ffffff',
+                            border: '1px solid rgba(255, 255, 255, 0.15)',
+                            borderRadius: '4px',
+                            padding: '4px 8px',
+                            fontSize: '0.78rem',
+                            outline: 'none',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          <option value="local">{isEs ? 'Local (Tu PC)' : 'Local PC Time'}</option>
+                          <option value="0">Londres / UTC+0</option>
+                          <option value="1">Madrid / París / UTC+1</option>
+                          <option value="-5">Nueva York / Miami / UTC-5</option>
+                          <option value="-8">Los Ángeles / UTC-8</option>
+                          <option value="9">Tokio / Japón / UTC+9</option>
+                          <option value="10">Sídney / Australia / UTC+10</option>
+                          <option value="-3">Santiago / BsAs / UTC-3</option>
+                        </select>
+                      </div>
+
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span>{isEs ? 'Estilo de reloj:' : 'Clock style:'}</span>
                         <div style={{ display: 'flex', gap: '6px' }}>
@@ -512,8 +568,33 @@ export const WidgetsTab: React.FC<WidgetsTabProps> = ({
                 {renderWidgetPreview(w)}
               </div>
 
-              {/* Add Extra Post-It button directly inside the Post-It card footer */}
-              {w.type === 'postit' && (
+              {/* Inline Add Button inside Clock or Post-It cards */}
+              {w.type === 'clock' && w.id === 'clock' && (
+                <button
+                  onClick={onAddClockWidget}
+                  style={{
+                    padding: '8px',
+                    borderRadius: 'var(--radius-sm)',
+                    border: '1px dashed rgba(56, 189, 248, 0.4)',
+                    background: 'rgba(56, 189, 248, 0.08)',
+                    color: 'var(--accent-cyan)',
+                    fontSize: '0.78rem',
+                    fontWeight: 600,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    cursor: 'pointer',
+                    marginTop: '4px',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <Globe size={14} />
+                  <span>{isEs ? '+ Agregar Otro Reloj (Ciudad / Zona Horaria)' : '+ Add Another World Clock'}</span>
+                </button>
+              )}
+
+              {w.type === 'postit' && w.id === 'postit' && (
                 <button
                   onClick={onAddPostItWidget}
                   style={{

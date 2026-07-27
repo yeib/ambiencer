@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Clock, Calendar } from 'lucide-react';
+import { Clock, Calendar, Globe } from 'lucide-react';
 import { AppSettings, WidgetSettings } from '../../types';
 
 interface ClockWidgetProps {
@@ -15,11 +15,21 @@ export const ClockWidget: React.FC<ClockWidgetProps> = ({ settings, widgetSettin
   const showSec = widgetSettings?.showSeconds !== false;
   const showDt = widgetSettings?.showDate !== false;
   const size = widgetSettings?.clockSize || 'md';
+  const tzOffset = widgetSettings?.timezoneOffset;
+  const cityLabel = widgetSettings?.cityLabel;
 
   useEffect(() => {
-    const timer = setInterval(() => setTime(new Date()), 1000);
+    const timer = setInterval(() => {
+      const now = new Date();
+      if (tzOffset !== undefined && tzOffset !== null) {
+        const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+        setTime(new Date(utc + (3600000 * tzOffset)));
+      } else {
+        setTime(now);
+      }
+    }, 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [tzOffset]);
 
   const is24h = format === '24h';
   const hours = is24h
@@ -45,6 +55,10 @@ export const ClockWidget: React.FC<ClockWidgetProps> = ({ settings, widgetSettin
   const dialSize = size === 'sm' ? 110 : size === 'lg' ? 160 : 130;
   const radius = dialSize / 2;
 
+  const defaultTitle = styleMode === 'analog'
+    ? (settings.language === 'es' ? 'Reloj Analógico' : 'Analog Clock')
+    : (settings.language === 'es' ? 'Reloj Digital' : 'Digital Clock');
+
   return (
     <div
       className="glass-panel"
@@ -61,11 +75,11 @@ export const ClockWidget: React.FC<ClockWidgetProps> = ({ settings, widgetSettin
     >
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--accent-cyan)', fontSize: '0.8rem', fontWeight: 600 }}>
-          <Clock size={14} />
-          <span>{styleMode === 'analog' ? (settings.language === 'es' ? 'Reloj Analógico' : 'Analog Clock') : (settings.language === 'es' ? 'Reloj Digital' : 'Digital Clock')}</span>
+          {cityLabel ? <Globe size={14} /> : <Clock size={14} />}
+          <span>{cityLabel || defaultTitle}</span>
         </div>
         <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontWeight: 700 }}>
-          {styleMode === 'analog' ? 'ANALOG' : is24h ? '24H' : '12H'}
+          {tzOffset !== undefined ? `UTC${tzOffset >= 0 ? '+' : ''}${tzOffset}` : (styleMode === 'analog' ? 'ANALOG' : is24h ? '24H' : '12H')}
         </span>
       </div>
 

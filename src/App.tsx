@@ -284,6 +284,32 @@ export const App: React.FC = () => {
     ]);
   };
 
+  const handleAddClockWidget = () => {
+    const count = widgets.filter((w) => w.type === 'clock').length + 1;
+    const newId = `clock_${Date.now()}`;
+
+    setWidgets((prev) => [
+      ...prev,
+      {
+        id: newId,
+        type: 'clock',
+        enabled: false,
+        desktopActive: false,
+        testActive: false,
+        position: { x: 40 + count * 20, y: 40 + count * 20 },
+        settings: {
+          clockFormat: '24h',
+          clockSize: 'md',
+          clockStyle: 'digital',
+          cityLabel: `📍 Tokio (UTC+9)`,
+          timezoneOffset: 9,
+          showSeconds: true,
+          showDate: true,
+        },
+      },
+    ]);
+  };
+
   const handleDeleteWidget = (id: string) => {
     setWidgets((prev) => prev.filter((w) => w.id !== id));
   };
@@ -584,6 +610,7 @@ export const App: React.FC = () => {
               }}
               onUpdateWidgetSettings={handleUpdateWidgetSettings}
               onAddPostItWidget={handleAddPostItWidget}
+              onAddClockWidget={handleAddClockWidget}
               onDeleteWidget={handleDeleteWidget}
             />
           )}
