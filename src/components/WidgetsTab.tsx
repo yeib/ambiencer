@@ -135,7 +135,9 @@ export const WidgetsTab: React.FC<WidgetsTabProps> = ({
 
       {/* Grid of Widgets */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '20px' }}>
-        {widgets.map((w) => {
+        {widgets
+          .filter((w) => ['clock', 'sysmonitor', 'postit'].includes(w.type))
+          .map((w) => {
           const isDesktopActive = !!(w.desktopActive || w.enabled);
           const isTestActive = !!w.testActive;
           const isExpanded = expandedEditId === w.id;

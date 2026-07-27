@@ -198,7 +198,13 @@ export const App: React.FC = () => {
     try {
       const saved = localStorage.getItem('ambiencer_widgets_state');
       if (saved) {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          const sanitized = parsed.filter(
+            (w: any) => w.type === 'clock' || w.type === 'sysmonitor' || w.type === 'postit'
+          );
+          if (sanitized.length > 0) return sanitized;
+        }
       }
     } catch (e) {}
     return [
