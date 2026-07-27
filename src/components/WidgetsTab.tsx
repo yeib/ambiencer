@@ -255,34 +255,68 @@ export const WidgetsTab: React.FC<WidgetsTabProps> = ({
                       </div>
 
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span>{isEs ? 'Zona Horaria:' : 'Timezone:'}</span>
-                        <select
-                          value={w.settings?.timezoneOffset ?? 'local'}
-                          onChange={(e) => {
-                            const val = e.target.value === 'local' ? undefined : parseFloat(e.target.value);
-                            onUpdateWidgetSettings(w.id, { timezoneOffset: val });
-                          }}
-                          style={{
-                            background: 'rgba(15, 23, 42, 0.9)',
-                            color: '#ffffff',
-                            border: '1px solid rgba(255, 255, 255, 0.15)',
-                            borderRadius: '4px',
-                            padding: '4px 8px',
-                            fontSize: '0.78rem',
-                            outline: 'none',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          <option value="local">{isEs ? 'Local (Tu PC)' : 'Local PC Time'}</option>
-                          <option value="0">Londres / UTC+0</option>
-                          <option value="1">Madrid / París / UTC+1</option>
-                          <option value="-5">Nueva York / Miami / UTC-5</option>
-                          <option value="-8">Los Ángeles / UTC-8</option>
-                          <option value="9">Tokio / Japón / UTC+9</option>
-                          <option value="10">Sídney / Australia / UTC+10</option>
-                          <option value="-3">Santiago / BsAs / UTC-3</option>
-                        </select>
+                        <span>{isEs ? 'Hora del Reloj:' : 'Clock Time:'}</span>
+                        <div style={{ display: 'flex', gap: '6px' }}>
+                          <button
+                            onClick={() => onUpdateWidgetSettings(w.id, { timezoneOffset: undefined })}
+                            style={{
+                              padding: '3px 8px',
+                              borderRadius: '4px',
+                              background: w.settings?.timezoneOffset === undefined ? 'var(--accent-cyan)' : 'rgba(255,255,255,0.06)',
+                              color: w.settings?.timezoneOffset === undefined ? '#000' : '#fff',
+                              border: 'none',
+                              cursor: 'pointer',
+                              fontWeight: 600,
+                              fontSize: '0.75rem'
+                            }}
+                          >{isEs ? 'Local (PC)' : 'Local PC'}</button>
+
+                          <button
+                            onClick={() => onUpdateWidgetSettings(w.id, { timezoneOffset: 0 })}
+                            style={{
+                              padding: '3px 8px',
+                              borderRadius: '4px',
+                              background: w.settings?.timezoneOffset !== undefined ? 'var(--accent-cyan)' : 'rgba(255,255,255,0.06)',
+                              color: w.settings?.timezoneOffset !== undefined ? '#000' : '#fff',
+                              border: 'none',
+                              cursor: 'pointer',
+                              fontWeight: 600,
+                              fontSize: '0.75rem'
+                            }}
+                          >{isEs ? 'Personalizar UTC' : 'Custom UTC'}</button>
+                        </div>
                       </div>
+
+                      {w.settings?.timezoneOffset !== undefined && (
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span>{isEs ? 'Desfasaje UTC (ej: -4, -3.5, +9):' : 'UTC Offset (e.g. -4, -3.5, +9):'}</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <span style={{ color: 'var(--accent-cyan)', fontWeight: 700 }}>UTC</span>
+                            <input
+                              type="number"
+                              step="0.5"
+                              min="-12"
+                              max="14"
+                              value={w.settings?.timezoneOffset ?? 0}
+                              onChange={(e) => {
+                                const val = parseFloat(e.target.value);
+                                onUpdateWidgetSettings(w.id, { timezoneOffset: isNaN(val) ? 0 : val });
+                              }}
+                              style={{
+                                width: '64px',
+                                background: 'rgba(0, 0, 0, 0.4)',
+                                border: '1px solid rgba(255, 255, 255, 0.15)',
+                                borderRadius: '4px',
+                                color: '#ffffff',
+                                padding: '4px 6px',
+                                fontSize: '0.8rem',
+                                outline: 'none',
+                                textAlign: 'center'
+                              }}
+                            />
+                          </div>
+                        </div>
+                      )}
 
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span>{isEs ? 'Estilo de reloj:' : 'Clock style:'}</span>
