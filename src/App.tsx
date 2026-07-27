@@ -7,7 +7,6 @@ import { WidgetsTab } from './components/WidgetsTab';
 import { FrequencyGeneratorTab } from './components/FrequencyGeneratorTab';
 import { WallpapersTab } from './components/WallpapersTab';
 import { WallpaperEngine } from './components/WallpaperEngine';
-import { OmnibarModal } from './components/OmnibarModal';
 import { SettingsModal } from './components/SettingsModal';
 import { FloatingWidgetOverlay } from './components/widgets/FloatingWidgetOverlay';
 import { audioEngine } from './audio/WebAudioEngine';
@@ -263,8 +262,6 @@ export const App: React.FC = () => {
     }
   }, []);
 
-  const [isOmnibarOpen, setIsOmnibarOpen] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [sleepTimer, setSleepTimer] = useState<number | null>(null);
 
   // Dynamic Global CSS Theme Accent Variable Propagation
@@ -302,14 +299,8 @@ export const App: React.FC = () => {
     }
   }, [channels, freqState, isPlaying]);
 
-  // Hotkeys & Mouse 4/5 navigation support
+  // Mouse 4/5 navigation support
   useEffect(() => {
-    const handleGlobalKeyDown = (e: KeyboardEvent) => {
-      if (e.key === '/' || (e.ctrlKey && e.code === 'Space')) {
-        e.preventDefault();
-        setIsOmnibarOpen(true);
-      }
-    };
     const handleMouseAux = (e: MouseEvent) => {
       const tabs: ActiveTab[] = ['mixer', 'generator', 'presets', 'wallpapers', 'widgets', 'settings'];
       const idx = tabs.indexOf(activeTab);
@@ -317,10 +308,8 @@ export const App: React.FC = () => {
       else if (e.button === 4 && idx < tabs.length - 1) setActiveTab(tabs[idx + 1]);
     };
 
-    window.addEventListener('keydown', handleGlobalKeyDown);
     window.addEventListener('mouseup', handleMouseAux);
     return () => {
-      window.removeEventListener('keydown', handleGlobalKeyDown);
       window.removeEventListener('mouseup', handleMouseAux);
     };
   }, [activeTab]);
@@ -433,9 +422,6 @@ export const App: React.FC = () => {
           onTogglePlay={handleTogglePlay}
           onMasterVolumeChange={(vol) => setSettings((s) => ({ ...s, masterVolume: vol }))}
           onToggleMute={() => setSettings((s) => ({ ...s, isMuted: !s.isMuted }))}
-          onOpenOmnibar={() => setIsOmnibarOpen(true)}
-          onToggleLanguage={() => setSettings((s) => ({ ...s, language: s.language === 'es' ? 'en' : 'es' }))}
-          onOpenSettings={() => setIsSettingsOpen(true)}
           onSetSleepTimer={setSleepTimer}
         />
 
@@ -502,29 +488,6 @@ export const App: React.FC = () => {
             </div>
           )}
         </main>
-
-        {/* Omnibar Command Modal */}
-        <OmnibarModal
-          isOpen={isOmnibarOpen}
-          settings={settings}
-          channels={channels}
-          presets={allPresets}
-          onClose={() => setIsOmnibarOpen(false)}
-          onApplyPreset={handleApplyPreset}
-          onSelectSound={(id) => {
-            handleChannelVolumeChange(id, 0.5);
-            setActiveTab('mixer');
-          }}
-          onToggleLanguage={() => setSettings((s) => ({ ...s, language: s.language === 'es' ? 'en' : 'es' }))}
-        />
-
-        {/* Settings Modal */}
-        <SettingsModal
-          isOpen={isSettingsOpen}
-          settings={settings}
-          onClose={() => setIsSettingsOpen(false)}
-          onUpdateSettings={(newS) => setSettings((prev) => ({ ...prev, ...newS }))}
-        />
       </div>
     </div>
   );
