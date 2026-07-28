@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getCurrentWindow } from '@tauri-apps/api/window';
 import { Header } from './components/Header';
 import { Navigation } from './components/Navigation';
 import { SoundMixer } from './components/SoundMixer';
@@ -133,15 +134,13 @@ const SYSTEM_PRESETS: FocusPreset[] = [
 export const App: React.FC = () => {
   // Smooth window reveal on mount to eliminate transparent flicker at launch
   useEffect(() => {
-    import('@tauri-apps/api/window').then(({ getCurrentWindow }) => {
-      try {
-        const win = getCurrentWindow();
-        if (win && win.label === 'main') {
-          win.show();
-          win.setFocus();
-        }
-      } catch (e) {}
-    }).catch(() => {});
+    try {
+      const win = getCurrentWindow();
+      if (win && win.label === 'main') {
+        win.show().catch(() => {});
+        win.setFocus().catch(() => {});
+      }
+    } catch (e) {}
   }, []);
 
   const [activeTab, setActiveTab] = useState<ActiveTab>('mixer');

@@ -215,6 +215,13 @@ fn main() {
         if let Some(main_win) = app.get_webview_window("main") {
           let _ = main_win.hide();
         }
+      } else if let Some(main_win) = app.get_webview_window("main") {
+        // Fallback: Reveal window after 300ms in case of frontend reload delay
+        let win_clone = main_win.clone();
+        tauri::async_runtime::spawn(async move {
+          tokio::time::sleep(std::time::Duration::from_millis(300)).await;
+          let _ = win_clone.show();
+        });
       }
 
       let quit_i = MenuItem::with_id(app, "quit", "Salir de Ambiencer", true, None::<&str>)?;
