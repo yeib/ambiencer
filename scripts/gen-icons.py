@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import os
 import sys
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFilter
 
 def generate_icons():
     root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -65,14 +65,53 @@ def generate_icons():
     wide_img.save(os.path.join(store_dir, "Wide310x150Logo.png"), "PNG")
     print("  ✅ Generado: Wide310x150Logo.png (310x150)")
 
-    # Poster Art vertical para Microsoft Store (720x1080)
-    poster = Image.new("RGBA", (720, 1080), (11, 15, 25, 255))
-    poster_icon = img.resize((360, 360), Image.Resampling.LANCZOS)
-    p_x = (720 - 360) // 2
-    p_y = (1080 - 360) // 2
+    # Poster Art vertical para Microsoft Store (720x1080) - Estética Dark Glassmorphism Premium
+    W, H = 720, 1080
+    poster = Image.new("RGBA", (W, H))
+    draw = ImageDraw.Draw(poster)
+    
+    # Gradient bicolor vertical (#090d16 -> #191228)
+    for y in range(H):
+        t = y / H
+        r = int(9 + (25 - 9) * t)
+        g = int(13 + (18 - 13) * t)
+        b = int(22 + (40 - 22) * t)
+        draw.line([(0, y), (W, y)], fill=(r, g, b, 255))
+        
+    # Esferas de luz neón ambiental (Emerald Cyan & Mystic Purple)
+    orb_layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    orb_draw = ImageDraw.Draw(orb_layer)
+    orb_draw.ellipse([60, 180, 500, 620], fill=(16, 185, 129, 65))
+    orb_draw.ellipse([220, 350, 660, 790], fill=(168, 85, 247, 75))
+    orb_draw.ellipse([100, 620, 620, 1040], fill=(56, 189, 248, 50))
+    
+    # Desenfoque gaussiano profundo para resplandor cristalino
+    orb_layer = orb_layer.filter(ImageFilter.GaussianBlur(85))
+    poster = Image.alpha_composite(poster, orb_layer)
+    
+    # Anillos flotantes de vidrio (Glassmorphic Rings)
+    ring_layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    ring_draw = ImageDraw.Draw(ring_layer)
+    ring_draw.ellipse([50, 230, 670, 850], outline=(255, 255, 255, 25), width=2)
+    ring_draw.ellipse([130, 310, 590, 770], outline=(56, 189, 248, 35), width=1)
+    poster = Image.alpha_composite(poster, ring_layer)
+    
+    # Logo central con sombra y resplandor aura
+    icon_size = 340
+    poster_icon = img.resize((icon_size, icon_size), Image.Resampling.LANCZOS)
+    p_x = (W - icon_size) // 2
+    p_y = (H - icon_size) // 2 - 20
+    
+    shadow_layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    shadow_draw = ImageDraw.Draw(shadow_layer)
+    shadow_draw.ellipse([p_x - 25, p_y - 25, p_x + icon_size + 25, p_y + icon_size + 25], fill=(168, 85, 247, 100))
+    shadow_layer = shadow_layer.filter(ImageFilter.GaussianBlur(35))
+    
+    poster = Image.alpha_composite(poster, shadow_layer)
     poster.paste(poster_icon, (p_x, p_y), poster_icon)
+    
     poster.save(os.path.join(store_dir, "poster_720x1080.png"), "PNG")
-    print("  ✅ Generado: poster_720x1080.png (720x1080)")
+    print("  ✅ Generado: poster_720x1080.png (720x1080 Bicolor Glassmorphic)")
 
     # Guardar icon.ico
     ico_img = img.resize((32, 32), Image.Resampling.LANCZOS)
