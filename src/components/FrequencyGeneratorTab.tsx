@@ -35,39 +35,109 @@ export const FrequencyGeneratorTab: React.FC<FrequencyGeneratorTabProps> = ({
 
   return (
     <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      {/* Header Info */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
-        <div>
-          <h2 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#ffffff', marginBottom: '4px' }}>
-            {getTranslation(lang, 'synthTitle')}
-          </h2>
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-            {getTranslation(lang, 'synthDesc')}
-          </p>
+      {/* Master Control Card with Dedicated Volume Slider & Power Toggle */}
+      <div
+        className="glass-card"
+        style={{
+          padding: '20px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '16px',
+          border: state.enabled ? '1px solid var(--accent-purple)' : 'var(--border-glass)',
+          background: state.enabled ? 'rgba(38, 22, 56, 0.6)' : 'var(--bg-glass-card)',
+          boxShadow: state.enabled ? '0 0 25px rgba(168, 85, 247, 0.2)' : 'none',
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
+          <div>
+            <h2 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#ffffff', marginBottom: '4px' }}>
+              {getTranslation(lang, 'synthTitle')}
+            </h2>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+              {getTranslation(lang, 'synthDesc')}
+            </p>
+          </div>
+
+          {/* Master Power Toggle */}
+          <button
+            onClick={() => onChangeState({ enabled: !state.enabled })}
+            style={{
+              padding: '10px 22px',
+              borderRadius: 'var(--radius-full)',
+              border: state.enabled ? '1px solid var(--accent-purple)' : 'var(--border-glass)',
+              background: state.enabled ? 'var(--accent-purple-glow)' : 'rgba(255, 255, 255, 0.05)',
+              color: state.enabled ? '#ffffff' : 'var(--text-muted)',
+              fontSize: '0.88rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              boxShadow: state.enabled ? '0 0 20px rgba(168, 85, 247, 0.4)' : 'none',
+              transition: 'all 0.2s'
+            }}
+          >
+            <Sparkles size={18} />
+            <span>{state.enabled ? getTranslation(lang, 'synthActive') : getTranslation(lang, 'synthEnable')}</span>
+          </button>
         </div>
 
-        {/* Master Power Toggle */}
-        <button
-          onClick={() => onChangeState({ enabled: !state.enabled })}
+        {/* Main Frequency Volume Control Bar */}
+        <div
           style={{
-            padding: '8px 20px',
-            borderRadius: 'var(--radius-full)',
-            border: state.enabled ? '1px solid var(--accent-purple)' : 'var(--border-glass)',
-            background: state.enabled ? 'var(--accent-purple-glow)' : 'rgba(255, 255, 255, 0.05)',
-            color: state.enabled ? 'var(--accent-purple)' : 'var(--text-muted)',
-            fontSize: '0.85rem',
-            fontWeight: 700,
-            cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
-            gap: '8px',
-            boxShadow: state.enabled ? '0 0 20px rgba(168, 85, 247, 0.3)' : 'none',
-            transition: 'all 0.2s'
+            gap: '16px',
+            background: 'rgba(0, 0, 0, 0.3)',
+            padding: '12px 18px',
+            borderRadius: 'var(--radius-md)',
+            border: 'var(--border-glass)',
+            flexWrap: 'wrap'
           }}
         >
-          <Sparkles size={16} />
-          <span>{state.enabled ? getTranslation(lang, 'synthActive') : getTranslation(lang, 'synthEnable')}</span>
-        </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: '170px' }}>
+            <button
+              onClick={() => onChangeState({ volume: state.volume > 0 ? 0 : 0.3, enabled: state.volume === 0 ? true : state.enabled })}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: state.volume === 0 || !state.enabled ? 'var(--accent-rose)' : 'var(--accent-purple)',
+                cursor: 'pointer',
+                padding: 0,
+                display: 'flex',
+                alignItems: 'center'
+              }}
+              title={state.volume === 0 ? 'Activar Volumen' : 'Silenciar Frecuencia'}
+            >
+              {state.volume === 0 || !state.enabled ? <VolumeX size={20} /> : <Volume2 size={20} />}
+            </button>
+            <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-main)' }}>
+              {getTranslation(lang, 'freqVolume')}
+            </span>
+          </div>
+
+          <div style={{ flex: 1, minWidth: '200px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value={state.enabled ? state.volume : 0}
+              onChange={(e) => {
+                const vol = parseFloat(e.target.value);
+                onChangeState({ volume: vol, enabled: vol > 0 ? true : state.enabled });
+              }}
+              style={{
+                accentColor: 'var(--accent-purple)',
+                flex: 1
+              }}
+            />
+            <span style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--accent-purple)', width: '45px', textAlign: 'right' }}>
+              {state.enabled ? `${Math.round(state.volume * 100)}%` : '0%'}
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* Quick Solfeggio Healing Frequencies Pills */}

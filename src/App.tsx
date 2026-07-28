@@ -580,6 +580,11 @@ export const App: React.FC = () => {
             <SoundMixer
               channels={channels}
               settings={settings}
+              freqState={freqState}
+              onChangeFreqState={(newS) => {
+                setFreqState((prev) => ({ ...prev, ...newS }));
+                if (!isPlaying && (newS.enabled || newS.volume)) setIsPlaying(true);
+              }}
               onVolumeChange={handleChannelVolumeChange}
               onToggleMuteChannel={handleToggleMuteChannel}
               onResetMixer={handleResetMixer}

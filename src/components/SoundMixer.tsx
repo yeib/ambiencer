@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { Volume2, VolumeX, RotateCcw, CloudRain, Zap, Waves, Wind, Flame, Coffee, Keyboard, Radio, Disc, Car, Train, BookOpen, PenTool, Heart, Trees, Cpu, Headphones, Compass, Sparkles, Moon, Sun, Droplets, Palmtree, Flower2, CircleDot } from 'lucide-react';
-import { SoundChannel, SoundCategory, AppSettings } from '../types';
+import { SoundChannel, SoundCategory, AppSettings, FrequencyGeneratorState } from '../types';
 import { SavePresetModal } from './SavePresetModal';
 import { getTranslation } from '../i18n';
 
 interface SoundMixerProps {
   channels: SoundChannel[];
   settings: AppSettings;
+  freqState?: FrequencyGeneratorState;
+  onChangeFreqState?: (newState: Partial<FrequencyGeneratorState>) => void;
   onVolumeChange: (id: string, volume: number) => void;
   onToggleMuteChannel: (id: string) => void;
   onResetMixer: () => void;
@@ -16,6 +18,8 @@ interface SoundMixerProps {
 export const SoundMixer: React.FC<SoundMixerProps> = ({
   channels,
   settings,
+  freqState,
+  onChangeFreqState,
   onVolumeChange,
   onToggleMuteChannel,
   onResetMixer,
@@ -149,6 +153,122 @@ export const SoundMixer: React.FC<SoundMixerProps> = ({
 
       {/* Grid of Sound Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '16px' }}>
+        {/* Synthesizer Frequency Master Card */}
+        {freqState && onChangeFreqState && (selectedCategory === 'all' || selectedCategory === 'synth') && (() => {
+          const isFreqActive = freqState.enabled && freqState.volume > 0;
+          const freqPercent = isFreqActive ? Math.round(freqState.volume * 100) : 0;
+          const modeText = freqState.mode === 'binaural'
+            ? `Binaural ${freqState.beatFreq}Hz`
+            : `${freqState.carrierFreq}Hz`;
+
+          return (
+            <div
+              key="binaural-synth-card"
+              className="glass-card"
+              style={{
+                height: '110px',
+                boxSizing: 'border-box',
+                padding: '14px 16px',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                border: isFreqActive ? '1px solid var(--accent-purple)' : 'var(--border-glass)',
+                background: isFreqActive ? 'rgba(38, 22, 56, 0.65)' : 'var(--bg-glass-card)',
+                boxShadow: isFreqActive ? '0 0 20px rgba(168, 85, 247, 0.25)' : 'none',
+                position: 'relative',
+                overflow: 'hidden'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
+                  <div
+                    style={{
+                      width: '36px',
+                      height: '36px',
+                      borderRadius: '10px',
+                      background: isFreqActive ? 'var(--accent-purple-glow)' : 'rgba(168, 85, 247, 0.08)',
+                      color: 'var(--accent-purple)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0
+                    }}
+                  >
+                    <Sparkles size={20} />
+                  </div>
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <h3
+                      style={{
+                        fontSize: '0.86rem',
+                        fontWeight: 600,
+                        color: isFreqActive ? '#ffffff' : 'var(--text-main)',
+                        marginBottom: '2px',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis'
+                      }}
+                    >
+                      {lang === 'es' ? 'Frecuencias & Binaural' : 'Binaural & Frequencies'}
+                    </h3>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span
+                        style={{
+                          fontSize: '0.62rem',
+                          fontWeight: 700,
+                          padding: '1px 5px',
+                          borderRadius: '4px',
+                          background: 'rgba(168, 85, 247, 0.15)',
+                          border: '1px solid rgba(168, 85, 247, 0.3)',
+                          color: 'var(--accent-purple)',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '3px',
+                          whiteSpace: 'nowrap'
+                        }}
+                      >
+                        <Cpu size={9} />
+                        {modeText}
+                      </span>
+                      <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600 }}>{freqPercent}%</span>
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => onChangeFreqState({ enabled: !freqState.enabled, volume: freqState.volume === 0 ? 0.3 : freqState.volume })}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: isFreqActive ? 'var(--accent-purple)' : 'var(--text-dim)',
+                    cursor: 'pointer',
+                    padding: '4px',
+                    flexShrink: 0
+                  }}
+                  title={isFreqActive ? 'Desactivar Frecuencias' : 'Activar Frecuencias'}
+                >
+                  {isFreqActive ? <Volume2 size={18} /> : <VolumeX size={18} />}
+                </button>
+              </div>
+
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value={freqState.enabled ? freqState.volume : 0}
+                onChange={(e) => {
+                  const vol = parseFloat(e.target.value);
+                  onChangeFreqState({ volume: vol, enabled: vol > 0 });
+                }}
+                style={{
+                  accentColor: 'var(--accent-purple)',
+                  width: '100%'
+                }}
+              />
+            </div>
+          );
+        })()}
+
         {filteredChannels.map((ch) => {
           const isActive = ch.volume > 0 && !ch.isMuted;
           const isRealAudio = ch.type === 'media';
