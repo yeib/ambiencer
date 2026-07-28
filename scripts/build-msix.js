@@ -9,11 +9,14 @@ const rootDir = path.resolve(__dirname, '..');
 
 const shouldBump = process.argv.includes('--bump');
 const targetConfPath = path.join(rootDir, 'src-tauri', 'tauri.conf.json');
+const pkgPath = path.join(rootDir, 'package.json');
 
-if (shouldBump && fs.existsSync(targetConfPath)) {
+let currentVersion = '1.0.0';
+
+if (fs.existsSync(targetConfPath)) {
   try {
     const json = JSON.parse(fs.readFileSync(targetConfPath, 'utf-8'));
-    if (json.version) {
+    if (shouldBump && json.version) {
       const parts = json.version.split('.');
       if (parts.length >= 3) {
         const patch = parseInt(parts[2], 10) + 1;
@@ -21,10 +24,18 @@ if (shouldBump && fs.existsSync(targetConfPath)) {
         json.version = `${parts[0]}.${parts[1]}.${patch}`;
         fs.writeFileSync(targetConfPath, JSON.stringify(json, null, 2), 'utf-8');
         console.log(`🔢 Auto-incrementando versión: ${oldVer} -> ${json.version}`);
+
+        if (fs.existsSync(pkgPath)) {
+          const pkgJson = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
+          pkgJson.version = json.version;
+          fs.writeFileSync(pkgPath, JSON.stringify(pkgJson, null, 2), 'utf-8');
+        }
       }
     }
+    currentVersion = json.version;
+    console.log(`📌 Compilando versión registrada activa: v${currentVersion}`);
   } catch (err) {
-    console.error(`⚠️ No se pudo auto-incrementar la versión:`, err);
+    console.error(`⚠️ Error procesando versión:`, err);
   }
 }
 
