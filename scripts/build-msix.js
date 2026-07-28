@@ -100,6 +100,20 @@ try {
     execSync('npx tauri-windows-bundle init', { stdio: 'inherit', cwd: rootDir });
   }
 
+  // 3.6 Inyectar credenciales oficiales de Microsoft Store en bundle.config.json
+  const bundleConfPath = path.join(rootDir, 'src-tauri', 'gen', 'windows', 'bundle.config.json');
+  if (fs.existsSync(bundleConfPath)) {
+    try {
+      const bundleConf = JSON.parse(fs.readFileSync(bundleConfPath, 'utf-8'));
+      bundleConf.publisher = 'CN=A3BEC9C4-FDB6-4E8A-8B23-D67FB5F9DB0D';
+      bundleConf.publisherDisplayName = 'Yeib';
+      fs.writeFileSync(bundleConfPath, JSON.stringify(bundleConf, null, 2), 'utf-8');
+      console.log(`🔑 Credenciales oficiales de Microsoft Store inyectadas (CN=A3BEC9C4-FDB6-4E8A-8B23-D67FB5F9DB0D, Yeib)`);
+    } catch (e) {
+      console.warn(`⚠️ No se pudo inyectar credenciales en bundle.config.json:`, e);
+    }
+  }
+
   // 4. Generar paquete MSIX usando @choochmeque/tauri-windows-bundle
   console.log(`⚡ Empaquetando paquete MSIX oficial con tauri-windows-bundle...`);
   execSync('npx tauri-windows-bundle build --runner npm --regenerate-assets', { stdio: 'inherit', cwd: rootDir });
