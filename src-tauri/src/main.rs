@@ -218,8 +218,8 @@ fn main() {
       } else if let Some(main_win) = app.get_webview_window("main") {
         // Fallback: Reveal window after 300ms in case of frontend reload delay
         let win_clone = main_win.clone();
-        tauri::async_runtime::spawn(async move {
-          tokio::time::sleep(std::time::Duration::from_millis(300)).await;
+        std::thread::spawn(move || {
+          std::thread::sleep(std::time::Duration::from_millis(300));
           let _ = win_clone.show();
         });
       }
