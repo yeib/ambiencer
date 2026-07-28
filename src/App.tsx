@@ -16,36 +16,36 @@ import './styles/main.css';
 
 const INITIAL_CHANNELS: SoundChannel[] = [
   // Naturaleza & Clima
-  { id: 'waves', nameKey: 'soundWaves', icon: 'waves', category: 'nature', volume: 0.5, isMuted: false, type: 'media', fileUrl: '/sounds/powerful-oceanic-waves-crashing-against_072626.webm' },
-  { id: 'rain', nameKey: 'soundRain', icon: 'rain', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/gentle-raindrops-falling-steadily-on_072526.webm' },
-  { id: 'thunder', nameKey: 'soundThunder', icon: 'thunder', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/heavy-thunderstorm-rumble-distant-low_072526.webm' },
-  { id: 'waterfall', nameKey: 'soundWaterfall', icon: 'waterfall', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/powerful-mountain-waterfall-roaring-stream_072626.webm' },
-  { id: 'wind', nameKey: 'soundWind', icon: 'wind', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/soft-autumn-wind-blowing-through_072526.webm' },
-  { id: 'fire', nameKey: 'soundFire', icon: 'fire', category: 'nature', volume: 0.3, isMuted: false, type: 'media', fileUrl: '/sounds/crackle-of-a-cozy-fireplace_072526.webm' },
-  { id: 'morning_forest', nameKey: 'soundMorningForest', icon: 'morning_forest', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/peaceful-morning-forest-ambience-gentle_072626.webm' },
-  { id: 'night_forest', nameKey: 'soundNightForest', icon: 'night_forest', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/calm-summer-night-forest-ambience_072526.webm' },
-  { id: 'jungle', nameKey: 'soundJungle', icon: 'jungle', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/deep-tropical-rainforest-jungle-ambience_072626.webm' },
-  { id: 'meadow', nameKey: 'soundMeadow', icon: 'meadow', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/calm-open-spring-meadow-landscape_072626.webm' },
-  { id: 'bamboo', nameKey: 'soundBamboo', icon: 'bamboo', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/japanese-bamboo-water-fountain-shishi-odoshi_072526.webm' },
-  { id: 'zen_pond', nameKey: 'soundZenPond', icon: 'zen_pond', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/tranquil-japanese-zen-garden-gentle_072626.webm' },
-  { id: 'cave', nameKey: 'soundCave', icon: 'cave', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/large-ancient-stone-cave-acoustic_072526.webm' },
+  { id: 'waves', nameKey: 'soundWaves', icon: 'waves', category: 'nature', volume: 0.5, isMuted: false, type: 'media', fileUrl: '/sounds/powerful-oceanic-waves-crashing-against_072626.webm', gainCalibration: 0.75 },
+  { id: 'rain', nameKey: 'soundRain', icon: 'rain', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/gentle-raindrops-falling-steadily-on_072526.webm', gainCalibration: 0.75 },
+  { id: 'thunder', nameKey: 'soundThunder', icon: 'thunder', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/heavy-thunderstorm-rumble-distant-low_072526.webm', gainCalibration: 0.80 },
+  { id: 'waterfall', nameKey: 'soundWaterfall', icon: 'waterfall', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/powerful-mountain-waterfall-roaring-stream_072626.webm', gainCalibration: 0.75 },
+  { id: 'wind', nameKey: 'soundWind', icon: 'wind', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/soft-autumn-wind-blowing-through_072526.webm', gainCalibration: 1.0 },
+  { id: 'fire', nameKey: 'soundFire', icon: 'fire', category: 'nature', volume: 0.3, isMuted: false, type: 'media', fileUrl: '/sounds/crackle-of-a-cozy-fireplace_072526.webm', gainCalibration: 0.85 },
+  { id: 'morning_forest', nameKey: 'soundMorningForest', icon: 'morning_forest', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/peaceful-morning-forest-ambience-gentle_072626.webm', gainCalibration: 1.0 },
+  { id: 'night_forest', nameKey: 'soundNightForest', icon: 'night_forest', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/calm-summer-night-forest-ambience_072526.webm', gainCalibration: 1.0 },
+  { id: 'jungle', nameKey: 'soundJungle', icon: 'jungle', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/deep-tropical-rainforest-jungle-ambience_072626.webm', gainCalibration: 1.0 },
+  { id: 'meadow', nameKey: 'soundMeadow', icon: 'meadow', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/calm-open-spring-meadow-landscape_072626.webm', gainCalibration: 1.0 },
+  { id: 'bamboo', nameKey: 'soundBamboo', icon: 'bamboo', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/japanese-bamboo-water-fountain-shishi-odoshi_072526.webm', gainCalibration: 1.0 },
+  { id: 'zen_pond', nameKey: 'soundZenPond', icon: 'zen_pond', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/tranquil-japanese-zen-garden-gentle_072626.webm', gainCalibration: 1.0 },
+  { id: 'cave', nameKey: 'soundCave', icon: 'cave', category: 'nature', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/large-ancient-stone-cave-acoustic_072526.webm', gainCalibration: 1.0 },
 
   // Urbanos & Espacios Acogedores
-  { id: 'car_rain', nameKey: 'soundCarRain', icon: 'car', category: 'urban', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/night-rain-falling-on-car_072526.webm' },
-  { id: 'train', nameKey: 'soundTrain', icon: 'train', category: 'urban', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/passenger-train-interior-gentle-rhythmic_072526.webm' },
-  { id: 'library', nameKey: 'soundLibrary', icon: 'library', category: 'urban', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/quiet-library-interior-subtle-paper_072526.webm' },
+  { id: 'car_rain', nameKey: 'soundCarRain', icon: 'car', category: 'urban', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/night-rain-falling-on-car_072526.webm', gainCalibration: 0.80 },
+  { id: 'train', nameKey: 'soundTrain', icon: 'train', category: 'urban', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/passenger-train-interior-gentle-rhythmic_072526.webm', gainCalibration: 1.0 },
+  { id: 'library', nameKey: 'soundLibrary', icon: 'library', category: 'urban', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/quiet-library-interior-subtle-paper_072526.webm', gainCalibration: 1.35 },
 
   // ASMR & Tactil
-  { id: 'keyboard', nameKey: 'soundKeyboard', icon: 'keyboard', category: 'asmr', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/asmr-mechanical-keyboard-typing-thocky_072526.webm' },
-  { id: 'pencil', nameKey: 'soundPencil', icon: 'pencil', category: 'asmr', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/pencil-writing-smoothly-on-thick_072526.webm' },
+  { id: 'keyboard', nameKey: 'soundKeyboard', icon: 'keyboard', category: 'asmr', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/asmr-mechanical-keyboard-typing-thocky_072526.webm', gainCalibration: 0.80 },
+  { id: 'pencil', nameKey: 'soundPencil', icon: 'pencil', category: 'asmr', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/pencil-writing-smoothly-on-thick_072526.webm', gainCalibration: 1.40 },
 
   // Zen & Sanación Sonora
-  { id: 'om_chant', nameKey: 'soundOmChant', icon: 'om_chant', category: 'synth', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/deep-meditative-sacred-om-chant_072626.webm' },
-  { id: 'singing_bowl', nameKey: 'soundSingingBowl', icon: 'singing_bowl', category: 'synth', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/meditative-singing-bowl-warm-drone_072526.webm' },
-  { id: 'solar_synth', nameKey: 'soundSolarSynth', icon: 'solar_synth', category: 'synth', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/warm-analog-synth-ambient-drone_072526.webm' },
-  { id: 'space_pad', nameKey: 'soundSpacePad', icon: 'space', category: 'synth', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/deep-space-cosmic-ambient-pad_072526.webm' },
-  { id: 'pink_noise', nameKey: 'soundPinkNoise', icon: 'radio', category: 'synth', volume: 0.0, isMuted: false, type: 'pink_noise' },
-  { id: 'white_noise', nameKey: 'soundWhiteNoise', icon: 'radio', category: 'synth', volume: 0.0, isMuted: false, type: 'white_noise' },
+  { id: 'om_chant', nameKey: 'soundOmChant', icon: 'om_chant', category: 'synth', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/deep-meditative-sacred-om-chant_072626.webm', gainCalibration: 1.0 },
+  { id: 'singing_bowl', nameKey: 'soundSingingBowl', icon: 'singing_bowl', category: 'synth', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/meditative-singing-bowl-warm-drone_072526.webm', gainCalibration: 1.0 },
+  { id: 'solar_synth', nameKey: 'soundSolarSynth', icon: 'solar_synth', category: 'synth', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/warm-analog-synth-ambient-drone_072526.webm', gainCalibration: 1.0 },
+  { id: 'space_pad', nameKey: 'soundSpacePad', icon: 'space', category: 'synth', volume: 0.0, isMuted: false, type: 'media', fileUrl: '/sounds/deep-space-cosmic-ambient-pad_072526.webm', gainCalibration: 1.0 },
+  { id: 'pink_noise', nameKey: 'soundPinkNoise', icon: 'radio', category: 'synth', volume: 0.0, isMuted: false, type: 'pink_noise', gainCalibration: 0.85 },
+  { id: 'white_noise', nameKey: 'soundWhiteNoise', icon: 'radio', category: 'synth', volume: 0.0, isMuted: false, type: 'white_noise', gainCalibration: 0.70 },
 ];
 
 const SYSTEM_PRESETS: FocusPreset[] = [
@@ -414,7 +414,7 @@ export const App: React.FC = () => {
     if (isPlaying) {
       audioEngine.resume();
       channels.forEach((ch) => {
-        audioEngine.updateChannelVolume(ch.id, ch.volume, ch.isMuted, ch.type, ch.fileUrl);
+        audioEngine.updateChannelVolume(ch.id, ch.volume, ch.isMuted, ch.type, ch.fileUrl, ch.gainCalibration ?? 1.0);
       });
       audioEngine.updateFrequencyGenerator(freqState);
     } else {

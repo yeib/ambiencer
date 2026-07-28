@@ -135,9 +135,10 @@ class WebAudioEngine {
   }
 
   // --- Channel Audio Controls ---
-  public updateChannelVolume(channelId: string, vol: number, isMuted: boolean, type: string, fileUrl?: string) {
+  public updateChannelVolume(channelId: string, vol: number, isMuted: boolean, type: string, fileUrl?: string, gainCalibration: number = 1.0) {
     if (!this.ctx) this.init();
-    const effectiveVol = isMuted ? 0 : vol;
+    const calibratedVol = vol * gainCalibration;
+    const effectiveVol = isMuted ? 0 : calibratedVol;
     const now = this.ctx?.currentTime || 0;
 
     let ch = this.channels.get(channelId);
@@ -161,8 +162,8 @@ class WebAudioEngine {
     }
   }
 
-  // Algoritmo de Trimming + Crossfade Equal-Power en RAM de WebAudio (100% libre de artefactos de compresión)
-  private makeCrossfadedLoopBuffer(originalBuffer: AudioBuffer, crossfadeDurationSec: number = 3.0): AudioBuffer {
+  // Algoritmo de Trimming + Zero-Crossing Alignment + Crossfade Hermite S-Curve (100% Zen, sin pops ni baches)
+  private makeCrossfadedLoopBuffer(originalBuffer: AudioBuffer, crossfadeDurationSec: number = 4.5): AudioBuffer {
     if (!this.ctx) return originalBuffer;
 
     const sampleRate = originalBuffer.sampleRate;
@@ -171,10 +172,9 @@ class WebAudioEngine {
 
     if (totalSamples < sampleRate * 5) return originalBuffer;
 
-    // 1. Detectar umbral de cuerpo de audio para omitir fundidos estáticos (fade-in / fade-out de origen)
     const ch0 = originalBuffer.getChannelData(0);
     
-    // Encontrar pico de volumen
+    // 1. Encontrar pico máximo de volumen
     let maxAmp = 0;
     const step = Math.floor(sampleRate / 10);
     for (let i = 0; i < totalSamples; i += step) {
@@ -182,22 +182,35 @@ class WebAudioEngine {
       if (absVal > maxAmp) maxAmp = absVal;
     }
 
-    const threshold = maxAmp * 0.15; // 15% del pico máximo
+    const threshold = maxAmp * 0.12; // 12% del pico
 
-    let bodyStart = 0;
-    while (bodyStart < totalSamples / 3 && Math.abs(ch0[bodyStart]) < threshold) {
+    let rawStart = 0;
+    while (rawStart < totalSamples / 3 && Math.abs(ch0[rawStart]) < threshold) {
+      rawStart++;
+    }
+
+    let rawEnd = totalSamples - 1;
+    while (rawEnd > (totalSamples * 2) / 3 && Math.abs(ch0[rawEnd]) < threshold) {
+      rawEnd--;
+    }
+
+    // 2. Alineación por cruce por cero (Zero-Crossing Alignment) para eliminar cualquier golpe por muestra discontinua
+    let bodyStart = rawStart;
+    while (bodyStart < rawStart + 1000 && bodyStart < totalSamples - 1) {
+      if (ch0[bodyStart] <= 0 && ch0[bodyStart + 1] > 0) break;
       bodyStart++;
     }
 
-    let bodyEnd = totalSamples - 1;
-    while (bodyEnd > (totalSamples * 2) / 3 && Math.abs(ch0[bodyEnd]) < threshold) {
+    let bodyEnd = rawEnd;
+    while (bodyEnd > rawEnd - 1000 && bodyEnd > 1) {
+      if (ch0[bodyEnd - 1] <= 0 && ch0[bodyEnd] > 0) break;
       bodyEnd--;
     }
 
     const bodySamples = bodyEnd - bodyStart;
     const crossfadeSamples = Math.min(
       Math.floor(sampleRate * crossfadeDurationSec),
-      Math.floor(bodySamples / 4)
+      Math.floor(bodySamples / 3)
     );
 
     if (bodySamples < sampleRate * 5 || crossfadeSamples <= 0) return originalBuffer;
@@ -209,19 +222,21 @@ class WebAudioEngine {
       const srcData = originalBuffer.getChannelData(c);
       const destData = resultBuffer.getChannelData(c);
 
-      // Copiar el cuerpo limpio sin los fundidos extremos
+      // Copiar el cuerpo limpio de audio
       for (let i = 0; i < outSamples; i++) {
         destData[i] = srcData[bodyStart + i];
       }
 
-      // Aplicar empalme cruzado Equal-Power (Cos/Sin) entre el final y el inicio del cuerpo
+      // Aplicar empalme cruzado S-Curve de alta suavidad para sintetizadores
       const fadeStart = outSamples - crossfadeSamples;
       const tailStart = bodyStart + outSamples;
 
       for (let i = 0; i < crossfadeSamples; i++) {
-        const progress = i / crossfadeSamples;
-        const fadeIn = Math.sin(progress * (Math.PI / 2));
-        const fadeOut = Math.cos(progress * (Math.PI / 2));
+        const t = i / crossfadeSamples;
+        // Curva S-Curve de mezcla orgánica Hermite (3t^2 - 2t^3)
+        const sCurve = t * t * (3 - 2 * t);
+        const fadeIn = sCurve;
+        const fadeOut = 1 - sCurve;
 
         const sampleFromStart = srcData[bodyStart + i];
         const sampleFromEnd = srcData[tailStart + i];

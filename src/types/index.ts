@@ -9,6 +9,7 @@ export interface SoundChannel {
   isMuted: boolean;
   type: string;
   fileUrl?: string;
+  gainCalibration?: number; // Perceived loudness gain calibration factor (e.g. 0.7 to 1.4)
 }
 
 export interface FocusPreset {
