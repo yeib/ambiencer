@@ -161,45 +161,72 @@ class WebAudioEngine {
     }
   }
 
-  // Algoritmo de Crossfade Equal-Power para bucles infinitos 100% invisibles sin cortes ni fades de IA
-  private makeCrossfadedLoopBuffer(originalBuffer: AudioBuffer, crossfadeDurationSec: number = 1.5): AudioBuffer {
+  // Algoritmo de Trimming + Crossfade Equal-Power en RAM de WebAudio (100% libre de artefactos de compresión)
+  private makeCrossfadedLoopBuffer(originalBuffer: AudioBuffer, crossfadeDurationSec: number = 3.0): AudioBuffer {
     if (!this.ctx) return originalBuffer;
-    
+
     const sampleRate = originalBuffer.sampleRate;
     const numChannels = originalBuffer.numberOfChannels;
+    const totalSamples = originalBuffer.length;
+
+    if (totalSamples < sampleRate * 5) return originalBuffer;
+
+    // 1. Detectar umbral de cuerpo de audio para omitir fundidos estáticos (fade-in / fade-out de origen)
+    const ch0 = originalBuffer.getChannelData(0);
+    
+    // Encontrar pico de volumen
+    let maxAmp = 0;
+    const step = Math.floor(sampleRate / 10);
+    for (let i = 0; i < totalSamples; i += step) {
+      const absVal = Math.abs(ch0[i]);
+      if (absVal > maxAmp) maxAmp = absVal;
+    }
+
+    const threshold = maxAmp * 0.15; // 15% del pico máximo
+
+    let bodyStart = 0;
+    while (bodyStart < totalSamples / 3 && Math.abs(ch0[bodyStart]) < threshold) {
+      bodyStart++;
+    }
+
+    let bodyEnd = totalSamples - 1;
+    while (bodyEnd > (totalSamples * 2) / 3 && Math.abs(ch0[bodyEnd]) < threshold) {
+      bodyEnd--;
+    }
+
+    const bodySamples = bodyEnd - bodyStart;
     const crossfadeSamples = Math.min(
       Math.floor(sampleRate * crossfadeDurationSec),
-      Math.floor(originalBuffer.length / 4)
+      Math.floor(bodySamples / 4)
     );
 
-    if (crossfadeSamples <= 0) return originalBuffer;
+    if (bodySamples < sampleRate * 5 || crossfadeSamples <= 0) return originalBuffer;
 
-    const newLength = originalBuffer.length - crossfadeSamples;
-    const resultBuffer = this.ctx.createBuffer(numChannels, newLength, sampleRate);
+    const outSamples = bodySamples - crossfadeSamples;
+    const resultBuffer = this.ctx.createBuffer(numChannels, outSamples, sampleRate);
 
     for (let c = 0; c < numChannels; c++) {
       const srcData = originalBuffer.getChannelData(c);
       const destData = resultBuffer.getChannelData(c);
 
-      // Copiar el cuerpo central
-      for (let i = 0; i < newLength; i++) {
-        destData[i] = srcData[i];
+      // Copiar el cuerpo limpio sin los fundidos extremos
+      for (let i = 0; i < outSamples; i++) {
+        destData[i] = srcData[bodyStart + i];
       }
 
-      // Mezclar los últimos N milisegundos del final con el inicio usando curva Equal-Power (Cos/Sin)
-      const fadeStart = newLength - crossfadeSamples;
-      const originalEndStart = originalBuffer.length - crossfadeSamples;
+      // Aplicar empalme cruzado Equal-Power (Cos/Sin) entre el final y el inicio del cuerpo
+      const fadeStart = outSamples - crossfadeSamples;
+      const tailStart = bodyStart + outSamples;
 
       for (let i = 0; i < crossfadeSamples; i++) {
         const progress = i / crossfadeSamples;
-        // Curva Equal-Power Cosine / Sine
         const fadeIn = Math.sin(progress * (Math.PI / 2));
         const fadeOut = Math.cos(progress * (Math.PI / 2));
 
-        const sampleFromStart = srcData[i];
-        const sampleFromEnd = srcData[originalEndStart + i];
+        const sampleFromStart = srcData[bodyStart + i];
+        const sampleFromEnd = srcData[tailStart + i];
 
-        destData[fadeStart + i] = (sampleFromStart * fadeIn) + (sampleFromEnd * fadeOut);
+        destData[fadeStart + i] = sampleFromStart * fadeIn + sampleFromEnd * fadeOut;
       }
     }
 
