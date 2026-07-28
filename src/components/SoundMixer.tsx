@@ -15,6 +15,80 @@ interface SoundMixerProps {
   onSaveCustomPreset: (name: string, icon: string) => void;
 }
 
+const CATEGORY_THEMES: Record<SoundCategory, {
+  accent: string;
+  glowBg: string;
+  iconBgActive: string;
+  iconBgInactive: string;
+  cardBgActive: string;
+  cardBgInactive: string;
+  borderActive: string;
+  borderInactive: string;
+  badgeBg: string;
+  badgeBorder: string;
+}> = {
+  nature: {
+    accent: '#10b981', // Emerald Green / Nature & Water
+    glowBg: 'rgba(16, 185, 129, 0.25)',
+    iconBgActive: 'rgba(16, 185, 129, 0.25)',
+    iconBgInactive: 'rgba(16, 185, 129, 0.1)',
+    cardBgActive: 'rgba(16, 48, 36, 0.65)',
+    cardBgInactive: 'rgba(16, 185, 129, 0.05)',
+    borderActive: '1px solid #10b981',
+    borderInactive: '1px solid rgba(16, 185, 129, 0.22)',
+    badgeBg: 'rgba(16, 185, 129, 0.15)',
+    badgeBorder: '1px solid rgba(16, 185, 129, 0.35)',
+  },
+  urban: {
+    accent: '#f59e0b', // Warm Amber / Focus & City
+    glowBg: 'rgba(245, 158, 11, 0.25)',
+    iconBgActive: 'rgba(245, 158, 11, 0.25)',
+    iconBgInactive: 'rgba(245, 158, 11, 0.1)',
+    cardBgActive: 'rgba(48, 36, 16, 0.65)',
+    cardBgInactive: 'rgba(245, 158, 11, 0.05)',
+    borderActive: '1px solid #f59e0b',
+    borderInactive: '1px solid rgba(245, 158, 11, 0.22)',
+    badgeBg: 'rgba(245, 158, 11, 0.15)',
+    badgeBorder: '1px solid rgba(245, 158, 11, 0.35)',
+  },
+  asmr: {
+    accent: '#f43f5e', // Neon Pink / Tactile ASMR
+    glowBg: 'rgba(244, 63, 94, 0.25)',
+    iconBgActive: 'rgba(244, 63, 94, 0.25)',
+    iconBgInactive: 'rgba(244, 63, 94, 0.1)',
+    cardBgActive: 'rgba(48, 16, 28, 0.65)',
+    cardBgInactive: 'rgba(244, 63, 94, 0.05)',
+    borderActive: '1px solid #f43f5e',
+    borderInactive: '1px solid rgba(244, 63, 94, 0.22)',
+    badgeBg: 'rgba(244, 63, 94, 0.15)',
+    badgeBorder: '1px solid rgba(244, 63, 94, 0.35)',
+  },
+  synth: {
+    accent: '#a855f7', // Mystic Purple / Frequencies & Zen
+    glowBg: 'rgba(168, 85, 247, 0.25)',
+    iconBgActive: 'rgba(168, 85, 247, 0.25)',
+    iconBgInactive: 'rgba(168, 85, 247, 0.1)',
+    cardBgActive: 'rgba(38, 22, 56, 0.65)',
+    cardBgInactive: 'rgba(168, 85, 247, 0.05)',
+    borderActive: '1px solid #a855f7',
+    borderInactive: '1px solid rgba(168, 85, 247, 0.22)',
+    badgeBg: 'rgba(168, 85, 247, 0.15)',
+    badgeBorder: '1px solid rgba(168, 85, 247, 0.35)',
+  },
+  all: {
+    accent: '#38bdf8', // Neon Cyan
+    glowBg: 'rgba(56, 189, 248, 0.25)',
+    iconBgActive: 'rgba(56, 189, 248, 0.25)',
+    iconBgInactive: 'rgba(56, 189, 248, 0.1)',
+    cardBgActive: 'rgba(22, 38, 56, 0.65)',
+    cardBgInactive: 'rgba(56, 189, 248, 0.05)',
+    borderActive: '1px solid #38bdf8',
+    borderInactive: '1px solid rgba(56, 189, 248, 0.22)',
+    badgeBg: 'rgba(56, 189, 248, 0.15)',
+    badgeBorder: '1px solid rgba(56, 189, 248, 0.35)',
+  }
+};
+
 export const SoundMixer: React.FC<SoundMixerProps> = ({
   channels,
   settings,
@@ -79,6 +153,7 @@ export const SoundMixer: React.FC<SoundMixerProps> = ({
         <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
           {categories.map((cat) => {
             const isSel = selectedCategory === cat.id;
+            const theme = CATEGORY_THEMES[cat.id];
             return (
               <button
                 key={cat.id}
@@ -86,12 +161,13 @@ export const SoundMixer: React.FC<SoundMixerProps> = ({
                 style={{
                   padding: '6px 14px',
                   borderRadius: 'var(--radius-full)',
-                  border: isSel ? 'var(--border-accent)' : 'var(--border-glass)',
-                  background: isSel ? 'var(--accent-cyan-glow)' : 'rgba(255, 255, 255, 0.04)',
-                  color: isSel ? 'var(--accent-cyan)' : 'var(--text-muted)',
+                  border: isSel ? `1px solid ${theme.accent}` : 'var(--border-glass)',
+                  background: isSel ? `${theme.accent}26` : 'rgba(255, 255, 255, 0.04)',
+                  color: isSel ? theme.accent : 'var(--text-muted)',
                   cursor: 'pointer',
                   fontSize: '0.8rem',
-                  fontWeight: isSel ? 600 : 400,
+                  fontWeight: isSel ? 700 : 400,
+                  boxShadow: isSel ? `0 0 12px ${theme.accent}40` : 'none',
                   transition: 'all 0.2s'
                 }}
               >
@@ -103,7 +179,7 @@ export const SoundMixer: React.FC<SoundMixerProps> = ({
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-            {getTranslation(lang, 'activeChannels')}: <strong style={{ color: 'var(--accent-cyan)' }}>{activeChannels.length}</strong>
+            {getTranslation(lang, 'activeChannels')}: <strong style={{ color: 'var(--accent-cyan)' }}>{activeChannels.length + (freqState?.enabled && freqState.volume > 0 ? 1 : 0)}</strong>
           </span>
 
           {/* Guardar Mezcla como Preset */}
@@ -160,6 +236,7 @@ export const SoundMixer: React.FC<SoundMixerProps> = ({
           const modeText = freqState.mode === 'binaural'
             ? `Binaural ${freqState.beatFreq}Hz`
             : `${freqState.carrierFreq}Hz`;
+          const synthTheme = CATEGORY_THEMES.synth;
 
           return (
             <div
@@ -172,11 +249,12 @@ export const SoundMixer: React.FC<SoundMixerProps> = ({
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
-                border: isFreqActive ? '1px solid var(--accent-purple)' : 'var(--border-glass)',
-                background: isFreqActive ? 'rgba(38, 22, 56, 0.65)' : 'var(--bg-glass-card)',
-                boxShadow: isFreqActive ? '0 0 20px rgba(168, 85, 247, 0.25)' : 'none',
+                border: isFreqActive ? synthTheme.borderActive : synthTheme.borderInactive,
+                background: isFreqActive ? synthTheme.cardBgActive : synthTheme.cardBgInactive,
+                boxShadow: isFreqActive ? `0 0 20px ${synthTheme.glowBg}` : 'none',
                 position: 'relative',
-                overflow: 'hidden'
+                overflow: 'hidden',
+                transition: 'all 0.25s ease'
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
@@ -186,8 +264,8 @@ export const SoundMixer: React.FC<SoundMixerProps> = ({
                       width: '36px',
                       height: '36px',
                       borderRadius: '10px',
-                      background: isFreqActive ? 'var(--accent-purple-glow)' : 'rgba(168, 85, 247, 0.08)',
-                      color: 'var(--accent-purple)',
+                      background: isFreqActive ? synthTheme.iconBgActive : synthTheme.iconBgInactive,
+                      color: synthTheme.accent,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -217,9 +295,9 @@ export const SoundMixer: React.FC<SoundMixerProps> = ({
                           fontWeight: 700,
                           padding: '1px 5px',
                           borderRadius: '4px',
-                          background: 'rgba(168, 85, 247, 0.15)',
-                          border: '1px solid rgba(168, 85, 247, 0.3)',
-                          color: 'var(--accent-purple)',
+                          background: synthTheme.badgeBg,
+                          border: synthTheme.badgeBorder,
+                          color: synthTheme.accent,
                           display: 'inline-flex',
                           alignItems: 'center',
                           gap: '3px',
@@ -239,7 +317,7 @@ export const SoundMixer: React.FC<SoundMixerProps> = ({
                   style={{
                     background: 'none',
                     border: 'none',
-                    color: isFreqActive ? 'var(--accent-purple)' : 'var(--text-dim)',
+                    color: isFreqActive ? synthTheme.accent : 'var(--text-dim)',
                     cursor: 'pointer',
                     padding: '4px',
                     flexShrink: 0
@@ -261,7 +339,7 @@ export const SoundMixer: React.FC<SoundMixerProps> = ({
                   onChangeFreqState({ volume: vol, enabled: vol > 0 });
                 }}
                 style={{
-                  accentColor: 'var(--accent-purple)',
+                  accentColor: synthTheme.accent,
                   width: '100%'
                 }}
               />
@@ -274,15 +352,7 @@ export const SoundMixer: React.FC<SoundMixerProps> = ({
           const isRealAudio = ch.type === 'media';
           const percent = Math.round(ch.volume * 100);
 
-          const iconBg = isRealAudio
-            ? (isActive ? 'var(--accent-cyan-glow)' : 'rgba(56, 189, 248, 0.08)')
-            : (isActive ? 'var(--accent-purple-glow)' : 'rgba(168, 85, 247, 0.08)');
-
-          const iconColor = isRealAudio ? 'var(--accent-cyan)' : 'var(--accent-purple)';
-
-          const badgeBg = isRealAudio ? 'rgba(56, 189, 248, 0.12)' : 'rgba(168, 85, 247, 0.12)';
-          const badgeBorder = isRealAudio ? '1px solid rgba(56, 189, 248, 0.3)' : '1px solid rgba(168, 85, 247, 0.3)';
-          const badgeText = isRealAudio ? 'var(--accent-cyan)' : 'var(--accent-purple)';
+          const theme = CATEGORY_THEMES[ch.category] || CATEGORY_THEMES.all;
 
           return (
             <div
@@ -295,17 +365,12 @@ export const SoundMixer: React.FC<SoundMixerProps> = ({
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
-                border: isActive
-                  ? (isRealAudio ? '1px solid var(--accent-cyan)' : '1px solid var(--accent-purple)')
-                  : 'var(--border-glass)',
-                background: isActive
-                  ? (isRealAudio ? 'rgba(22, 38, 56, 0.55)' : 'rgba(38, 22, 56, 0.55)')
-                  : 'var(--bg-glass-card)',
-                boxShadow: isActive
-                  ? (isRealAudio ? '0 0 20px rgba(56, 189, 248, 0.18)' : '0 0 20px rgba(168, 85, 247, 0.18)')
-                  : 'none',
+                border: isActive ? theme.borderActive : theme.borderInactive,
+                background: isActive ? theme.cardBgActive : theme.cardBgInactive,
+                boxShadow: isActive ? `0 0 20px ${theme.glowBg}` : 'none',
                 position: 'relative',
-                overflow: 'hidden'
+                overflow: 'hidden',
+                transition: 'all 0.25s ease'
               }}
             >
               {/* Header info */}
@@ -316,8 +381,8 @@ export const SoundMixer: React.FC<SoundMixerProps> = ({
                       width: '36px',
                       height: '36px',
                       borderRadius: '10px',
-                      background: iconBg,
-                      color: iconColor,
+                      background: isActive ? theme.iconBgActive : theme.iconBgInactive,
+                      color: theme.accent,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -349,9 +414,9 @@ export const SoundMixer: React.FC<SoundMixerProps> = ({
                           fontWeight: 700,
                           padding: '1px 5px',
                           borderRadius: '4px',
-                          background: badgeBg,
-                          border: badgeBorder,
-                          color: badgeText,
+                          background: theme.badgeBg,
+                          border: theme.badgeBorder,
+                          color: theme.accent,
                           display: 'inline-flex',
                           alignItems: 'center',
                           gap: '3px',
@@ -374,7 +439,7 @@ export const SoundMixer: React.FC<SoundMixerProps> = ({
                   style={{
                     background: 'none',
                     border: 'none',
-                    color: ch.isMuted ? 'var(--accent-rose)' : isActive ? iconColor : 'var(--text-dim)',
+                    color: ch.isMuted ? 'var(--accent-rose)' : isActive ? theme.accent : 'var(--text-dim)',
                     cursor: 'pointer',
                     padding: '4px',
                     flexShrink: 0
@@ -393,7 +458,7 @@ export const SoundMixer: React.FC<SoundMixerProps> = ({
                 value={ch.isMuted ? 0 : ch.volume}
                 onChange={(e) => onVolumeChange(ch.id, parseFloat(e.target.value))}
                 style={{
-                  accentColor: iconColor,
+                  accentColor: theme.accent,
                   width: '100%'
                 }}
               />
