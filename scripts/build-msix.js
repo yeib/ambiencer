@@ -82,6 +82,13 @@ try {
     console.log(`🖼️ Iconos de Ambiencer Pro copiados a gen/windows/Assets`);
   }
 
+  // 3.5 Verificar / Inicializar plantillas de Windows Bundle si no existen
+  const manifestTemplate = path.join(rootDir, 'src-tauri', 'gen', 'windows', 'AppxManifest.xml.template');
+  if (!fs.existsSync(manifestTemplate)) {
+    console.log(`⚙️ Inicializando plantillas MSIX (tauri-windows-bundle init)...`);
+    execSync('npx tauri-windows-bundle init', { stdio: 'inherit', cwd: rootDir });
+  }
+
   // 4. Generar paquete MSIX usando @choochmeque/tauri-windows-bundle
   console.log(`⚡ Empaquetando paquete MSIX oficial con tauri-windows-bundle...`);
   execSync('npx tauri-windows-bundle build --runner npm --regenerate-assets', { stdio: 'inherit', cwd: rootDir });
