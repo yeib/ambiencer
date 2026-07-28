@@ -40,6 +40,12 @@ def generate_icons():
         "128x128.png": (128, 128),
         "128x128@2x.png": (256, 256),
         "icon.png": (512, 512),
+        # Microsoft Store Web Listing Assets
+        "logo_44x44.png": (44, 44),
+        "logo_71x71.png": (71, 71),
+        "logo_150x150.png": (150, 150),
+        "logo_300x300.png": (300, 300),
+        "logo_512x512.png": (512, 512),
     }
 
     for name, (w, h) in sizes.items():
@@ -59,12 +65,21 @@ def generate_icons():
     wide_img.save(os.path.join(store_dir, "Wide310x150Logo.png"), "PNG")
     print("  ✅ Generado: Wide310x150Logo.png (310x150)")
 
+    # Poster Art vertical para Microsoft Store (720x1080)
+    poster = Image.new("RGBA", (720, 1080), (11, 15, 25, 255))
+    poster_icon = img.resize((360, 360), Image.Resampling.LANCZOS)
+    p_x = (720 - 360) // 2
+    p_y = (1080 - 360) // 2
+    poster.paste(poster_icon, (p_x, p_y), poster_icon)
+    poster.save(os.path.join(store_dir, "poster_720x1080.png"), "PNG")
+    print("  ✅ Generado: poster_720x1080.png (720x1080)")
+
     # Guardar icon.ico
     ico_img = img.resize((32, 32), Image.Resampling.LANCZOS)
     ico_img.save(os.path.join(icons_dir, "icon.ico"), format="ICO")
     print("  ✅ Generado: icon.ico")
 
-    print("\n🚀 ¡Todos los iconos y tiles de Ambiencer Pro generados con éxito!")
+    print("\n🚀 ¡Todos los iconos y assets de la Microsoft Store generados con éxito!")
 
 if __name__ == "__main__":
     generate_icons()
