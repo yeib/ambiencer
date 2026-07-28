@@ -131,6 +131,19 @@ const SYSTEM_PRESETS: FocusPreset[] = [
 ];
 
 export const App: React.FC = () => {
+  // Smooth window reveal on mount to eliminate transparent flicker at launch
+  useEffect(() => {
+    import('@tauri-apps/api/window').then(({ getCurrentWindow }) => {
+      try {
+        const win = getCurrentWindow();
+        if (win && win.label === 'main') {
+          win.show();
+          win.setFocus();
+        }
+      } catch (e) {}
+    }).catch(() => {});
+  }, []);
+
   const [activeTab, setActiveTab] = useState<ActiveTab>('mixer');
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [channels, setChannels] = useState<SoundChannel[]>(INITIAL_CHANNELS);
