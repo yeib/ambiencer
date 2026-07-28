@@ -162,8 +162,8 @@ class WebAudioEngine {
     }
   }
 
-  // Algoritmo de Trimming + Zero-Crossing Alignment + Crossfade Hermite S-Curve (100% Zen, sin pops ni baches)
-  private makeCrossfadedLoopBuffer(originalBuffer: AudioBuffer, crossfadeDurationSec: number = 4.5): AudioBuffer {
+  // Algoritmo de Seam-Aligned Equal-Power Loop Crossfade (100% liso, sin paf, sin baches de volumen)
+  private makeCrossfadedLoopBuffer(originalBuffer: AudioBuffer, crossfadeDurationSec: number = 4.0): AudioBuffer {
     if (!this.ctx) return originalBuffer;
 
     const sampleRate = originalBuffer.sampleRate;
@@ -194,7 +194,7 @@ class WebAudioEngine {
       rawEnd--;
     }
 
-    // 2. Alineación por cruce por cero (Zero-Crossing Alignment) para eliminar cualquier golpe por muestra discontinua
+    // 2. Alineación por cruce por cero (Zero-Crossing Alignment)
     let bodyStart = rawStart;
     while (bodyStart < rawStart + 1000 && bodyStart < totalSamples - 1) {
       if (ch0[bodyStart] <= 0 && ch0[bodyStart + 1] > 0) break;
@@ -222,26 +222,21 @@ class WebAudioEngine {
       const srcData = originalBuffer.getChannelData(c);
       const destData = resultBuffer.getChannelData(c);
 
-      // Copiar el cuerpo limpio de audio
-      for (let i = 0; i < outSamples; i++) {
-        destData[i] = srcData[bodyStart + i];
-      }
-
-      // Aplicar empalme cruzado S-Curve de alta suavidad para sintetizadores
-      const fadeStart = outSamples - crossfadeSamples;
-      const tailStart = bodyStart + outSamples;
-
+      // 1. Aplicar la mezcla empalmada en la COSTURA del bucle (índices 0 a crossfadeSamples)
       for (let i = 0; i < crossfadeSamples; i++) {
         const t = i / crossfadeSamples;
-        // Curva S-Curve de mezcla orgánica Hermite (3t^2 - 2t^3)
-        const sCurve = t * t * (3 - 2 * t);
-        const fadeIn = sCurve;
-        const fadeOut = 1 - sCurve;
+        const fadeIn = Math.sin(t * (Math.PI / 2));
+        const fadeOut = Math.cos(t * (Math.PI / 2));
 
-        const sampleFromStart = srcData[bodyStart + i];
-        const sampleFromEnd = srcData[tailStart + i];
+        const sampleStart = srcData[bodyStart + i];
+        const sampleEnd = srcData[bodyEnd - crossfadeSamples + i];
 
-        destData[fadeStart + i] = sampleFromStart * fadeIn + sampleFromEnd * fadeOut;
+        destData[i] = sampleStart * fadeIn + sampleEnd * fadeOut;
+      }
+
+      // 2. Copiar el resto del cuerpo limpio (índices crossfadeSamples a outSamples)
+      for (let i = crossfadeSamples; i < outSamples; i++) {
+        destData[i] = srcData[bodyStart + i];
       }
     }
 
