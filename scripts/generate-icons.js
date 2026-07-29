@@ -17,7 +17,7 @@ if (!fs.existsSync(logoA) && !fs.existsSync(logoPublic)) {
 }
 
 try {
-  console.log(`\n🎨 Generando paquete completo de iconos y tiles para Ambiencer Pro...`);
+  console.log(`\n🎨 Generando paquete completo de iconos y tiles para Ambiencer...`);
   if (process.platform === 'win32') {
     execSync('powershell -ExecutionPolicy Bypass -File scripts/gen-store-icons.ps1', { stdio: 'inherit', cwd: rootDir });
   } else {

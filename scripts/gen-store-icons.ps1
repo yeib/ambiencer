@@ -1,4 +1,4 @@
-# Script de Generación Automática de Iconos y Tiles para Ambiencer Pro (Microsoft Store)
+# Script de Generación Automática de Iconos y Tiles para Ambiencer (Microsoft Store)
 Add-Type -AssemblyName System.Drawing
 
 $baseDir = Get-Location
@@ -97,4 +97,4 @@ $icoBmp.Dispose()
 Write-Host "✅ Icono ejecutable generado: icon.ico" -ForegroundColor Green
 
 $srcImg.Dispose()
-Write-Host "🚀 Todos los iconos y tiles de Ambiencer Pro procesados desde store-assets/logoA.png!" -ForegroundColor Cyan
+Write-Host "🚀 Todos los iconos y tiles de Ambiencer procesados desde store-assets/logoA.png!" -ForegroundColor Cyan

@@ -75,7 +75,7 @@ function patchTauriWindowsBundle() {
 patchTauriWindowsBundle();
 
 try {
-  console.log(`\n🚀 Preparando compilación MSIX para Ambiencer Pro...`);
+  console.log(`\n🚀 Preparando compilación MSIX para Ambiencer...`);
 
   // 1. Compilar frontend de producción
   console.log(`📦 Compilando bundle frontend Vite...`);
@@ -90,7 +90,7 @@ try {
   const genAssetsDir = path.join(rootDir, 'src-tauri', 'gen', 'windows', 'Assets');
   if (fs.existsSync(iconsPath)) {
     copyDir(iconsPath, genAssetsDir);
-    console.log(`🖼️ Iconos de Ambiencer Pro copiados a gen/windows/Assets`);
+    console.log(`🖼️ Iconos de Ambiencer copiados a gen/windows/Assets`);
   }
 
   // 3.5 Verificar / Inicializar plantillas de Windows Bundle si no existen
@@ -130,8 +130,8 @@ try {
     }
   }
 
-  console.log(`\n✅ Paquete MSIX compilado con éxito para Ambiencer Pro!`);
+  console.log(`\n✅ Paquete MSIX compilado con éxito para Ambiencer!`);
 } catch (error) {
-  console.error(`\n❌ Error durante la compilación MSIX de Ambiencer Pro:`, error);
+  console.error(`\n❌ Error durante la compilación MSIX de Ambiencer:`, error);
   process.exitCode = 1;
 }
